@@ -170,7 +170,7 @@ With both features, the trees can split on `X_12m` and `X_06m` together and appr
 
 The correlation between two features tells you whether they carry the same values, not whether they carry the same information about the target. The rule works when the second feature is a noisy copy of the first. It fails when the signal is in how they differ.
 
-Checking $	ext{cor}(X_1, f(X_1, X_2))$ for ratios, differences and the like helps, but only for the combinations you think of. A better question to ask is whether the model uses the feature at all, and how that compares to a feature that is pure noise.
+Checking $\text{cor}(X_1, f(X_1, X_2))$ for ratios, differences and the like helps, but only for the combinations you think of. A better question to ask is whether the model uses the feature at all, and how that compares to a feature that is pure noise.
 
 That is the random probe idea. Add one or more random features, the probes, to the data, fit a model, and rank every feature by its importance. A probe can't carry any information about the target, so its importance is the level a useless feature reaches by chance. Features that rank below the probes are candidates to drop. The method goes back to Stoppiglia, Dreyfus, Dubois and Oussar, [Ranking a Random Feature for Variable and Feature Selection](https://www.jmlr.org/papers/v3/stoppiglia03a.html) (JMLR, 2003), which also gives a statistical stopping rule for where to cut the ranking.
 

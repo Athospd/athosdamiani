@@ -15,6 +15,10 @@ I've filtered out one feature of every pair with $\text{cor}(X_i, X_k) > 0.97$ f
 
 A while ago I [posted on LinkedIn](https://www.linkedin.com/posts/athosdamiani_feat-selection-by-correlation-when-lgbmn-activity-7256640466937425920-Ivvd) a simulation where that rule fails. When the signal lives in a ratio or a difference of two features, $X_1/X_2$ or $X_1 - X_2$, both features matter, even with $\text{cor}(X_1, X_2) = 0.99$. This post walks through the [simulation code](https://gist.github.com/Athospd/5d60c99c4ce1a5461e7f59c26669c7d0).
 
+::: {.callout-tip title="Spoiler"}
+Avoid using linear correlation for feature selection. Use the random feature strategy instead: compare each feature's importance to the importance of features that are pure noise. More details [down below](#what-to-check-instead).
+:::
+
 ## The data
 
 ```{r}
@@ -169,6 +173,8 @@ The correlation between two features tells you whether they carry the same value
 Checking $	ext{cor}(X_1, f(X_1, X_2))$ for ratios, differences and the like helps, but only for the combinations you think of. A better question to ask is whether the model uses the feature at all, and how that compares to a feature that is pure noise.
 
 That is the random probe idea. Add one or more random features, the probes, to the data, fit a model, and rank every feature by its importance. A probe can't carry any information about the target, so its importance is the level a useless feature reaches by chance. Features that rank below the probes are candidates to drop. The method goes back to Stoppiglia, Dreyfus, Dubois and Oussar, [Ranking a Random Feature for Variable and Feature Selection](https://www.jmlr.org/papers/v3/stoppiglia03a.html) (JMLR, 2003), which also gives a statistical stopping rule for where to cut the ranking.
+
+![The random probe strategy: add noise features, fit a tree model, rank features by importance, and drop those below the best probe.](random-probes.png)
 
 A random forest is a good model for the ranking: it captures interactions such as the ratio here without you having to build them, and its feature importance comes for free. Ready-made tools:
 

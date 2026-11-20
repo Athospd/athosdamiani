@@ -705,6 +705,852 @@ font-style: inherit;">0.1</span>)</span></code></pre></div></div>
   <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-20-learning-rate/learning_rate.png" medium="image" type="image/png" height="108" width="144"/>
 </item>
 <item>
+  <title>Dropping highly correlated features can throw away the signal</title>
+  <dc:creator>Athos Damiani</dc:creator>
+  <link>https://athospd.github.io/athosdamiani/posts/2026-11-20-feature-selection-by-correlation/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>I’ve filtered out one feature of every pair with <img src="https://latex.codecogs.com/png.latex?%5Ctext%7Bcor%7D(X_i,%20X_k)%20%3E%200.97"> for most of my career. The reasoning: if two features are almost the same, keeping both adds nothing.</p>
+<p>A while ago I <a href="https://www.linkedin.com/posts/athosdamiani_feat-selection-by-correlation-when-lgbmn-activity-7256640466937425920-Ivvd">posted on LinkedIn</a> a simulation where that rule fails. When the signal lives in a ratio or a difference of two features, <img src="https://latex.codecogs.com/png.latex?X_1/X_2"> or <img src="https://latex.codecogs.com/png.latex?X_1%20-%20X_2">, both features matter, even with <img src="https://latex.codecogs.com/png.latex?%5Ctext%7Bcor%7D(X_1,%20X_2)%20=%200.99">. This post walks through the <a href="https://gist.github.com/Athospd/5d60c99c4ce1a5461e7f59c26669c7d0">simulation code</a>.</p>
+<section id="the-data" class="level2">
+<h2 class="anchored" data-anchor-id="the-data">The data</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tidymodels)</span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tidyverse)</span>
+<span id="cb1-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(bonsai)</span>
+<span id="cb1-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(lightgbm)</span>
+<span id="cb1-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(patchwork)</span>
+<span id="cb1-6"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(corrr)</span>
+<span id="cb1-7"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_set</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_minimal</span>())</span>
+<span id="cb1-8">f <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> glue<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span>glue</span>
+<span id="cb1-9"></span>
+<span id="cb1-10">add_dummy_feats <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(df, n_new_feats) {</span>
+<span id="cb1-11">  n <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">nrow</span>(df)</span>
+<span id="cb1-12">  dummy_feats <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">replicate</span>(n_new_feats, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">runif</span>(n)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb1-13">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as_tibble</span>() <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb1-14">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set_names</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">f</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"random{1:n_new_feats}"</span>))</span>
+<span id="cb1-15">  df <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">bind_cols</span>(dummy_feats)</span>
+<span id="cb1-16">}</span></code></pre></div></div>
+</div>
+<p>Think of <code>X_12m</code> as some quantity measured over the last 12 months, and <code>X_06m</code> as the same quantity over the last 6 months. <code>X_06m</code> is <code>X_12m</code> minus a small random amount, so the two are almost identical. The target depends only on their ratio, <code>X_06_12 = X_06m/X_12m</code>. Three pure-noise features complete the data.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">123</span>)</span>
+<span id="cb2-2">n <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100000</span></span>
+<span id="cb2-3">data <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tibble</span>(</span>
+<span id="cb2-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">X_12m =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">runif</span>(n),</span>
+<span id="cb2-5">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">X_06m =</span> X_12m <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pmin</span>(X_12m, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rgamma</span>(n, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.2</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">55</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> (X_12m <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">26</span>)),</span>
+<span id="cb2-6">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">X_06_12 =</span> X_06m<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>X_12m,</span>
+<span id="cb2-7">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">target =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbinom</span>(n, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">prob =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exp</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> (<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">60</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">60</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>X_06_12)))),</span>
+<span id="cb2-8">) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(</span>
+<span id="cb2-9">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">target =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.factor</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">if_else</span>(target <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"a_1"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"b_0"</span>))</span>
+<span id="cb2-10">) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb2-11">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">add_dummy_feats</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>)</span>
+<span id="cb2-12"></span>
+<span id="cb2-13">data <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb2-14">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">count</span>(target) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb2-15">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">p =</span> scales<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">percent</span>(n<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(n)))</span>
+<span id="cb2-16"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">## # A tibble: 2 × 3</span></span>
+<span id="cb2-17"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">##   target     n p    </span></span>
+<span id="cb2-18"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">##   &lt;fct&gt;  &lt;int&gt; &lt;chr&gt;</span></span>
+<span id="cb2-19"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">## 1 a_1    32522 33%  </span></span>
+<span id="cb2-20"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">## 2 b_0    67478 67%</span></span></code></pre></div></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">cor_feats <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> data <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sample_frac</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.1</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">select</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">starts_with</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"X"</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">correlate</span>() <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">stretch</span>() <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-6">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> x, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> y)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-7">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_tile</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> r), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">show.legend =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_text</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(r,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-9">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_fill_gradient2</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">low =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"royalblue"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">high =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"darkred"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mid =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"white"</span>,</span>
+<span id="cb3-10">                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midpoint =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">limit =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-11">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">coord_fixed</span>() <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-12">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Pearson Correlation"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NULL</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NULL</span>)</span>
+<span id="cb3-13"></span>
+<span id="cb3-14">X_06m_X_12m <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> data <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-15">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sample_frac</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.1</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-16">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> X_12m, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> X_06m)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-17">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_point</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">alpha =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.1</span>)</span>
+<span id="cb3-18"></span>
+<span id="cb3-19">cor_feats <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> X_06m_X_12m</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://athospd.github.io/athosdamiani/posts/2026-11-20-feature-selection-by-correlation/index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><code>X_06m</code> and <code>X_12m</code> are the textbook case for the correlation filter. The ratio <code>X_06_12</code>, the feature that actually drives the target, has a weak correlation with either of them.</p>
+</section>
+<section id="two-models" class="level2">
+<h2 class="anchored" data-anchor-id="two-models">Two models</h2>
+<p>In the simulation the ratio isn’t available to the model: in real life you’d have to know to build it. Both recipes drop <code>X_06_12</code>. The second one also drops <code>X_12m</code>, as the correlation filter would.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">123</span>)</span>
+<span id="cb4-2">data_split <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">initial_split</span>(data, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">strata =</span> target)</span>
+<span id="cb4-3">train_data <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">training</span>(data_split)</span>
+<span id="cb4-4">test_data <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">testing</span>(data_split)</span>
+<span id="cb4-5"></span>
+<span id="cb4-6">lgbm_model <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">boost_tree</span>(</span>
+<span id="cb4-7">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mode =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"classification"</span>,</span>
+<span id="cb4-8">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">trees =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>,</span>
+<span id="cb4-9">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">tree_depth =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>,</span>
+<span id="cb4-10">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">learn_rate =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.01</span></span>
+<span id="cb4-11">) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-12">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set_engine</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"lightgbm"</span>)</span>
+<span id="cb4-13"></span>
+<span id="cb4-14"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># keeps both X_12m and X_06m</span></span>
+<span id="cb4-15">recipe1 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">recipe</span>(target <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> ., <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> train_data) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-16">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">step_rm</span>(X_06_12) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-17">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">step_normalize</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">all_predictors</span>())</span>
+<span id="cb4-18"></span>
+<span id="cb4-19"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># drops X_12m, as the correlation filter would</span></span>
+<span id="cb4-20">recipe2 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">recipe</span>(target <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> ., <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> train_data) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-21">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">step_rm</span>(X_12m) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-22">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">step_rm</span>(X_06_12) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-23">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">step_normalize</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">all_predictors</span>())</span>
+<span id="cb4-24"></span>
+<span id="cb4-25">fitted_model1 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">workflow</span>(recipe1, lgbm_model) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">fit</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> train_data)</span>
+<span id="cb4-26">fitted_model2 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">workflow</span>(recipe2, lgbm_model) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">fit</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> train_data)</span></code></pre></div></div>
+</div>
+</section>
+<section id="results" class="level2">
+<h2 class="anchored" data-anchor-id="results">Results</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">results1 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">bind_cols</span>(test_data, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">predict</span>(fitted_model1, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">new_data =</span> test_data, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"prob"</span>))</span>
+<span id="cb5-2">results2 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">bind_cols</span>(test_data, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">predict</span>(fitted_model2, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">new_data =</span> test_data, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"prob"</span>))</span>
+<span id="cb5-3"></span>
+<span id="cb5-4">roc_auc1 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">roc_auc</span>(results1, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">truth =</span> target, .pred_a_1)</span>
+<span id="cb5-5">roc_auc2 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">roc_auc</span>(results2, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">truth =</span> target, .pred_a_1)</span>
+<span id="cb5-6"></span>
+<span id="cb5-7"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">bind_rows</span>(</span>
+<span id="cb5-8">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"both features"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> roc_auc1,</span>
+<span id="cb5-9">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"X_12m dropped"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> roc_auc2,</span>
+<span id="cb5-10">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">.id =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"model"</span></span>
+<span id="cb5-11">)</span>
+<span id="cb5-12"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">## # A tibble: 2 × 4</span></span>
+<span id="cb5-13"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">##   model         .metric .estimator .estimate</span></span>
+<span id="cb5-14"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">##   &lt;chr&gt;         &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;</span></span>
+<span id="cb5-15"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">## 1 both features roc_auc binary         0.650</span></span>
+<span id="cb5-16"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">## 2 X_12m dropped roc_auc binary         0.543</span></span></code></pre></div></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1">roc_plot <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(results, auc, title) {</span>
+<span id="cb6-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">roc_curve</span>(results, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">truth =</span> target, .pred_a_1) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb6-3">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> specificity, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> sensitivity)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-4">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_path</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linewidth =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-5">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_abline</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">lty =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linewidth =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-6">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> title, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"1 - Specificity"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Sensitivity"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-7">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">annotate</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"text"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.6</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.2</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"AUC ="</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(auc<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>.estimate, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)),</span>
+<span id="cb6-8">             <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"royalblue"</span>)</span>
+<span id="cb6-9">}</span>
+<span id="cb6-10"></span>
+<span id="cb6-11">feat_imp_plot <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(fitted_model) {</span>
+<span id="cb6-12">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">lgb.importance</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">extract_fit_engine</span>(fitted_model)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb6-13">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as_tibble</span>() <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb6-14">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">reorder</span>(Feature, Gain), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> Gain)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-15">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_col</span>() <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-16">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">coord_flip</span>() <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-17">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Feature importance"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NULL</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Gain"</span>)</span>
+<span id="cb6-18">}</span>
+<span id="cb6-19"></span>
+<span id="cb6-20">final_plot <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">roc_plot</span>(results1, roc_auc1, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ROC curve: both features"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">feat_imp_plot</span>(fitted_model1) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-21">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">roc_plot</span>(results2, roc_auc2, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ROC curve: X_12m dropped"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">feat_imp_plot</span>(fitted_model2) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-22">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot_layout</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ncol =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)</span>
+<span id="cb6-23">final_plot</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://athospd.github.io/athosdamiani/posts/2026-11-20-feature-selection-by-correlation/index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>With both features, the trees can split on <code>X_12m</code> and <code>X_06m</code> together and approximate their ratio, and the two features rank at the top of the importance. Without <code>X_12m</code>, the model sees <code>X_06m</code> alone, and the information in the ratio is gone. The AUROC drops from 0.65 to 0.54.</p>
+</section>
+<section id="what-to-check-instead" class="level2">
+<h2 class="anchored" data-anchor-id="what-to-check-instead">What to check instead</h2>
+<p>The correlation between two features tells you whether they carry the same values, not whether they carry the same information about the target. The rule works when the second feature is a noisy copy of the first. It fails when the signal is in how they differ.</p>
+<p>Before dropping a feature, check its correlation with combinations of it and its partner, <img src="https://latex.codecogs.com/png.latex?%5Ctext%7Bcor%7D(X_1,%20f(X_1,%20X_2))"> for ratios, differences and the like. Here <code>X_06_12</code> has a weak correlation with both <code>X_12m</code> and <code>X_06m</code>: neither one alone stands in for it.</p>
+<p>The gist also has commented-out versions with the product, the difference and the sum in place of the ratio, if you want to try them.</p>
+<p>Was this obvious to you? New? Or misleading in practice? I’d like to know.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>machine learning</category>
+  <category>feature selection</category>
+  <category>lightgbm</category>
+  <category>tidymodels</category>
+  <category>r</category>
+  <guid>https://athospd.github.io/athosdamiani/posts/2026-11-20-feature-selection-by-correlation/</guid>
+  <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
+  <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-20-feature-selection-by-correlation/feature-selection.png" medium="image" type="image/png" height="101" width="144"/>
+</item>
+<item>
   <title>Untuned vs tuned xgboost, one tree at a time</title>
   <dc:creator>Athos Damiani</dc:creator>
   <link>https://athospd.github.io/athosdamiani/posts/2026-11-20-xgboost-untuned-vs-tuned/</link>

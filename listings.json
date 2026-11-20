@@ -1,9 +1,9 @@
 [
   {
-    "listing": "/blog.html",
+    "listing": "/index.html",
     "items": [
-      "/posts/2026-11-20-targetsboard/index.html",
       "/posts/2026-11-20-fourier-transform-gif/index.html",
+      "/posts/2026-11-20-targetsboard/index.html",
       "/posts/2026-11-20-learning-rate/index.html",
       "/posts/2026-11-20-xgboost-untuned-vs-tuned/index.html",
       "/posts/2026-11-17-parquet-sql-from-r/index.html",
@@ -24,10 +24,10 @@
     ]
   },
   {
-    "listing": "/index.html",
+    "listing": "/blog.html",
     "items": [
-      "/posts/2026-11-20-targetsboard/index.html",
       "/posts/2026-11-20-fourier-transform-gif/index.html",
+      "/posts/2026-11-20-targetsboard/index.html",
       "/posts/2026-11-20-learning-rate/index.html",
       "/posts/2026-11-20-xgboost-untuned-vs-tuned/index.html",
       "/posts/2026-11-17-parquet-sql-from-r/index.html",

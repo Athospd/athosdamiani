@@ -13,8 +13,8 @@ project:
 website:
   title: "Athos Damiani"
   description: "Data Scientist — statistics and machine learning, with data engineering experience. Python, R, SQL, Spark and Databricks."
-  site-url: https://athospd.github.io
-  repo-url: https://github.com/athospd/athospd.github.io
+  site-url: https://athospd.github.io/athosdamiani
+  repo-url: https://github.com/Athospd/athosdamiani
   favicon: files/favicon.svg
   open-graph: true
   twitter-card: true

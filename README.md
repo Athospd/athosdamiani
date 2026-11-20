@@ -1,4 +1,4 @@
-# athospd.github.io
+# athosdamiani
 
 Personal site of Athos Damiani — built with [Quarto](https://quarto.org), R and Python.
 
@@ -17,17 +17,17 @@ theme/code-vibes.scss  dark "terminal" theme
 ## One-time setup
 
 1. Install [Quarto](https://quarto.org/docs/get-started/) (RStudio/Positron already bundle it).
-2. Create a **public** GitHub repo named exactly `athospd.github.io` and push this folder to `main`:
+2. Create a **public** GitHub repo named `athosdamiani` and push this folder to `main`:
    ```bash
    git init && git add . && git commit -m "first version"
    git branch -M main
-   git remote add origin https://github.com/athospd/athospd.github.io.git
+   git remote add origin https://github.com/Athospd/athosdamiani.git
    git push -u origin main
    ```
 3. Run once locally to create the `gh-pages` branch: `quarto publish gh-pages`
 4. On GitHub: **Settings → Pages → Source: Deploy from a branch → `gh-pages` / root**.
 
-Site goes live at **https://athospd.github.io**. Your existing `athospd.github.io/mestrado` keeps working.
+Site goes live at **https://athospd.github.io/athosdamiani/**. Your existing `athospd.github.io/mestrado` keeps working.
 
 ## Writing a post
 

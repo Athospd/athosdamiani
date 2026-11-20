@@ -86,8 +86,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b78bc898bbbbb594d628fcbdab6526fe.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-7a5991e87a7fdc810a04bd96fe44dbc3.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark-fa0bbbf340a139748e6af9eeca2f05c9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-92b68146f8e39240a836cd34799ad18c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-5aa70ca03f8c5fcd7263a47770ed5d2f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -629,7 +629,7 @@ window.Quarto = {
 <section id="what-to-check-instead" class="level2">
 <h2 class="anchored" data-anchor-id="what-to-check-instead">What to check instead</h2>
 <p>The correlation between two features tells you whether they carry the same values, not whether they carry the same information about the target. The rule works when the second feature is a noisy copy of the first. It fails when the signal is in how they differ.</p>
-<p>Checking $ ext{cor}(X_1, f(X_1, X_2))$ for ratios, differences and the like helps, but only for the combinations you think of. A better question to ask is whether the model uses the feature at all, and how that compares to a feature that is pure noise.</p>
+<p>Checking <span class="math inline">\(\text{cor}(X_1, f(X_1, X_2))\)</span> for ratios, differences and the like helps, but only for the combinations you think of. A better question to ask is whether the model uses the feature at all, and how that compares to a feature that is pure noise.</p>
 <p>That is the random probe idea. Add one or more random features, the probes, to the data, fit a model, and rank every feature by its importance. A probe can’t carry any information about the target, so its importance is the level a useless feature reaches by chance. Features that rank below the probes are candidates to drop. The method goes back to Stoppiglia, Dreyfus, Dubois and Oussar, <a href="https://www.jmlr.org/papers/v3/stoppiglia03a.html">Ranking a Random Feature for Variable and Feature Selection</a> (JMLR, 2003), which also gives a statistical stopping rule for where to cut the ranking.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">

@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.11.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Data Scientist – Athos Damiani</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./files/favicon.svg" rel="icon" type="image/svg+xml">
+<script src="site_libs/quarto-listing/list.min.js"></script>
+<script src="site_libs/quarto-listing/quarto-listing.js"></script>
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-868321d9503970f15a7d694f61803284.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b78bc898bbbbb594d628fcbdab6526fe.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-6bc887b0b3ebeccd7b891273419cd309.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-23bac9dc9bd8b03798cdceb97f41749d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script>
+
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-latest .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
+
+    const options = {
+      valueNames: ['listing-date','listing-title','listing-author','listing-image','listing-description',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      
+      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description"],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-latest'] = new List('listing-latest', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+  </script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<meta property="og:title" content="Data Scientist">
+<meta property="og:description" content="Data Scientist — statistics and machine learning, with data engineering experience. Python, R, SQL, Spark and Databricks.">
+<meta property="og:image" content="https://athospd.github.io/athosdamiani/posts/2026-11-20-targetsboard/thumbnail.png">
+<meta property="og:site_name" content="Athos Damiani">
+<meta property="og:image:height" content="312">
+<meta property="og:image:width" content="620">
+<meta name="twitter:title" content="Data Scientist">
+<meta name="twitter:description" content="Data Scientist — statistics and machine learning, with data engineering experience. Python, R, SQL, Spark and Databricks.">
+<meta name="twitter:image" content="https://athospd.github.io/athosdamiani/posts/2026-11-20-targetsboard/thumbnail.png">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-fixed fullcontent quarto-dark"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          toggle.setAttribute("aria-checked", alternate ? "true" : "false");
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455).
+    // Not run on load: stylesheets are set before first paint there, and
+    // scrolling would undo the scroll to a URL fragment (#14973).
+    // The one pixel nudge keeps the reader where they were.
+    const refreshSafariScrollbar = () => {
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        const scrollY = window.scrollY;
+        window.scrollTo(0, scrollY > 0 ? scrollY - 1 : 1);
+        setTimeout(() => {
+          window.scrollTo(0, scrollY);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = true;
+    const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeDefault = queryPrefersDark.matches;
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      refreshSafariScrollbar();
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    queryPrefersDark.addEventListener("change", e => {
+      if(window.localStorage.getItem("quarto-color-scheme") !== null)
+        return;
+      const alternate = e.matches
+      toggleColorMode(alternate);
+      refreshSafariScrollbar();
+      localAlternateSentinel = e.matches ? 'alternate' : 'default'; // this is used alongside local storage!
+      toggleGiscusIfUsed(alternate, darkModeDefault);
+    });
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Site">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Athos Damiani</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./index.html" aria-current="page"> 
+<span class="menu-text">~/home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./resume.html"> 
+<span class="menu-text">~/resume</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./projects.html"> 
+<span class="menu-text">~/projects</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./blog.html"> 
+<span class="menu-text">~/blog</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/athospd"> <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/athosdamiani"> <i class="bi bi-linkedin" role="img" aria-label="LinkedIn">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="mailto:athos.damiani@gmail.com"> <i class="bi bi-envelope" role="img" aria-label="Email">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="./blog.xml"> <i class="bi bi-rss" role="img" aria-label="RSS">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <button type="button" role="switch" aria-checked="false" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode" aria-label="Toggle dark mode"><i class="bi"></i></button>
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1"><header id="title-block-header" class="quarto-title-block"></header>
+
+
+
+
+
+<div class="hero">
+<div class="xgb-bg" aria-hidden="true">
+<svg class="xgb-svg" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 560 320" preserveaspectratio="xMaxYMid meet" shape-rendering="crispEdges" role="img" aria-label="Gradient-boosted trees fitting a noisy sine curve, one boosting round at a time">
+<style>.xgb-svg{--_dot:var(--xgb-dot,#7c8692);--_truth:var(--xgb-truth,#7c8692);--_fit:var(--xgb-fit,#6ee7a0);--_label:var(--xgb-label,#7c8692)}
+.xgb-dots{fill:var(--_dot)}
+.xgb-truth{fill:none;stroke:var(--_truth);stroke-width:2;stroke-dasharray:4 4}
+.xgb-f path{fill:none;stroke:var(--_fit);stroke-width:4;stroke-linecap:square;stroke-linejoin:miter}
+.xgb-f text{fill:var(--_label);font:12px Silkscreen,"IBM Plex Mono",monospace}
+.xgb-f{opacity:0;animation:xgb-frame 8.2s step-end infinite}
+.xgb-f:last-child{animation-name:xgb-last}
+@keyframes xgb-frame{0%{opacity:1}2.439%,100%{opacity:0}}
+@keyframes xgb-last{0%{opacity:1}29.268%,100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.xgb-f{animation:none}.xgb-f:last-child{opacity:1}}</style>
+<path class="xgb-dots" d="M12 140h4v4h-4zM12 172h4v4h-4zM12 192h4v4h-4zM12 216h4v4h-4zM16 136h4v4h-4zM16 160h4v4h-4zM16 168h4v4h-4zM16 172h4v4h-4zM20 84h4v4h-4zM20 108h4v4h-4zM20 164h4v4h-4zM20 172h4v4h-4zM20 200h4v4h-4zM24 136h4v4h-4zM24 180h4v4h-4zM28 140h4v4h-4zM28 144h4v4h-4zM28 152h4v4h-4zM28 176h4v4h-4zM32 172h4v4h-4zM32 184h4v4h-4zM32 192h4v4h-4zM32 204h4v4h-4zM32 212h4v4h-4zM36 164h4v4h-4zM36 184h4v4h-4zM36 192h4v4h-4zM36 200h4v4h-4zM36 204h4v4h-4zM40 168h4v4h-4zM40 184h4v4h-4zM40 192h4v4h-4zM40 196h4v4h-4zM40 200h4v4h-4zM44 220h4v4h-4zM44 232h4v4h-4zM48 244h4v4h-4zM52 176h4v4h-4zM52 204h4v4h-4zM52 208h4v4h-4zM52 212h4v4h-4zM52 248h4v4h-4zM56 184h4v4h-4zM56 204h4v4h-4zM56 224h4v4h-4zM56 232h4v4h-4zM60 200h4v4h-4zM60 204h4v4h-4zM60 216h4v4h-4zM60 224h4v4h-4zM60 228h4v4h-4zM60 244h4v4h-4zM64 200h4v4h-4zM64 220h4v4h-4zM64 236h4v4h-4zM64 244h4v4h-4zM64 252h4v4h-4zM64 256h4v4h-4zM68 196h4v4h-4zM68 204h4v4h-4zM68 216h4v4h-4zM68 228h4v4h-4zM72 196h4v4h-4zM72 204h4v4h-4zM72 212h4v4h-4zM72 224h4v4h-4zM72 260h4v4h-4zM76 172h4v4h-4zM76 176h4v4h-4zM76 200h4v4h-4zM76 216h4v4h-4zM76 272h4v4h-4zM80 204h4v4h-4zM80 216h4v4h-4zM80 232h4v4h-4zM80 264h4v4h-4zM84 196h4v4h-4zM84 216h4v4h-4zM84 232h4v4h-4zM84 240h4v4h-4zM84 260h4v4h-4zM84 264h4v4h-4zM88 180h4v4h-4zM88 192h4v4h-4zM88 204h4v4h-4zM88 212h4v4h-4zM88 220h4v4h-4zM88 232h4v4h-4zM88 240h4v4h-4zM88 256h4v4h-4zM92 196h4v4h-4zM92 200h4v4h-4zM92 220h4v4h-4zM92 224h4v4h-4zM92 232h4v4h-4zM92 244h4v4h-4zM96 236h4v4h-4zM96 248h4v4h-4zM96 284h4v4h-4zM100 192h4v4h-4zM100 224h4v4h-4zM100 236h4v4h-4zM100 248h4v4h-4zM100 284h4v4h-4zM104 208h4v4h-4zM104 220h4v4h-4zM104 236h4v4h-4zM104 248h4v4h-4zM104 260h4v4h-4zM104 284h4v4h-4zM108 256h4v4h-4zM108 296h4v4h-4zM108 300h4v4h-4zM112 212h4v4h-4zM112 236h4v4h-4zM112 268h4v4h-4zM112 284h4v4h-4zM116 208h4v4h-4zM116 236h4v4h-4zM116 240h4v4h-4zM116 252h4v4h-4zM116 260h4v4h-4zM120 244h4v4h-4zM120 260h4v4h-4zM120 280h4v4h-4zM124 296h4v4h-4zM128 248h4v4h-4zM132 200h4v4h-4zM132 268h4v4h-4zM132 284h4v4h-4zM132 312h4v4h-4zM136 200h4v4h-4zM136 208h4v4h-4zM136 232h4v4h-4zM136 268h4v4h-4zM136 284h4v4h-4zM136 296h4v4h-4zM140 204h4v4h-4zM140 252h4v4h-4zM140 288h4v4h-4zM144 240h4v4h-4zM144 256h4v4h-4zM144 280h4v4h-4zM148 276h4v4h-4zM152 244h4v4h-4zM152 248h4v4h-4zM152 256h4v4h-4zM152 312h4v4h-4zM156 240h4v4h-4zM156 264h4v4h-4zM160 204h4v4h-4zM160 252h4v4h-4zM160 256h4v4h-4zM160 268h4v4h-4zM164 228h4v4h-4zM164 236h4v4h-4zM164 252h4v4h-4zM164 256h4v4h-4zM164 280h4v4h-4zM168 212h4v4h-4zM168 220h4v4h-4zM168 236h4v4h-4zM168 276h4v4h-4zM168 280h4v4h-4zM172 216h4v4h-4zM172 240h4v4h-4zM172 244h4v4h-4zM172 256h4v4h-4zM172 272h4v4h-4zM176 256h4v4h-4zM176 276h4v4h-4zM176 280h4v4h-4zM180 208h4v4h-4zM180 216h4v4h-4zM180 240h4v4h-4zM180 244h4v4h-4zM180 248h4v4h-4zM180 292h4v4h-4zM184 228h4v4h-4zM188 240h4v4h-4zM188 248h4v4h-4zM188 252h4v4h-4zM188 280h4v4h-4zM188 284h4v4h-4zM192 236h4v4h-4zM192 248h4v4h-4zM192 264h4v4h-4zM196 236h4v4h-4zM200 224h4v4h-4zM204 224h4v4h-4zM204 264h4v4h-4zM208 208h4v4h-4zM208 212h4v4h-4zM208 244h4v4h-4zM208 248h4v4h-4zM208 252h4v4h-4zM208 256h4v4h-4zM212 200h4v4h-4zM212 208h4v4h-4zM212 220h4v4h-4zM212 224h4v4h-4zM212 244h4v4h-4zM216 184h4v4h-4zM216 200h4v4h-4zM216 220h4v4h-4zM216 252h4v4h-4zM220 196h4v4h-4zM220 224h4v4h-4zM220 236h4v4h-4zM224 188h4v4h-4zM224 192h4v4h-4zM224 248h4v4h-4zM228 176h4v4h-4zM228 196h4v4h-4zM232 200h4v4h-4zM232 204h4v4h-4zM232 260h4v4h-4zM236 176h4v4h-4zM236 192h4v4h-4zM236 208h4v4h-4zM236 212h4v4h-4zM236 216h4v4h-4zM236 276h4v4h-4zM240 132h4v4h-4zM240 200h4v4h-4zM244 140h4v4h-4zM244 148h4v4h-4zM244 180h4v4h-4zM244 188h4v4h-4zM244 220h4v4h-4zM244 240h4v4h-4zM248 156h4v4h-4zM248 164h4v4h-4zM248 184h4v4h-4zM248 200h4v4h-4zM248 216h4v4h-4zM252 200h4v4h-4zM252 204h4v4h-4zM252 208h4v4h-4zM252 220h4v4h-4zM252 260h4v4h-4zM256 144h4v4h-4zM256 180h4v4h-4zM256 200h4v4h-4zM256 212h4v4h-4zM256 236h4v4h-4zM256 260h4v4h-4zM260 168h4v4h-4zM260 184h4v4h-4zM260 196h4v4h-4zM260 212h4v4h-4zM264 144h4v4h-4zM264 160h4v4h-4zM264 172h4v4h-4zM264 180h4v4h-4zM264 192h4v4h-4zM264 200h4v4h-4zM268 128h4v4h-4zM268 156h4v4h-4zM268 184h4v4h-4zM268 196h4v4h-4zM272 140h4v4h-4zM272 148h4v4h-4zM272 176h4v4h-4zM276 148h4v4h-4zM276 164h4v4h-4zM276 172h4v4h-4zM276 176h4v4h-4zM276 192h4v4h-4zM280 120h4v4h-4zM280 152h4v4h-4zM280 196h4v4h-4zM280 204h4v4h-4zM284 148h4v4h-4zM284 156h4v4h-4zM284 168h4v4h-4zM284 188h4v4h-4zM288 116h4v4h-4zM288 144h4v4h-4zM288 160h4v4h-4zM292 116h4v4h-4zM292 124h4v4h-4zM292 136h4v4h-4zM292 152h4v4h-4zM292 172h4v4h-4zM296 156h4v4h-4zM296 160h4v4h-4zM296 208h4v4h-4zM300 124h4v4h-4zM300 128h4v4h-4zM300 140h4v4h-4zM308 68h4v4h-4zM308 72h4v4h-4zM308 96h4v4h-4zM308 116h4v4h-4zM308 140h4v4h-4zM308 176h4v4h-4zM312 92h4v4h-4zM312 120h4v4h-4zM312 124h4v4h-4zM316 108h4v4h-4zM316 120h4v4h-4zM316 132h4v4h-4zM316 152h4v4h-4zM320 120h4v4h-4zM320 124h4v4h-4zM320 136h4v4h-4zM320 160h4v4h-4zM324 92h4v4h-4zM324 96h4v4h-4zM324 108h4v4h-4zM324 140h4v4h-4zM324 144h4v4h-4zM328 60h4v4h-4zM328 76h4v4h-4zM328 92h4v4h-4zM328 100h4v4h-4zM328 112h4v4h-4zM328 120h4v4h-4zM328 136h4v4h-4zM332 112h4v4h-4zM332 116h4v4h-4zM332 140h4v4h-4zM336 64h4v4h-4zM336 68h4v4h-4zM336 76h4v4h-4zM336 124h4v4h-4zM336 140h4v4h-4zM336 164h4v4h-4zM340 140h4v4h-4zM340 160h4v4h-4zM344 84h4v4h-4zM344 88h4v4h-4zM344 120h4v4h-4zM344 160h4v4h-4zM348 120h4v4h-4zM348 160h4v4h-4zM352 36h4v4h-4zM352 52h4v4h-4zM352 60h4v4h-4zM352 72h4v4h-4zM352 92h4v4h-4zM352 96h4v4h-4zM352 100h4v4h-4zM352 108h4v4h-4zM352 112h4v4h-4zM356 44h4v4h-4zM356 48h4v4h-4zM356 64h4v4h-4zM356 88h4v4h-4zM356 112h4v4h-4zM356 120h4v4h-4zM360 44h4v4h-4zM360 48h4v4h-4zM360 84h4v4h-4zM360 96h4v4h-4zM360 112h4v4h-4zM360 148h4v4h-4zM364 60h4v4h-4zM364 80h4v4h-4zM364 88h4v4h-4zM368 36h4v4h-4zM368 60h4v4h-4zM368 68h4v4h-4zM368 76h4v4h-4zM368 80h4v4h-4zM372 60h4v4h-4zM372 64h4v4h-4zM372 72h4v4h-4zM372 112h4v4h-4zM372 136h4v4h-4zM376 76h4v4h-4zM380 56h4v4h-4zM380 84h4v4h-4zM380 92h4v4h-4zM384 80h4v4h-4zM384 96h4v4h-4zM384 104h4v4h-4zM388 32h4v4h-4zM388 52h4v4h-4zM388 60h4v4h-4zM388 64h4v4h-4zM388 88h4v4h-4zM388 140h4v4h-4zM392 4h4v4h-4zM392 36h4v4h-4zM392 100h4v4h-4zM396 36h4v4h-4zM396 44h4v4h-4zM396 60h4v4h-4zM396 104h4v4h-4zM400 72h4v4h-4zM400 80h4v4h-4zM400 92h4v4h-4zM404 44h4v4h-4zM404 64h4v4h-4zM404 84h4v4h-4zM408 52h4v4h-4zM408 104h4v4h-4zM412 56h4v4h-4zM412 88h4v4h-4zM412 96h4v4h-4zM412 100h4v4h-4zM416 92h4v4h-4zM416 116h4v4h-4zM420 48h4v4h-4zM420 76h4v4h-4zM420 132h4v4h-4zM424 24h4v4h-4zM424 84h4v4h-4zM424 100h4v4h-4zM424 108h4v4h-4zM424 148h4v4h-4zM428 36h4v4h-4zM428 48h4v4h-4zM428 52h4v4h-4zM428 64h4v4h-4zM432 52h4v4h-4zM432 60h4v4h-4zM432 72h4v4h-4zM432 76h4v4h-4zM432 80h4v4h-4zM432 84h4v4h-4zM432 96h4v4h-4zM432 104h4v4h-4zM432 124h4v4h-4zM436 52h4v4h-4zM436 72h4v4h-4zM436 88h4v4h-4zM436 96h4v4h-4zM436 100h4v4h-4zM436 136h4v4h-4zM440 64h4v4h-4zM440 68h4v4h-4zM444 32h4v4h-4zM444 56h4v4h-4zM444 60h4v4h-4zM444 64h4v4h-4zM444 68h4v4h-4zM444 84h4v4h-4zM444 96h4v4h-4zM444 124h4v4h-4zM448 72h4v4h-4zM452 84h4v4h-4zM452 88h4v4h-4zM456 28h4v4h-4zM456 36h4v4h-4zM456 56h4v4h-4zM456 60h4v4h-4zM456 112h4v4h-4zM460 32h4v4h-4zM460 72h4v4h-4zM460 80h4v4h-4zM460 92h4v4h-4zM460 96h4v4h-4zM460 132h4v4h-4zM464 52h4v4h-4zM464 72h4v4h-4zM464 80h4v4h-4zM464 108h4v4h-4zM464 116h4v4h-4zM468 56h4v4h-4zM468 64h4v4h-4zM468 84h4v4h-4zM468 112h4v4h-4zM472 60h4v4h-4zM472 64h4v4h-4zM472 76h4v4h-4zM472 84h4v4h-4zM472 92h4v4h-4zM472 96h4v4h-4zM476 64h4v4h-4zM476 80h4v4h-4zM476 112h4v4h-4zM480 60h4v4h-4zM480 124h4v4h-4zM484 96h4v4h-4zM488 92h4v4h-4zM488 100h4v4h-4zM492 72h4v4h-4zM492 80h4v4h-4zM492 88h4v4h-4zM492 116h4v4h-4zM496 80h4v4h-4zM496 84h4v4h-4zM496 96h4v4h-4zM496 136h4v4h-4zM500 84h4v4h-4zM500 88h4v4h-4zM500 136h4v4h-4zM504 92h4v4h-4zM504 100h4v4h-4zM504 128h4v4h-4zM508 76h4v4h-4zM508 116h4v4h-4zM508 124h4v4h-4zM508 136h4v4h-4zM508 156h4v4h-4zM508 160h4v4h-4zM512 72h4v4h-4zM512 108h4v4h-4zM512 112h4v4h-4zM512 120h4v4h-4zM512 124h4v4h-4zM512 132h4v4h-4zM516 84h4v4h-4zM516 124h4v4h-4zM516 140h4v4h-4zM516 156h4v4h-4zM520 148h4v4h-4zM520 152h4v4h-4zM524 112h4v4h-4zM524 132h4v4h-4zM524 144h4v4h-4zM524 148h4v4h-4zM528 84h4v4h-4zM528 100h4v4h-4zM528 124h4v4h-4zM528 136h4v4h-4zM528 160h4v4h-4zM532 72h4v4h-4zM532 136h4v4h-4zM536 120h4v4h-4zM536 144h4v4h-4zM536 188h4v4h-4zM536 192h4v4h-4zM540 132h4v4h-4zM540 136h4v4h-4zM540 148h4v4h-4zM540 156h4v4h-4zM544 180h4v4h-4zM544 192h4v4h-4zM548 108h4v4h-4zM548 144h4v4h-4zM548 164h4v4h-4zM548 188h4v4h-4zM552 200h4v4h-4z"></path>
+<path class="xgb-truth" shape-rendering="geometricPrecision" d="M8.0 160.0 L10.3 162.4 L12.5 164.8 L14.8 167.2 L17.1 169.6 L19.3 171.9 L21.6 174.3 L23.9 176.7 L26.1 179.0 L28.4 181.3 L30.7 183.7 L32.9 186.0 L35.2 188.3 L37.5 190.5 L39.7 192.8 L42.0 195.0 L44.3 197.2 L46.5 199.4 L48.8 201.5 L51.1 203.6 L53.3 205.7 L55.6 207.8 L57.9 209.8 L60.1 211.8 L62.4 213.7 L64.7 215.7 L66.9 217.5 L69.2 219.4 L71.5 221.2 L73.7 222.9 L76.0 224.6 L78.3 226.3 L80.5 227.9 L82.8 229.5 L85.1 231.1 L87.3 232.5 L89.6 234.0 L91.9 235.3 L94.1 236.7 L96.4 238.0 L98.7 239.2 L100.9 240.3 L103.2 241.5 L105.5 242.5 L107.7 243.5 L110.0 244.5 L112.3 245.4 L114.5 246.2 L116.8 247.0 L119.1 247.7 L121.3 248.3 L123.6 248.9 L125.9 249.4 L128.1 249.9 L130.4 250.3 L132.7 250.6 L134.9 250.9 L137.2 251.1 L139.5 251.3 L141.7 251.4 L144.0 251.4 L146.3 251.4 L148.5 251.3 L150.8 251.1 L153.1 250.9 L155.3 250.6 L157.6 250.3 L159.9 249.9 L162.1 249.4 L164.4 248.9 L166.7 248.3 L168.9 247.7 L171.2 247.0 L173.5 246.2 L175.7 245.4 L178.0 244.5 L180.3 243.5 L182.5 242.5 L184.8 241.5 L187.1 240.3 L189.3 239.2 L191.6 238.0 L193.9 236.7 L196.1 235.3 L198.4 234.0 L200.7 232.5 L202.9 231.1 L205.2 229.5 L207.5 227.9 L209.7 226.3 L212.0 224.6 L214.3 222.9 L216.5 221.2 L218.8 219.4 L221.1 217.5 L223.3 215.7 L225.6 213.7 L227.9 211.8 L230.1 209.8 L232.4 207.8 L234.7 205.7 L236.9 203.6 L239.2 201.5 L241.5 199.4 L243.7 197.2 L246.0 195.0 L248.3 192.8 L250.5 190.5 L252.8 188.3 L255.1 186.0 L257.3 183.7 L259.6 181.3 L261.9 179.0 L264.1 176.7 L266.4 174.3 L268.7 171.9 L270.9 169.6 L273.2 167.2 L275.5 164.8 L277.7 162.4 L280.0 160.0 L282.3 157.6 L284.5 155.2 L286.8 152.8 L289.1 150.4 L291.3 148.1 L293.6 145.7 L295.9 143.3 L298.1 141.0 L300.4 138.7 L302.7 136.3 L304.9 134.0 L307.2 131.7 L309.5 129.5 L311.7 127.2 L314.0 125.0 L316.3 122.8 L318.5 120.6 L320.8 118.5 L323.1 116.4 L325.3 114.3 L327.6 112.2 L329.9 110.2 L332.1 108.2 L334.4 106.3 L336.7 104.3 L338.9 102.5 L341.2 100.6 L343.5 98.8 L345.7 97.1 L348.0 95.4 L350.3 93.7 L352.5 92.1 L354.8 90.5 L357.1 88.9 L359.3 87.5 L361.6 86.0 L363.9 84.7 L366.1 83.3 L368.4 82.0 L370.7 80.8 L372.9 79.7 L375.2 78.5 L377.5 77.5 L379.7 76.5 L382.0 75.5 L384.3 74.6 L386.5 73.8 L388.8 73.0 L391.1 72.3 L393.3 71.7 L395.6 71.1 L397.9 70.6 L400.1 70.1 L402.4 69.7 L404.7 69.4 L406.9 69.1 L409.2 68.9 L411.5 68.7 L413.7 68.6 L416.0 68.6 L418.3 68.6 L420.5 68.7 L422.8 68.9 L425.1 69.1 L427.3 69.4 L429.6 69.7 L431.9 70.1 L434.1 70.6 L436.4 71.1 L438.7 71.7 L440.9 72.3 L443.2 73.0 L445.5 73.8 L447.7 74.6 L450.0 75.5 L452.3 76.5 L454.5 77.5 L456.8 78.5 L459.1 79.7 L461.3 80.8 L463.6 82.0 L465.9 83.3 L468.1 84.7 L470.4 86.0 L472.7 87.5 L474.9 88.9 L477.2 90.5 L479.5 92.1 L481.7 93.7 L484.0 95.4 L486.3 97.1 L488.5 98.8 L490.8 100.6 L493.1 102.5 L495.3 104.3 L497.6 106.3 L499.9 108.2 L502.1 110.2 L504.4 112.2 L506.7 114.3 L508.9 116.4 L511.2 118.5 L513.5 120.6 L515.7 122.8 L518.0 125.0 L520.3 127.2 L522.5 129.5 L524.8 131.7 L527.1 134.0 L529.3 136.3 L531.6 138.7 L533.9 141.0 L536.1 143.3 L538.4 145.7 L540.7 148.1 L542.9 150.4 L545.2 152.8 L547.5 155.2 L549.7 157.6 L552.0 160.0"></path>
+<g class="xgb-f" style="animation-delay:0.0s"><path d="M8 160H44V168H236V164H264V160H284V156H352V152H508V156H536V160H552"></path><text x="552" y="310" text-anchor="end">nrounds = 01</text></g>
+<g class="xgb-f" style="animation-delay:0.2s"><path d="M8 164H44V176H236V168H264V160H284V156H288V152H352V144H504V148H508V152H536V160H552"></path><text x="552" y="310" text-anchor="end">nrounds = 02</text></g>
+<g class="xgb-f" style="animation-delay:0.4s"><path d="M8 164H44V176H96V180H220V176H236V168H264V160H284V156H288V148H352V136H504V144H508V152H536V160H552"></path><text x="552" y="310" text-anchor="end">nrounds = 03</text></g>
+<g class="xgb-f" style="animation-delay:0.6s"><path d="M8 168H40V172H44V184H96V188H220V184H236V176H244V172H264V160H284V156H288V152H300V148H352V132H504V144H508V148H536V160H552"></path><text x="552" y="310" text-anchor="end">nrounds = 04</text></g>
+<g class="xgb-f" style="animation-delay:0.8s"><path d="M8 168H40V176H44V188H96V192H220V184H236V176H264V160H284V156H288V152H300V144H352V128H504V140H508V144H536V160H552"></path><text x="552" y="310" text-anchor="end">nrounds = 05</text></g>
+<g class="xgb-f" style="animation-delay:1.0s"><path d="M8 172H40V176H44V188H60V192H96V200H212V196H220V188H236V180H244V176H264V164H284V156H288V152H300V140H352V120H496V124H504V140H508V144H536V160H552"></path><text x="552" y="310" text-anchor="end">nrounds = 06</text></g>
+<g class="xgb-f" style="animation-delay:1.2s"><path d="M8 172H40V176H44V188H60V192H96V204H212V196H220V188H236V184H244V180H264V164H284V160H288V152H300V140H352V116H496V120H504V132H508V140H536V160H552"></path><text x="552" y="310" text-anchor="end">nrounds = 07</text></g>
+<g class="xgb-f" style="animation-delay:1.4s"><path d="M8 172H32V176H40V180H44V192H60V196H96V208H212V200H220V192H236V184H244V180H264V164H284V160H288V152H300V136H352V112H480V116H496V120H504V132H508V140H536V160H552"></path><text x="552" y="310" text-anchor="end">nrounds = 08</text></g>
+<g class="xgb-f" style="animation-delay:1.6s"><path d="M8 168H32V180H40V184H44V196H60V200H96V212H212V200H220V192H236V184H244V180H264V164H284V160H288V152H300V136H308V132H352V108H480V116H504V132H508V136H536V160H552"></path><text x="552" y="310" text-anchor="end">nrounds = 09</text></g>
+<g class="xgb-f" style="animation-delay:1.8s"><path d="M8 168H32V184H40V188H44V200H60V204H96V212H212V200H220V196H236V188H244V184H264V168H272V164H284V160H288V152H300V136H308V132H324V128H352V108H480V112H496V116H504V128H508V136H536V160H552"></path><text x="552" y="310" text-anchor="end">nrounds = 10</text></g>
+<g class="xgb-f" style="animation-delay:2.0s"><path d="M8 168H32V184H40V188H44V204H60V208H96V216H212V204H220V196H236V188H244V184H264V168H272V164H284V160H288V152H300V136H308V132H324V128H352V104H480V112H504V128H508V132H520V136H536V156H552"></path><text x="552" y="310" text-anchor="end">nrounds = 11</text></g>
+<g class="xgb-f" style="animation-delay:2.2s"><path d="M8 168H32V184H40V188H44V204H60V208H96V220H212V204H220V196H236V188H244V184H264V168H272V164H284V160H288V152H300V136H308V128H328V124H352V100H480V108H496V112H504V128H508V132H520V136H536V156H552"></path><text x="552" y="310" text-anchor="end">nrounds = 12</text></g>
+<g class="xgb-f" style="animation-delay:2.4s"><path d="M8 168H32V184H40V192H44V204H60V208H76V212H96V224H208V220H212V204H220V196H236V188H264V172H272V164H284V160H288V152H300V136H308V128H328V124H352V100H480V108H496V112H504V124H508V132H520V136H536V156H552"></path><text x="552" y="310" text-anchor="end">nrounds = 13</text></g>
+<g class="xgb-f" style="animation-delay:2.6s"><path d="M8 164H32V188H40V192H44V204H60V208H76V212H96V224H208V220H212V208H220V200H236V192H244V188H264V172H272V164H284V160H288V152H300V136H308V128H324V124H352V96H480V108H504V124H508V132H520V136H536V156H552"></path><text x="552" y="310" text-anchor="end">nrounds = 14</text></g>
+<g class="xgb-f" style="animation-delay:2.8s"><path d="M8 164H32V188H40V192H44V208H60V212H92V216H96V228H208V224H212V208H220V200H236V192H244V188H264V172H272V164H284V160H288V152H300V136H308V128H324V124H328V120H352V96H480V104H496V108H504V124H508V128H520V132H536V156H552"></path><text x="552" y="310" text-anchor="end">nrounds = 15</text></g>
+<g class="xgb-f" style="animation-delay:3.0s"><path d="M8 164H32V188H40V192H44V208H60V212H92V216H96V228H104V232H208V224H212V208H220V200H236V192H244V188H264V172H272V160H280V164H284V160H288V152H300V136H308V124H328V120H352V92H464V96H480V104H496V108H504V120H508V128H520V132H536V156H552"></path><text x="552" y="310" text-anchor="end">nrounds = 16</text></g>
+<g class="xgb-f" style="animation-delay:3.2s"><path d="M8 164H32V188H40V196H44V208H60V212H76V216H96V228H104V232H208V228H212V208H220V200H236V192H264V172H272V160H280V164H284V160H288V152H300V136H308V124H328V120H352V92H476V96H480V104H496V108H504V120H508V128H520V132H536V156H552"></path><text x="552" y="310" text-anchor="end">nrounds = 17</text></g>
+<g class="xgb-f" style="animation-delay:3.4s"><path d="M8 164H32V188H40V196H44V208H60V212H76V216H96V228H104V236H208V228H212V208H220V204H236V196H244V192H264V172H272V160H280V164H284V160H288V152H300V136H308V124H324V120H352V92H480V104H504V120H508V124H520V132H536V156H552"></path><text x="552" y="310" text-anchor="end">nrounds = 18</text></g>
+<g class="xgb-f" style="animation-delay:3.6s"><path d="M8 164H32V188H40V196H44V208H60V212H76V216H92V220H96V232H104V236H208V228H212V212H220V204H236V196H244V192H264V172H272V160H280V164H284V160H288V152H300V136H308V124H324V120H352V88H464V92H480V100H496V104H504V120H508V124H520V132H536V156H552"></path><text x="552" y="310" text-anchor="end">nrounds = 19</text></g>
+<g class="xgb-f" style="animation-delay:3.8s"><path d="M8 164H32V188H40V196H44V208H60V216H92V220H96V232H104V236H208V228H212V212H220V204H236V196H244V192H264V172H272V160H280V164H284V160H288V152H300V136H304V132H308V124H324V120H328V116H352V88H476V92H480V100H496V104H504V116H508V124H520V132H536V156H552"></path><text x="552" y="310" text-anchor="end">nrounds = 20</text></g>
+<g class="xgb-f" style="animation-delay:4.0s"><path d="M8 164H32V192H40V196H44V212H60V216H76V220H96V232H104V240H208V232H212V212H220V204H236V196H244V192H264V172H272V160H280V164H284V160H288V152H300V136H304V132H308V124H324V120H328V116H336V120H352V88H476V92H480V100H496V104H504V116H508V124H520V132H536V156H552"></path><text x="552" y="310" text-anchor="end">nrounds = 21</text></g>
+<g class="xgb-f" style="animation-delay:4.2s"><path d="M8 164H32V192H40V196H44V212H60V216H76V220H96V232H104V240H208V232H212V212H220V208H236V200H240V196H244V192H264V172H272V160H280V164H284V160H288V152H300V136H304V132H308V124H324V120H328V116H352V88H388V84H460V88H480V100H504V116H508V124H520V132H536V156H552"></path><text x="552" y="310" text-anchor="end">nrounds = 22</text></g>
+<g class="xgb-f" style="animation-delay:4.4s"><path d="M8 164H32V192H40V196H44V212H60V216H76V220H96V232H104V240H208V232H212V212H220V208H236V200H240V196H244V192H264V172H272V160H280V164H284V160H288V152H300V136H304V132H308V124H324V120H328V116H352V84H464V88H480V100H504V116H508V120H516V124H520V132H536V156H552"></path><text x="552" y="310" text-anchor="end">nrounds = 23</text></g>
+<g class="xgb-f" style="animation-delay:4.6s"><path d="M8 164H32V192H40V196H44V212H60V216H76V220H96V232H104V244H136V240H208V232H212V216H220V208H236V200H244V192H256V196H264V172H272V160H280V164H284V160H288V152H300V136H304V132H308V124H324V120H328V116H352V84H464V88H480V96H496V100H504V116H508V120H520V128H536V156H552"></path><text x="552" y="310" text-anchor="end">nrounds = 24</text></g>
+<g class="xgb-f" style="animation-delay:4.8s"><path d="M8 164H32V192H40V196H44V212H60V216H76V220H92V224H96V236H104V244H208V236H212V216H220V208H236V200H244V192H256V196H264V172H272V160H280V164H284V160H288V152H300V136H304V132H308V120H328V116H352V84H464V88H480V96H496V100H504V112H508V120H520V128H536V156H552"></path><text x="552" y="310" text-anchor="end">nrounds = 25</text></g>
+<g class="xgb-f" style="animation-delay:5.0s"><path d="M8 164H32V192H40V196H44V212H60V216H76V220H92V224H96V236H104V244H208V236H212V216H220V208H236V200H244V192H256V196H264V172H272V160H280V164H284V160H288V152H300V136H304V132H308V120H328V116H352V84H388V80H460V84H476V88H480V96H496V100H504V112H508V120H516V124H520V132H528V128H536V156H552"></path><text x="552" y="310" text-anchor="end">nrounds = 26</text></g>
+<g class="xgb-f" style="animation-delay:5.2s"><path d="M8 164H24V160H32V192H40V196H44V212H60V216H76V220H92V224H96V236H104V248H136V244H208V236H212V216H220V208H236V200H244V196H264V172H272V160H280V164H284V160H288V152H300V136H304V132H308V120H328V116H352V84H388V80H432V84H440V80H460V84H476V88H480V96H496V100H504V112H508V120H520V128H536V156H552"></path><text x="552" y="310" text-anchor="end">nrounds = 27</text></g>
+<g class="xgb-f" style="animation-delay:5.4s"><path d="M8 164H32V192H40V196H44V212H60V216H76V220H92V224H96V236H104V248H136V244H208V236H212V216H220V208H236V200H244V196H264V172H272V160H280V164H284V160H288V152H300V136H304V132H308V120H324V116H352V84H388V80H424V76H432V84H440V80H460V84H476V88H480V96H496V100H504V112H508V120H520V128H536V156H552"></path><text x="552" y="310" text-anchor="end">nrounds = 28</text></g>
+<g class="xgb-f" style="animation-delay:5.6s"><path d="M8 164H24V160H32V192H40V196H44V212H60V220H68V216H76V220H92V224H96V236H104V248H136V244H208V236H212V216H220V208H236V200H244V196H264V172H272V160H280V164H284V160H288V152H300V136H304V132H308V120H324V116H352V84H388V80H424V76H432V84H440V80H464V84H476V88H480V96H496V100H504V112H508V120H520V128H536V156H552"></path><text x="552" y="310" text-anchor="end">nrounds = 29</text></g>
+<g class="xgb-f" style="animation-delay:5.8s"><path d="M8 164H24V160H32V192H40V196H44V212H60V220H68V216H76V220H92V224H96V236H104V248H136V244H208V236H212V216H220V208H236V200H244V196H264V172H272V160H280V164H284V160H288V152H300V136H304V132H308V120H324V116H352V84H388V80H424V76H432V80H464V84H480V96H496V100H504V112H508V120H520V128H536V156H552"></path><text x="552" y="310" text-anchor="end">nrounds = 30</text></g>
+</svg>
+</div>
+<section id="athos-damiani" class="level1 hero-head">
+<h1>Athos Damiani</h1>
+<p><span class="ai-badge" role="img" aria-label="Certified AI-friendly human" title="Certified AI-friendly human"><span class="l1">AI-friendly</span> <span class="l2">human</span></span></p>
+</section>
+<p><span class="role">Data Scientist · Statistics · ML · Data Engineering</span></p>
+<p><span class="lead">I build <span class="typer"><span class="visually-hidden">ML models and shiny apps</span></span>, the pipelines that feed them and the infrastructure to run them in production. 13+ years in finance, regulation and fraud prevention.</span></p>
+<div class="alumni">
+<p><span class="visually-hidden">Previously at</span> <span>Nubank</span> <span>Bank of England</span> <span>Serasa Experian</span> <span>Itaú</span></p>
+</div>
+<div class="cta">
+<p><a href="./resume.html" class="btn btn-primary">Resume</a> <a href="./projects.html" class="btn btn-outline-primary">Projects</a> <a href="https://github.com/athospd" class="btn btn-outline-primary"><i class="bi bi-github"></i> GitHub</a> <a href="https://www.linkedin.com/in/athosdamiani" class="btn btn-outline-primary"><i class="bi bi-linkedin"></i> LinkedIn</a> <a href="mailto:athos.damiani@gmail.com" class="btn btn-outline-primary"><i class="bi bi-envelope"></i> Email</a></p>
+</div>
+</div>
+<section id="stack" class="level2">
+<h2 class="anchored" data-anchor-id="stack">Stack</h2>
+<div class="stack-tags">
+<p><span class="tag">Python</span> <span class="tag">R</span> <span class="tag">SQL</span> <span class="tag">Spark</span> <span class="tag">PySpark</span> <span class="tag">Databricks</span> <span class="tag">MLflow</span> <span class="tag">AI</span> <span class="tag">Torch</span> <span class="tag">PyTorch</span> <span class="tag">Scala</span> <span class="tag">Docker</span> <span class="tag">Git</span> <span class="tag">Bash</span> <span class="tag">Shiny</span> <span class="tag">Posit Connect</span></p>
+</div>
+</section>
+<section id="what-i-do" class="level2">
+<h2 class="anchored" data-anchor-id="what-i-do">What I do</h2>
+<div class="do-grid">
+<section id="credit-fraud-models" class="level3 do-item i-tree">
+<h3 class="anchored" data-anchor-id="credit-fraud-models">Credit &amp; fraud models</h3>
+<p>Risk, lending and fraud models, from first fit to monitoring.</p>
+<p><span class="at">Nubank</span> <span class="at">Itaú</span> <span class="at">Serasa Experian</span> <span class="at">ClearSale</span></p>
+</section>
+<section id="ml-in-production" class="level3 do-item i-ship">
+<h3 class="anchored" data-anchor-id="ml-in-production">ML in production</h3>
+<p>Deploy and monitor on Databricks. Wrote XGBoost-to-SQL scoring for tidypredict.</p>
+<p><span class="at">Databricks</span> <span class="at">tidypredict</span></p>
+</section>
+<section id="data-pipelines" class="level3 do-item i-dag">
+<h3 class="anchored" data-anchor-id="data-pipelines">Data pipelines</h3>
+<p>Tested, version-controlled batch pipelines.</p>
+<p><span class="at">Spark</span> <span class="at">PySpark</span> <span class="at">SQL</span> <span class="at">R</span></p>
+</section>
+<section id="data-products" class="level3 do-item i-app">
+<h3 class="anchored" data-anchor-id="data-products">Data products</h3>
+<p>Internal tools and dashboards for client teams.</p>
+<p><span class="at">Bank of England</span> <span class="at">Global pharma</span> <span class="at">Shiny</span></p>
+</section>
+</div>
+</section>
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<div class="facts">
+<div class="fact i-grad">
+<p><strong>B.Sc. Statistics</strong></p>
+<p>University of São Paulo</p>
+</div>
+<div class="fact i-team">
+<p><strong>Co-founder, Curso-R</strong></p>
+<p>R training in Brazil</p>
+</div>
+<div class="fact i-talk">
+<p><strong>~10K followers</strong></p>
+<p><a href="https://www.linkedin.com/in/athosdamiani">Writing about data on LinkedIn</a></p>
+</div>
+</div>
+<div class="reco">
+<blockquote class="blockquote">
+<p>“One of the most brilliant data scientists I’ve ever worked with … curious, analytical, committed, hands-on.” — Carlos Abdalad, LinkedIn recommendation</p>
+</blockquote>
+</div>
+</section>
+<section id="latest-posts" class="level2">
+<h2 class="anchored" data-anchor-id="latest-posts">Latest posts</h2>
+<div id="listing-latest" class="quarto-listing quarto-listing-container-default">
+<div class="list quarto-listing-default">
+<div class="quarto-post image-right" data-index="0" data-categories="Y29uY2VwdHMlMkNkZWVwJTIwbGVhcm5pbmclMkN0b3JjaCUyQ3IlMkNvcHRpbWl6YXRpb24=" data-listing-date-sort="1795143600000" data-listing-file-modified-sort="1795153938183" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="3" data-listing-word-count-sort="429">
+<div class="thumbnail"><a href="./posts/2026-11-20-learning-rate/index.html" class="no-external-icon">
+
+<img loading="lazy" src="./posts/2026-11-20-learning-rate/learning_rate.png" class="thumbnail-image">
+
+</a></div>
+<div class="body">
+<h3 class="no-anchor listing-title">
+<a href="./posts/2026-11-20-learning-rate/index.html" class="no-external-icon">Gentle introduction to the learning rate parameter</a>
+</h3>
+<div class="listing-description">
+<a href="./posts/2026-11-20-learning-rate/index.html" class="no-external-icon">
+<p>Three copies of the same model, fitted by gradient descent with three different learning rates: too low, too high and just right.</p>
+</a>
+</div>
+</div>
+<div class="metadata">
+<a href="./posts/2026-11-20-learning-rate/index.html" class="no-external-icon">
+<div class="listing-date">
+Nov 20, 2026
+</div>
+<div class="listing-author">
+Athos Damiani
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="1" data-categories="ciUyQ3RhcmdldHMlMkNzaGlueSUyQ3JlYWN0UiUyQ21sb3BzJTJDcGFja2FnZXM=" data-listing-date-sort="1795143600000" data-listing-file-modified-sort="1795155513420" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="363">
+<div class="thumbnail"><a href="./posts/2026-11-20-targetsboard/index.html" class="no-external-icon">
+
+<img loading="lazy" src="./posts/2026-11-20-targetsboard/thumbnail.png" class="thumbnail-image">
+
+</a></div>
+<div class="body">
+<h3 class="no-anchor listing-title">
+<a href="./posts/2026-11-20-targetsboard/index.html" class="no-external-icon">{targetsboard}: a Shiny + React board for {targets} pipelines</a>
+</h3>
+<div class="listing-description">
+<a href="./posts/2026-11-20-targetsboard/index.html" class="no-external-icon">
+<p>An experimental alternative to targets::tar_watch() to monitor and (perhaps one day) control targets’ DAGs from the UI.</p>
+</a>
+</div>
+</div>
+<div class="metadata">
+<a href="./posts/2026-11-20-targetsboard/index.html" class="no-external-icon">
+<div class="listing-date">
+Nov 20, 2026
+</div>
+<div class="listing-author">
+Athos Damiani
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="2" data-categories="ciUyQ2R1Y2tkYiUyQ3NxbCUyQ3BhcnF1ZXQ=" data-listing-date-sort="1794884400000" data-listing-file-modified-sort="1795154889783" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="218">
+<div class="thumbnail"><a href="./posts/2026-11-17-parquet-sql-from-r/index.html" class="no-external-icon">
+
+<img loading="lazy" src="./posts/2026-11-17-parquet-sql-from-r/parquet-sql.png" class="thumbnail-image">
+
+</a></div>
+<div class="body">
+<h3 class="no-anchor listing-title">
+<a href="./posts/2026-11-17-parquet-sql-from-r/index.html" class="no-external-icon">Querying Parquet with SQL from R, no warehouse needed</a>
+</h3>
+<div class="listing-description">
+<a href="./posts/2026-11-17-parquet-sql-from-r/index.html" class="no-external-icon">
+<p>DuckDB + dbplyr: write dplyr, run SQL, read parquet. All in-process.</p>
+</a>
+</div>
+</div>
+<div class="metadata">
+<a href="./posts/2026-11-17-parquet-sql-from-r/index.html" class="no-external-icon">
+<div class="listing-date">
+Nov 17, 2026
+</div>
+<div class="listing-author">
+Athos Damiani
+</div>
+</a>
+</div>
+</div>
+</div>
+<div class="listing-no-matching d-none">No matching items</div>
+</div>
+<p><a href="./blog.html">See all posts →</a></p>
+
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const toggle = window.document.createElement('button');
+      toggle.type = "button";
+      toggle.setAttribute("role", "switch");
+      toggle.setAttribute("aria-checked", "false");
+      toggle.classList.add('top-right');
+      toggle.classList.add('quarto-color-scheme-toggle');
+      toggle.setAttribute("aria-label", "Toggle dark mode");
+      toggle.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      toggle.appendChild(i);
+      // Put the toggle in a landmark of its own, so that landmark navigation
+      // can reach it.
+      //
+      // The container is always a fresh direct child of body, and the toggle is
+      // never moved into page furniture that the theme or the author controls.
+      // The toggle is positioned against the page, so any ancestor that
+      // establishes a containing block captures it: a positioned element or a
+      // grid for position: absolute, and transform, filter, will-change or
+      // contain for position: fixed. A direct child of body has none of these
+      // to inherit, and the shift when one appears is silent and visual.
+      //
+      // ARIA says a document should have at most one banner, and axe reports a
+      // duplicate whether or not the banners carry distinct labels. So use a
+      // header when the page has no banner yet, and a named region otherwise.
+      //
+      // A header is a banner wherever it sits, unless it is inside sectioning
+      // content, so this cannot just look at the children of body: a custom
+      // page layout wraps the title block header in a plain div. An explicit
+      // role="banner" always counts.
+      const sectioning = 'article, aside, main, nav, section, [role="article"], [role="complementary"], [role="main"], [role="navigation"], [role="region"]';
+      const hasBanner = Array.from(
+        window.document.querySelectorAll('header:not([role]), [role="banner"]')
+      ).some(function(el) {
+        return el.hasAttribute("role") || el.closest(sectioning) === null;
+      });
+      const container = window.document.createElement(hasBanner ? "div" : "header");
+      if (hasBanner) {
+        container.setAttribute("role", "region");
+        container.setAttribute("aria-label", "Toggle dark mode");
+      }
+      container.classList.add('quarto-color-scheme-toggle-container');
+      container.appendChild(toggle);
+      window.document.body.appendChild(container);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/athospd\.github\.io\/athosdamiani");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
+          if (lineIds.length > 0) {
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            placeBand(gutterDiv, el, lastEl);
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollable code","output":"Scrollable output"};
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2026 Athos Damiani</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Built with <a href="https://quarto.org">Quarto</a> + R + Python</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

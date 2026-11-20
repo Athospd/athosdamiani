@@ -15,3 +15,6 @@ posts/**/index_files/
 
 # agent handoff notes (local only)
 /_HANDOFF*.md
+
+# written by Quarto when a theme fails to compile
+_quarto_internal_scss_error.scss

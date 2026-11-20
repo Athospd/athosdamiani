@@ -10,7 +10,105 @@
 <atom:link href="https://athospd.github.io/athosdamiani/blog.xml" rel="self" type="application/rss+xml"/>
 <description>Notes on data science, data engineering and code — written in Quarto with R and Python.</description>
 <generator>quarto-1.11.9</generator>
-<lastBuildDate>Fri, 20 Nov 2026 03:00:00 GMT</lastBuildDate>
+<lastBuildDate>Fri, 20 Nov 2026 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>{targetsboard}: a Shiny + React board for {targets} pipelines</title>
+  <dc:creator>Athos Damiani</dc:creator>
+  <link>https://athospd.github.io/athosdamiani/posts/2026-11-20-targetsboard/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>This weekend’s project was <a href="https://github.com/Athospd/targetsboard">{targetsboard}</a>, an alternative Shiny + React UI to monitor and (perhaps one day) control <a href="https://books.ropensci.org/targets/">{targets}</a>’ DAGs. For those familiar with {targets}, it serves as an alternative to the default <code>tar_watch()</code>.</p>
+<video src="targetsboard.mp4" autoplay="" loop="" muted="" playsinline="" style="width: 100%; height: auto;" aria-label="targetsboard showing a targets DAG updating while tar_make() runs">
+</video>
+<p>I absolutely LOVE the {targets} package, and I mostly did this project for fun (and it was indeed fun!). However, it will take some time to make it minimally viable, so I’m publishing it with the hope of finding skilled folks to help take the idea and develop a proper version.</p>
+<section id="the-idea" class="level2">
+<h2 class="anchored" data-anchor-id="the-idea">The idea</h2>
+<p>The main concept of this project is to propose a data orchestration tool designed with Data Scientists in mind, emphasizing reproducibility, reporting, and a robust feedback loop. It would be fantastic to have an Airflow-grade tool centered on Data Science!</p>
+<p>And honestly, I believe that R has what it takes to be a leading force in this area. R has the potential to be an enterprise-ready, first-class citizen in MLOps. Packages like {targets}, {shiny}, {reactR}, {tidyverse}, {quarto}, {vetiver}, {sparklyr}, {dbplyr}, etc., are simply AMAZING!</p>
+</section>
+<section id="how-to-try-it" class="level2">
+<h2 class="anchored" data-anchor-id="how-to-try-it">How to try it</h2>
+<p>The package is at an ultra-early, experimental stage. Install the development version from GitHub:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1">remotes<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">install_github</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Athospd/targetsboard"</span>)</span></code></pre></div></div>
+<p>In your normal, day-to-day targets workflow, launch the board with <code>tar_board()</code>. It runs in the background and is served at <code>localhost:9999</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(targetsboard)</span>
+<span id="cb2-2"></span>
+<span id="cb2-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># launch the app</span></span>
+<span id="cb2-4">app <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tar_board</span>()</span>
+<span id="cb2-5"></span>
+<span id="cb2-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># go to localhost:9999 where the board is being served</span></span>
+<span id="cb2-7"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">browseURL</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"http://localhost:9999"</span>)</span>
+<span id="cb2-8"></span>
+<span id="cb2-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># you can check it is alive, running on background</span></span>
+<span id="cb2-10">app<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">is_alive</span>()</span></code></pre></div></div>
+<p>It keeps track of your targets’ metadata just like <code>tar_watch()</code> would. Run your pipeline as usual and watch the DAG update:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tar_make</span>()</span></code></pre></div></div>
+<p>When you are done, shut the app down:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">app<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">kill</span>()</span></code></pre></div></div>
+</section>
+<section id="packages-to-put-under-your-radar" class="level2">
+<h2 class="anchored" data-anchor-id="packages-to-put-under-your-radar">Packages to put under your radar</h2>
+<ul>
+<li><a href="https://books.ropensci.org/targets/">{targets}</a>: amazing data orchestration with a focus on data science.</li>
+<li><a href="https://react-r.github.io/reactR/">{reactR}</a>: a powerful templating toolkit to connect R with React components (I used the <a href="https://reactflow.dev/">reactflow</a> React lib as the DAG interface).</li>
+<li><a href="https://shiny.posit.co/">{shiny}</a>: now also available for Python, a rich web app framework, awesome for us mortal data scientists.</li>
+</ul>
+</section>
+<section id="lets-discuss-it" class="level2">
+<h2 class="anchored" data-anchor-id="lets-discuss-it">Let’s discuss it!</h2>
+<p>What orchestration tools do you know that are already DS-friendly? What data orchestration tool do you like the most? What are your thoughts on my beloved R in the MLOps field? Please let me know.</p>
+<p>Code: <a href="https://github.com/Athospd/targetsboard" class="uri">https://github.com/Athospd/targetsboard</a></p>
+
+
+</section>
+
+ ]]></description>
+  <category>r</category>
+  <category>targets</category>
+  <category>shiny</category>
+  <category>reactR</category>
+  <category>mlops</category>
+  <category>packages</category>
+  <guid>https://athospd.github.io/athosdamiani/posts/2026-11-20-targetsboard/</guid>
+  <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
+  <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-20-targetsboard/thumbnail.png" medium="image" type="image/png" height="72" width="144"/>
+</item>
 <item>
   <title>Gentle introduction to the learning rate parameter</title>
   <dc:creator>Athos Damiani</dc:creator>
@@ -322,106 +420,8 @@ font-style: inherit;">0.1</span>)</span></code></pre></div></div>
   <category>r</category>
   <category>optimization</category>
   <guid>https://athospd.github.io/athosdamiani/posts/2026-11-20-learning-rate/</guid>
-  <pubDate>Fri, 20 Nov 2026 03:00:00 GMT</pubDate>
+  <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
   <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-20-learning-rate/learning_rate.png" medium="image" type="image/png" height="108" width="144"/>
-</item>
-<item>
-  <title>{targetsboard}: a Shiny + React board for {targets} pipelines</title>
-  <dc:creator>Athos Damiani</dc:creator>
-  <link>https://athospd.github.io/athosdamiani/posts/2026-11-20-targetsboard/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<p>This weekend’s project was <a href="https://github.com/Athospd/targetsboard">{targetsboard}</a>, an alternative Shiny + React UI to monitor and (perhaps one day) control <a href="https://books.ropensci.org/targets/">{targets}</a>’ DAGs. For those familiar with {targets}, it serves as an alternative to the default <code>tar_watch()</code>.</p>
-<video src="targetsboard.mp4" autoplay="" loop="" muted="" playsinline="" style="width: 100%; height: auto;" aria-label="targetsboard showing a targets DAG updating while tar_make() runs">
-</video>
-<p>I absolutely LOVE the {targets} package, and I mostly did this project for fun (and it was indeed fun!). However, it will take some time to make it minimally viable, so I’m publishing it with the hope of finding skilled folks to help take the idea and develop a proper version.</p>
-<section id="the-idea" class="level2">
-<h2 class="anchored" data-anchor-id="the-idea">The idea</h2>
-<p>The main concept of this project is to propose a data orchestration tool designed with Data Scientists in mind, emphasizing reproducibility, reporting, and a robust feedback loop. It would be fantastic to have an Airflow-grade tool centered on Data Science!</p>
-<p>And honestly, I believe that R has what it takes to be a leading force in this area. R has the potential to be an enterprise-ready, first-class citizen in MLOps. Packages like {targets}, {shiny}, {reactR}, {tidyverse}, {quarto}, {vetiver}, {sparklyr}, {dbplyr}, etc., are simply AMAZING!</p>
-</section>
-<section id="how-to-try-it" class="level2">
-<h2 class="anchored" data-anchor-id="how-to-try-it">How to try it</h2>
-<p>The package is at an ultra-early, experimental stage. Install the development version from GitHub:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1">remotes<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">install_github</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Athospd/targetsboard"</span>)</span></code></pre></div></div>
-<p>In your normal, day-to-day targets workflow, launch the board with <code>tar_board()</code>. It runs in the background and is served at <code>localhost:9999</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(targetsboard)</span>
-<span id="cb2-2"></span>
-<span id="cb2-3"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># launch the app</span></span>
-<span id="cb2-4">app <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tar_board</span>()</span>
-<span id="cb2-5"></span>
-<span id="cb2-6"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># go to localhost:9999 where the board is being served</span></span>
-<span id="cb2-7"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">browseURL</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"http://localhost:9999"</span>)</span>
-<span id="cb2-8"></span>
-<span id="cb2-9"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># you can check it is alive, running on background</span></span>
-<span id="cb2-10">app<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">is_alive</span>()</span></code></pre></div></div>
-<p>It keeps track of your targets’ metadata just like <code>tar_watch()</code> would. Run your pipeline as usual and watch the DAG update:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tar_make</span>()</span></code></pre></div></div>
-<p>When you are done, shut the app down:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">app<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">kill</span>()</span></code></pre></div></div>
-</section>
-<section id="packages-to-put-under-your-radar" class="level2">
-<h2 class="anchored" data-anchor-id="packages-to-put-under-your-radar">Packages to put under your radar</h2>
-<ul>
-<li><a href="https://books.ropensci.org/targets/">{targets}</a>: amazing data orchestration with a focus on data science.</li>
-<li><a href="https://react-r.github.io/reactR/">{reactR}</a>: a powerful templating toolkit to connect R with React components (I used the <a href="https://reactflow.dev/">reactflow</a> React lib as the DAG interface).</li>
-<li><a href="https://shiny.posit.co/">{shiny}</a>: now also available for Python, a rich web app framework, awesome for us mortal data scientists.</li>
-</ul>
-</section>
-<section id="lets-discuss-it" class="level2">
-<h2 class="anchored" data-anchor-id="lets-discuss-it">Let’s discuss it!</h2>
-<p>What orchestration tools do you know that are already DS-friendly? What data orchestration tool do you like the most? What are your thoughts on my beloved R in the MLOps field? Please let me know.</p>
-<p>Code: <a href="https://github.com/Athospd/targetsboard" class="uri">https://github.com/Athospd/targetsboard</a></p>
-
-
-</section>
-
- ]]></description>
-  <category>r</category>
-  <category>targets</category>
-  <category>shiny</category>
-  <category>reactR</category>
-  <category>mlops</category>
-  <category>packages</category>
-  <guid>https://athospd.github.io/athosdamiani/posts/2026-11-20-targetsboard/</guid>
-  <pubDate>Fri, 20 Nov 2026 03:00:00 GMT</pubDate>
-  <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-20-targetsboard/thumbnail.png" medium="image" type="image/png" height="72" width="144"/>
 </item>
 <item>
   <title>Querying Parquet with SQL from R, no warehouse needed</title>
@@ -679,7 +679,7 @@ font-style: inherit;">collect</span>(monthly)</span></code></pre></div></div>
   <category>sql</category>
   <category>parquet</category>
   <guid>https://athospd.github.io/athosdamiani/posts/2026-11-17-parquet-sql-from-r/</guid>
-  <pubDate>Tue, 17 Nov 2026 03:00:00 GMT</pubDate>
+  <pubDate>Tue, 17 Nov 2026 00:00:00 GMT</pubDate>
   <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-17-parquet-sql-from-r/parquet-sql.png" medium="image" type="image/png" height="81" width="144"/>
 </item>
 <item>
@@ -1478,7 +1478,7 @@ Gatys, Leon A., Alexander S. Ecker, and Matthias Bethge. 2015. <em>A Neural Algo
   <category>neural style transfer</category>
   <category>modeling</category>
   <guid>https://athospd.github.io/athosdamiani/posts/2021-02-22-neural-style-transfer/</guid>
-  <pubDate>Mon, 22 Feb 2021 03:00:00 GMT</pubDate>
+  <pubDate>Mon, 22 Feb 2021 00:00:00 GMT</pubDate>
   <media:content url="https://athospd.github.io/athosdamiani/posts/2021-02-22-neural-style-transfer/cristoredentorfinal.webp" medium="image" type="image/webp"/>
 </item>
 <item>
@@ -3036,7 +3036,7 @@ font-style: inherit;">20</span></span>
   <category>r</category>
   <category>audio processing</category>
   <guid>https://athospd.github.io/athosdamiani/posts/2021-02-04-simple-audio-classification-with-torch/</guid>
-  <pubDate>Thu, 04 Feb 2021 03:00:00 GMT</pubDate>
+  <pubDate>Thu, 04 Feb 2021 00:00:00 GMT</pubDate>
   <media:content url="https://athospd.github.io/athosdamiani/posts/2021-02-04-simple-audio-classification-with-torch/images/preview.jpg" medium="image" type="image/jpeg" height="96" width="144"/>
 </item>
 <item>
@@ -3328,7 +3328,7 @@ font-style: inherit;">kable</span>()</span></code></pre></div></div>
   <category>tabulizer</category>
   <category>pdftools</category>
   <guid>https://athospd.github.io/athosdamiani/posts/2021-01-08-tabulizer/</guid>
-  <pubDate>Fri, 08 Jan 2021 03:00:00 GMT</pubDate>
+  <pubDate>Fri, 08 Jan 2021 00:00:00 GMT</pubDate>
   <media:content url="https://athospd.github.io/athosdamiani/posts/2021-01-08-tabulizer/tabulizer.webp" medium="image" type="image/webp"/>
 </item>
 <item>
@@ -3678,7 +3678,7 @@ font-style: inherit;">$</span>fit)</span></code></pre></div></div>
   <category>xgboost</category>
   <category>machine learning</category>
   <guid>https://athospd.github.io/athosdamiani/posts/2020-08-29-xgboost-sql/</guid>
-  <pubDate>Sat, 29 Aug 2020 03:00:00 GMT</pubDate>
+  <pubDate>Sat, 29 Aug 2020 00:00:00 GMT</pubDate>
   <media:content url="https://athospd.github.io/athosdamiani/posts/2020-08-29-xgboost-sql/xgboost-sql.webp" medium="image" type="image/webp"/>
 </item>
 <item>
@@ -5072,7 +5072,7 @@ font-style: inherit;">"top"</span>)</span></code></pre></div></div>
   <category>api</category>
   <category>imdb</category>
   <guid>https://athospd.github.io/athosdamiani/posts/2020-06-09-bechdel/</guid>
-  <pubDate>Tue, 09 Jun 2020 03:00:00 GMT</pubDate>
+  <pubDate>Tue, 09 Jun 2020 00:00:00 GMT</pubDate>
   <media:content url="https://athospd.github.io/athosdamiani/posts/2020-06-09-bechdel/bechdel.webp" medium="image" type="image/webp"/>
 </item>
 <item>
@@ -5372,7 +5372,7 @@ font-style: inherit;">theme_bw</span>()</span></code></pre></div></div>
   <category>app</category>
   <category>packages</category>
   <guid>https://athospd.github.io/athosdamiani/posts/2018-08-09-desafio-recuperacao-imagem/</guid>
-  <pubDate>Thu, 09 Aug 2018 03:00:00 GMT</pubDate>
+  <pubDate>Thu, 09 Aug 2018 00:00:00 GMT</pubDate>
   <media:content url="https://athospd.github.io/athosdamiani/posts/2018-08-09-desafio-recuperacao-imagem/purple_wave.webp" medium="image" type="image/webp"/>
 </item>
 <item>
@@ -5695,7 +5695,7 @@ font-style: inherit;">"Gráfico da relação entre o número de variáveis multi
   <category>random forest</category>
   <category>multicollinearity</category>
   <guid>https://athospd.github.io/athosdamiani/posts/2018-05-22-arvore-e-multicolinearidade/</guid>
-  <pubDate>Tue, 22 May 2018 03:00:00 GMT</pubDate>
+  <pubDate>Tue, 22 May 2018 00:00:00 GMT</pubDate>
   <media:content url="https://athospd.github.io/athosdamiani/posts/2018-05-22-arvore-e-multicolinearidade/banner-arvore-e-multicolinearidade.webp" medium="image" type="image/webp"/>
 </item>
 <item>
@@ -6123,7 +6123,7 @@ font-style: inherit;">10</span></span>
   <category>kaggle</category>
   <category>deep learning</category>
   <guid>https://athospd.github.io/athosdamiani/posts/2018-03-29-guess-the-correlation/</guid>
-  <pubDate>Thu, 29 Mar 2018 03:00:00 GMT</pubDate>
+  <pubDate>Thu, 29 Mar 2018 00:00:00 GMT</pubDate>
   <media:content url="https://athospd.github.io/athosdamiani/posts/2018-03-29-guess-the-correlation/guess-the-correlation.webp" medium="image" type="image/webp"/>
 </item>
 <item>
@@ -6663,7 +6663,7 @@ font-style: inherit;">print</span>(p)</span></code></pre></div></div>
   <category>telegram</category>
   <category>bitcoin</category>
   <guid>https://athospd.github.io/athosdamiani/posts/2017-08-19-r-telegram-bitcoin/</guid>
-  <pubDate>Sat, 19 Aug 2017 03:00:00 GMT</pubDate>
+  <pubDate>Sat, 19 Aug 2017 00:00:00 GMT</pubDate>
   <media:content url="https://athospd.github.io/athosdamiani/posts/2017-08-19-r-telegram-bitcoin/r_telegram_bitcoin.webp" medium="image" type="image/webp"/>
 </item>
 <item>
@@ -7947,7 +7947,7 @@ font-style: inherit;">"resposta"</span>)</span></code></pre></div></div>
   <category>keras</category>
   <category>glm</category>
   <guid>https://athospd.github.io/athosdamiani/posts/2017-07-29-segundo-menor-dl/</guid>
-  <pubDate>Sat, 29 Jul 2017 03:00:00 GMT</pubDate>
+  <pubDate>Sat, 29 Jul 2017 00:00:00 GMT</pubDate>
   <media:content url="https://athospd.github.io/athosdamiani/posts/2017-07-29-segundo-menor-dl/what_if_i_told_you.webp" medium="image" type="image/webp"/>
 </item>
 <item>
@@ -8393,7 +8393,7 @@ font-style: inherit;">30</span>))</span></code></pre></div></div>
   <category>tutorials</category>
   <category>woe</category>
   <guid>https://athospd.github.io/athosdamiani/posts/2017-07-06-tidywoe/</guid>
-  <pubDate>Thu, 06 Jul 2017 03:00:00 GMT</pubDate>
+  <pubDate>Thu, 06 Jul 2017 00:00:00 GMT</pubDate>
   <media:content url="https://athospd.github.io/athosdamiani/posts/2017-07-06-tidywoe/tidywoe_hex2.webp" medium="image" type="image/webp"/>
 </item>
 <item>
@@ -9054,7 +9054,7 @@ font-style: inherit;">50</span>))</span></code></pre></div></div>
   <category>principal components</category>
   <category>plotly</category>
   <guid>https://athospd.github.io/athosdamiani/posts/2017-06-24-componentes-principais-intuicao/</guid>
-  <pubDate>Sat, 24 Jun 2017 03:00:00 GMT</pubDate>
+  <pubDate>Sat, 24 Jun 2017 00:00:00 GMT</pubDate>
   <media:content url="https://athospd.github.io/athosdamiani/posts/2017-06-24-componentes-principais-intuicao/componentes_principais.webp" medium="image" type="image/webp"/>
 </item>
 <item>
@@ -10291,7 +10291,7 @@ font-style: inherit;">""</span>)</span></code></pre></div></div>
   <category>lollapalooza</category>
   <category>api</category>
   <guid>https://athospd.github.io/athosdamiani/posts/2017-03-27-lollapalooza-sp-2017-segundo-spotify/</guid>
-  <pubDate>Mon, 27 Mar 2017 03:00:00 GMT</pubDate>
+  <pubDate>Mon, 27 Mar 2017 00:00:00 GMT</pubDate>
   <media:content url="https://athospd.github.io/athosdamiani/posts/2017-03-27-lollapalooza-sp-2017-segundo-spotify/lolla-spotify_s.webp" medium="image" type="image/webp"/>
 </item>
 <item>
@@ -10385,7 +10385,7 @@ font-style: inherit;">""</span>)</span></code></pre></div></div>
   <category>top 10</category>
   <category>packages</category>
   <guid>https://athospd.github.io/athosdamiani/posts/2017-02-21-top10-pacotes-para-data-science/</guid>
-  <pubDate>Tue, 21 Feb 2017 03:00:00 GMT</pubDate>
+  <pubDate>Tue, 21 Feb 2017 00:00:00 GMT</pubDate>
   <media:content url="https://athospd.github.io/athosdamiani/posts/2017-02-21-top10-pacotes-para-data-science/podio-pacotes.webp" medium="image" type="image/webp"/>
 </item>
 </channel>

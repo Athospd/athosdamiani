@@ -2266,7 +2266,7 @@ font-style: inherit;">"rmse"</span>)</span></code></pre></div></div>
 
 
 
-<p>In 2017 I wrote my <a href="../2017-02-21-top10-pacotes-para-data-science/">top 10 packages for data science</a>. Nine years later, some of them are still on my list, some were replaced by their successors, and some new ones changed the way I work. Here is the 2026 edition.</p>
+<p>In 2017 I wrote my <a href="../2017-02-21-top10-pacotes-para-data-science/">top 10 packages for data science</a>. Nine years later, some of them are still on my list, some were replaced by their successors, and some new ones changed the way I work. Here is the 2026 edition, plus a special mention for the packages of the GenAI era.</p>
 <p><img src="https://athospd.github.io/athosdamiani/posts/2026-11-20-top10-packages-2026/podium-2026.png" class="img-fluid"></p>
 <section id="purrr-vector-and-list-manipulation" class="level3">
 <h3 class="anchored" data-anchor-id="purrr-vector-and-list-manipulation"><a href="https://purrr.tidyverse.org/">10. purrr</a> (vector and list manipulation)</h3>
@@ -2281,9 +2281,16 @@ font-style: inherit;">"rmse"</span>)</span></code></pre></div></div>
 <p><em>Replaces knitr/rmarkdown.</em> Quarto is RMarkdown’s successor, from the same team. Same idea, write the analysis and let the tool make the pdf, word or html, but it works with R, Python and Julia alike, and it does websites, books, slides and dashboards out of the box. knitr is still under the hood when the code is R.</p>
 <p>PS: this blog is made with Quarto!</p>
 </section>
-<section id="stringr-string-manipulation" class="level3">
-<h3 class="anchored" data-anchor-id="stringr-string-manipulation"><a href="https://stringr.tidyverse.org/">7. stringr</a> (string manipulation)</h3>
-<p>Everything to extract, create and transform strings, with <a href="https://stringr.tidyverse.org/articles/regular-expressions.html">regex</a> support. Nine years later, I still use it every week.</p>
+<section id="mirai-async-and-parallel-computing" class="level3">
+<h3 class="anchored" data-anchor-id="mirai-async-and-parallel-computing"><a href="https://mirai.r-lib.org/">7. mirai</a> (async and parallel computing)</h3>
+<p><em>Replaces stringr.</em> {mirai} evaluates R code asynchronously and in parallel, on your laptop or spread across the machines of a cluster. It’s now an official cluster type in R’s own {parallel} package. Its best trick is that you rarely call it directly: it is the engine behind a lot of the R you already use.</p>
+<ul>
+<li>{purrr}: <code>map(x, in_parallel(f))</code> runs a <code>map()</code> in parallel.</li>
+<li>{shiny}: long computations run in the background (<code>ExtendedTask</code>) while the app stays responsive.</li>
+<li>{targets}: through {crew}, the steps of a pipeline run on parallel workers, locally or in the cloud.</li>
+<li>{promises}: any async R code can wait on a mirai.</li>
+</ul>
+<p>Parallel R used to mean choosing between a handful of frameworks with different rules. Now it’s mostly one engine, and it’s fast.</p>
 </section>
 <section id="lubridate-date-manipulation" class="level3">
 <h3 class="anchored" data-anchor-id="lubridate-date-manipulation"><a href="https://lubridate.tidyverse.org/">6. lubridate</a> (date manipulation)</h3>
@@ -2326,6 +2333,19 @@ font-style: inherit;">"rmse"</span>)</span></code></pre></div></div>
 <li><strong>htmlwidgets</strong> (integration between R and JavaScript libraries)</li>
 <li><strong>leaflet</strong> (interactive maps)</li>
 </ul>
+</section>
+<section id="special-mention-the-genai-era" class="level3">
+<h3 class="anchored" data-anchor-id="special-mention-the-genai-era">Special mention: the GenAI era</h3>
+<p>LLMs, RAG and agents arrived in R too, and a new family of packages came with them:</p>
+<ul>
+<li><a href="https://ellmer.tidyverse.org/"><strong>ellmer</strong></a>: chat with LLMs from many providers (Claude, OpenAI, Gemini, local models via Ollama and more), with streaming, tool calling and structured data extraction.</li>
+<li><a href="https://ragnar.tidyverse.org/"><strong>ragnar</strong></a>: Retrieval-Augmented Generation (RAG) workflows. Reads documents, splits them into chunks, generates embeddings, stores them and retrieves the relevant ones for the LLM.</li>
+<li><a href="https://posit-dev.github.io/mcptools/"><strong>mcptools</strong></a>: the Model Context Protocol (MCP) for R. Serve R functions as tools for apps like Claude Desktop and Claude Code, or use other MCP servers’ tools from R.</li>
+<li><a href="https://posit-dev.github.io/btw/"><strong>btw</strong></a>: describes your R objects, workspace and package documentation in a format LLMs understand.</li>
+<li><a href="https://vitals.tidyverse.org/"><strong>vitals</strong></a>: evaluates LLM-based products, an R port of Python’s Inspect framework.</li>
+<li><a href="https://posit-dev.github.io/shinychat/"><strong>shinychat</strong></a> and <a href="https://posit-dev.github.io/querychat/"><strong>querychat</strong></a>: a chat interface for Shiny apps, and a chat that turns users’ questions into SQL queries over your data.</li>
+</ul>
+<p>I’m still discovering and learning this whole new world. But it’s as sure as the sunrise that it’s here to stay.</p>
 </section>
 <section id="what-the-downloads-say" class="level2">
 <h2 class="anchored" data-anchor-id="what-the-downloads-say">What the downloads say</h2>
@@ -2409,7 +2429,7 @@ font-style: inherit;">"shiny"</span>, <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"lubridate"</span>, <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"stringr"</span>, <span class="st" style="color: #20794D;
+font-style: inherit;">"mirai"</span>, <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"quarto"</span>, <span class="st" style="color: #20794D;
 background-color: null;
@@ -2472,7 +2492,7 @@ font-style: inherit;">na_if</span>(feb_2017, <span class="dv" style="color: #AD0
 background-color: null;
 font-style: inherit;">0</span>), <span class="co" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;"># torch, targets, tidymodels and quarto didn't exist yet</span></span>
+font-style: inherit;"># torch, targets, tidymodels, quarto and mirai didn't exist yet</span></span>
 <span id="cb1-22">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">rank_2017 =</span> <span class="fu" style="color: #4758AB;
@@ -2559,10 +2579,10 @@ font-style: inherit;">","</span>))</span></code></pre></div></div>
 <td style="text-align: right;">6</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">stringr</td>
-<td style="text-align: right;">342,351</td>
-<td style="text-align: right;">1,187,180</td>
-<td style="text-align: right;">7</td>
+<td style="text-align: left;">mirai</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">41,213</td>
+<td style="text-align: right;"></td>
 <td style="text-align: right;">7</td>
 </tr>
 <tr class="even">
@@ -2608,13 +2628,20 @@ font-style: inherit;">","</span>))</span></code></pre></div></div>
 <td style="text-align: right;"></td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">stringr</td>
+<td style="text-align: right;">342,351</td>
+<td style="text-align: right;">1,187,180</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;">rmarkdown</td>
 <td style="text-align: right;">208,673</td>
 <td style="text-align: right;">1,371,005</td>
 <td style="text-align: right;">8</td>
 <td style="text-align: right;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">caret</td>
 <td style="text-align: right;">87,426</td>
 <td style="text-align: right;">132,869</td>
@@ -2629,7 +2656,7 @@ font-style: inherit;">","</span>))</span></code></pre></div></div>
 <ul>
 <li>ggplot2 is the most downloaded package on CRAN that you’d install on purpose. Only rlang, a low-level dependency of almost everything, beats it.</li>
 <li>magrittr still has more than 1.6 million downloads a month, mostly as a dependency of other packages, even with the native pipe in base R.</li>
-<li>torch and targets are far from the top in downloads. They’re on my list because of what they do for my work, not because everyone uses them (yet).</li>
+<li>torch, mirai and targets are far from the top in downloads. They’re on my list because of what they do for my work, not because everyone uses them (yet).</li>
 <li>Quarto is a command-line tool, not an R package. The <code>quarto</code> R package only calls it, so its downloads say little about how many people use Quarto.</li>
 </ul>
 <p>These numbers only count Posit’s CRAN mirror, so they are a sample, not the whole picture.</p>

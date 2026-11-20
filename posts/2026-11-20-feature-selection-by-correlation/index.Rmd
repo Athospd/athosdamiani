@@ -166,7 +166,16 @@ With both features, the trees can split on `X_12m` and `X_06m` together and appr
 
 The correlation between two features tells you whether they carry the same values, not whether they carry the same information about the target. The rule works when the second feature is a noisy copy of the first. It fails when the signal is in how they differ.
 
-Before dropping a feature, check its correlation with combinations of it and its partner, $\text{cor}(X_1, f(X_1, X_2))$ for ratios, differences and the like. Here `X_06_12` has a weak correlation with both `X_12m` and `X_06m`: neither one alone stands in for it.
+Checking $	ext{cor}(X_1, f(X_1, X_2))$ for ratios, differences and the like helps, but only for the combinations you think of. A better question to ask is whether the model uses the feature at all, and how that compares to a feature that is pure noise.
+
+That is the random probe idea. Add one or more random features, the probes, to the data, fit a model, and rank every feature by its importance. A probe can't carry any information about the target, so its importance is the level a useless feature reaches by chance. Features that rank below the probes are candidates to drop. The method goes back to Stoppiglia, Dreyfus, Dubois and Oussar, [Ranking a Random Feature for Variable and Feature Selection](https://www.jmlr.org/papers/v3/stoppiglia03a.html) (JMLR, 2003), which also gives a statistical stopping rule for where to cut the ranking.
+
+A random forest is a good model for the ranking: it captures interactions such as the ratio here without you having to build them, and its feature importance comes for free. Ready-made tools:
+
+- R: [{Boruta}](https://www.jstatsoft.org/v36/i11) (Kursa and Rudnicki, *Journal of Statistical Software*, 2010) wraps a random forest. Its probes, the "shadow" features, are shuffled copies of each real feature. A feature is kept when its importance beats the best shadow more often than chance would allow, over many runs. Boruta looks for *all* relevant features, so it keeps redundant ones too: the opposite of the correlation filter.
+- Python: [`ProbeFeatureSelection`](https://feature-engine.trainindata.com/en/latest/api_doc/selection/ProbeFeatureSelection.html) from feature-engine adds random probe features, fits a scikit-learn model with cross-validation, and drops the features whose importance is below the probes' (their mean, their maximum, or the mean plus 3 standard deviations).
+
+The simulation already has probes: `random1`, `random2` and `random3`. In the feature importance plot of the model with both features, `X_12m` and `X_06m` are far above all three, so the probe rule keeps both, which is what this data needs. The correlation filter would have dropped one of them.
 
 The gist also has commented-out versions with the product, the difference and the sum in place of the ratio, if you want to try them.
 

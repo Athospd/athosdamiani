@@ -11,7 +11,7 @@ image: podium-2026.png
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, error = FALSE, collapse = TRUE)
 ```
 
-In 2017 I wrote my [top 10 packages for data science](../2017-02-21-top10-pacotes-para-data-science/). Nine years later, some of them are still on my list, some were replaced by their successors, and some new ones changed the way I work. Here is the 2026 edition.
+In 2017 I wrote my [top 10 packages for data science](../2017-02-21-top10-pacotes-para-data-science/). Nine years later, some of them are still on my list, some were replaced by their successors, and some new ones changed the way I work. Here is the 2026 edition, plus a special mention for the packages of the GenAI era.
 
 ![](podium-2026.png)
 
@@ -29,9 +29,16 @@ Still here, and still putting the `for` loop at risk of extinction. `map()` and 
 
 PS: this blog is made with Quarto!
 
-### [7. stringr](https://stringr.tidyverse.org/) (string manipulation)
+### [7. mirai](https://mirai.r-lib.org/) (async and parallel computing)
 
-Everything to extract, create and transform strings, with [regex](https://stringr.tidyverse.org/articles/regular-expressions.html) support. Nine years later, I still use it every week.
+*Replaces stringr.* {mirai} evaluates R code asynchronously and in parallel, on your laptop or spread across the machines of a cluster. It's now an official cluster type in R's own {parallel} package. Its best trick is that you rarely call it directly: it is the engine behind a lot of the R you already use.
+
+- {purrr}: `map(x, in_parallel(f))` runs a `map()` in parallel.
+- {shiny}: long computations run in the background (`ExtendedTask`) while the app stays responsive.
+- {targets}: through {crew}, the steps of a pipeline run on parallel workers, locally or in the cloud.
+- {promises}: any async R code can wait on a mirai.
+
+Parallel R used to mean choosing between a handful of frameworks with different rules. Now it's mostly one engine, and it's fast.
 
 ### [6. lubridate](https://lubridate.tidyverse.org/) (date manipulation)
 
@@ -74,6 +81,19 @@ The gold medal now goes to {torch}: deep learning in R, built directly on the C+
 - **htmlwidgets** (integration between R and JavaScript libraries)
 - **leaflet** (interactive maps)
 
+### Special mention: the GenAI era
+
+LLMs, RAG and agents arrived in R too, and a new family of packages came with them:
+
+- [**ellmer**](https://ellmer.tidyverse.org/): chat with LLMs from many providers (Claude, OpenAI, Gemini, local models via Ollama and more), with streaming, tool calling and structured data extraction.
+- [**ragnar**](https://ragnar.tidyverse.org/): Retrieval-Augmented Generation (RAG) workflows. Reads documents, splits them into chunks, generates embeddings, stores them and retrieves the relevant ones for the LLM.
+- [**mcptools**](https://posit-dev.github.io/mcptools/): the Model Context Protocol (MCP) for R. Serve R functions as tools for apps like Claude Desktop and Claude Code, or use other MCP servers' tools from R.
+- [**btw**](https://posit-dev.github.io/btw/): describes your R objects, workspace and package documentation in a format LLMs understand.
+- [**vitals**](https://vitals.tidyverse.org/): evaluates LLM-based products, an R port of Python's Inspect framework.
+- [**shinychat**](https://posit-dev.github.io/shinychat/) and [**querychat**](https://posit-dev.github.io/querychat/): a chat interface for Shiny apps, and a chat that turns users' questions into SQL queries over your data.
+
+I'm still discovering and learning this whole new world. But it's as sure as the sunrise that it's here to stay.
+
 ## What the downloads say
 
 A top 10 is a matter of taste, but the download counts are data. The CRAN logs of Posit's mirror are public, so here are the 2017 list and the 2026 list, with downloads in the month before each post.
@@ -88,7 +108,7 @@ downloads <- function(pkgs, from, to) {
 }
 
 top_2017 <- c("magrittr", "ggplot2", "dplyr", "tidyr", "shiny", "lubridate", "stringr", "rmarkdown", "caret", "purrr")
-top_2026 <- c("torch", "ggplot2", "tidyverse", "targets", "shiny", "lubridate", "stringr", "quarto", "tidymodels", "purrr")
+top_2026 <- c("torch", "ggplot2", "tidyverse", "targets", "shiny", "lubridate", "mirai", "quarto", "tidymodels", "purrr")
 
 pkgs <- union(top_2017, top_2026)
 
@@ -99,7 +119,7 @@ bind_rows(
 ) |>
   pivot_wider(names_from = month, values_from = downloads) |>
   mutate(
-    feb_2017 = na_if(feb_2017, 0), # torch, targets, tidymodels and quarto didn't exist yet
+    feb_2017 = na_if(feb_2017, 0), # torch, targets, tidymodels, quarto and mirai didn't exist yet
     rank_2017 = match(package, top_2017),
     rank_2026 = match(package, top_2026)
   ) |>
@@ -111,7 +131,7 @@ A few things stand out:
 
 - ggplot2 is the most downloaded package on CRAN that you'd install on purpose. Only rlang, a low-level dependency of almost everything, beats it.
 - magrittr still has more than 1.6 million downloads a month, mostly as a dependency of other packages, even with the native pipe in base R.
-- torch and targets are far from the top in downloads. They're on my list because of what they do for my work, not because everyone uses them (yet).
+- torch, mirai and targets are far from the top in downloads. They're on my list because of what they do for my work, not because everyone uses them (yet).
 - Quarto is a command-line tool, not an R package. The `quarto` R package only calls it, so its downloads say little about how many people use Quarto.
 
 These numbers only count Posit's CRAN mirror, so they are a sample, not the whole picture.

@@ -1,0 +1,63 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "Athos Damiani"
+  description: "Data Engineer — Spark, Databricks, SQL, Python & R. I build reliable data pipelines and the platforms that put models into production."
+  site-url: https://athospd.github.io
+  repo-url: https://github.com/athospd/athospd.github.io
+  favicon: files/favicon.svg
+  open-graph: true
+  twitter-card: true
+  page-navigation: false
+  navbar:
+    left:
+      - text: "~/home"
+        href: index.qmd
+      - text: "~/resume"
+        href: resume.qmd
+      - text: "~/projects"
+        href: projects.qmd
+      - text: "~/blog"
+        href: blog.qmd
+    right:
+      - icon: github
+        href: https://github.com/athospd
+        aria-label: GitHub
+      - icon: linkedin
+        href: https://www.linkedin.com/in/athosdamiani
+        aria-label: LinkedIn
+      - icon: envelope
+        href: mailto:athos.damiani@gmail.com
+        aria-label: Email
+      - icon: rss
+        href: blog.xml
+        aria-label: RSS
+  page-footer:
+    left: "© 2026 Athos Damiani"
+    right: "Built with [Quarto](https://quarto.org) + R + Python"
+
+format:
+  html:
+    # Two themes with a toggle in the navbar:
+    #   light = simple & clean (default)
+    #   dark  = "code vibes" (terminal look)
+    # To go full code-vibes only, replace this block with:
+    #   theme: [darkly, theme/code-vibes.scss]
+    theme:
+      light: [cosmo, theme/light.scss]
+      dark: [darkly, theme/code-vibes.scss]
+    respect-user-color-scheme: true
+    highlight-style:
+      light: github
+      dark: dracula
+    code-copy: true
+    code-overflow: wrap
+    toc: false
+    smooth-scroll: true
+
+execute:
+  # Re-run code only when a post's source changes.
+  # Results are stored in _freeze/ — commit that folder.
+  freeze: auto

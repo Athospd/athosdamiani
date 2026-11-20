@@ -1,0 +1,52 @@
+---
+title: "Blog"
+description: "Notes on data science, data engineering and code — written in Quarto with R and Python."
+listing:
+  contents: posts
+  sort: "date desc"
+  type: default
+  categories: true
+  sort-ui: [date, title]
+  filter-ui: true
+  feed: true
+page-layout: full
+title-block-banner: false
+# List / cards view switch. The choice is kept in localStorage ("pt-blog-view").
+# The class goes on <html> before first paint so the page never flashes the wrong view;
+# the CSS for both views lives in theme/pixel.scss ("blog: list / cards views").
+include-in-header:
+  - text: |
+      <script>
+        try { if (localStorage.getItem("pt-blog-view") === "cards")
+          document.documentElement.classList.add("pt-view-cards"); } catch (e) {}
+      </script>
+include-after-body:
+  - text: |
+      <script>
+      (function () {
+        var bar = document.querySelector("#listing-listing .listing-actions-group");
+        if (!bar) return;
+        var root = document.documentElement, key = "pt-blog-view";
+        var sw = document.createElement("div");
+        sw.className = "pt-view-switch";
+        sw.setAttribute("role", "group");
+        sw.setAttribute("aria-label", "Layout");
+        sw.innerHTML =
+          '<button type="button" data-view="list" title="List view"><i class="bi bi-list-ul"></i><span>list</span></button>' +
+          '<button type="button" data-view="cards" title="Card view"><i class="bi bi-grid"></i><span>cards</span></button>';
+        bar.appendChild(sw);
+        function set(view) {
+          root.classList.toggle("pt-view-cards", view === "cards");
+          sw.querySelectorAll("button").forEach(function (b) {
+            b.setAttribute("aria-pressed", String(b.dataset.view === view));
+          });
+          try { localStorage.setItem(key, view); } catch (e) {}
+        }
+        sw.addEventListener("click", function (e) {
+          var b = e.target.closest("button");
+          if (b) set(b.dataset.view);
+        });
+        set(root.classList.contains("pt-view-cards") ? "cards" : "list");
+      })();
+      </script>
+---

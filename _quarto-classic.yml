@@ -1,0 +1,9 @@
+# Profile "classic": the original code-vibes look (GitHub-dark palette, JetBrains Mono).
+format:
+  html:
+    theme:
+      light: [cosmo, theme/light.scss, theme/compact.scss]
+      dark: [darkly, theme/code-vibes.scss, theme/compact.scss]
+    highlight-style:
+      light: github
+      dark: dracula

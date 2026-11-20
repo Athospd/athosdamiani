@@ -1,0 +1,74 @@
+---
+title: "Querying Parquet with SQL from R, no warehouse needed"
+description: "DuckDB + dbplyr: write dplyr, run SQL, read parquet. All in-process."
+date: 2026-11-17
+author: "Athos Damiani"
+categories: [r, duckdb, sql, parquet]
+image: parquet-sql.png
+execute:
+  warning: false
+---
+
+A lot of data engineering work is just *moving tables around and aggregating them*. You don't always need a cluster for that. [DuckDB](https://duckdb.org) is an in-process analytical database that reads Parquet directly, and with `dbplyr` you can write dplyr code that gets translated to SQL.
+
+```{r}
+#| message: false
+library(DBI)
+library(dplyr)
+library(dbplyr)
+
+con <- dbConnect(duckdb::duckdb())
+```
+
+## Create some "raw" data as Parquet
+
+```{r}
+set.seed(42)
+transactions <- data.frame(
+  id       = 1:10000,
+  customer = sample(sprintf("C%03d", 1:200), 10000, replace = TRUE),
+  amount   = round(rexp(10000, 1 / 80), 2),
+  day      = as.Date("2026-01-01") + sample(0:89, 10000, replace = TRUE)
+)
+
+path <- tempfile(fileext = ".parquet")
+duckdb::duckdb_register(con, "tx_df", transactions)
+dbExecute(con, sprintf("COPY tx_df TO '%s' (FORMAT PARQUET)", path))
+```
+
+## Query the file lazily with dplyr
+
+`tbl()` points at the parquet file, nothing is loaded into R yet.
+
+```{r}
+tx <- tbl(con, sql(sprintf("SELECT * FROM read_parquet('%s')", path)))
+
+monthly <- tx |>
+  mutate(month = date_trunc("month", day)) |>
+  group_by(month) |>
+  summarise(
+    n_tx      = n(),
+    customers = n_distinct(customer),
+    revenue   = sum(amount, na.rm = TRUE)
+  ) |>
+  arrange(month)
+```
+
+This is the SQL dbplyr generated:
+
+```{r}
+show_query(monthly)
+```
+
+And only now do we pull the (small) result into R:
+
+```{r}
+collect(monthly)
+```
+
+```{r}
+#| include: false
+dbDisconnect(con, shutdown = TRUE)
+```
+
+The same pattern scales up: swap DuckDB for Spark (`sparklyr`) or Databricks SQL and the dplyr code stays the same.

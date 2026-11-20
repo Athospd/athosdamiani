@@ -1,0 +1,8 @@
+# Profile "pixel": professional terminal + restrained pixel-art accents (IBM Plex + Silkscreen labels).
+# Palettes: theme/pixel-dark.scss, theme/pixel-light.scss · shared layout: theme/pixel.scss
+format:
+  html:
+    theme:
+      dark: [darkly, theme/pixel-dark.scss, theme/pixel.scss]
+      light: [cosmo, theme/pixel-light.scss, theme/pixel.scss]
+    highlight-style: github

@@ -1,0 +1,69 @@
+---
+title: "{targetsboard}: a Shiny + React board for {targets} pipelines"
+description: "An experimental alternative to targets::tar_watch() to monitor and (perhaps one day) control targets' DAGs from the UI."
+date: 2026-11-20
+author: "Athos Damiani"
+categories: ["r", "targets", "shiny", "reactR", "mlops", "packages"]
+image: thumbnail.png
+resources:
+  - targetsboard.mp4
+---
+
+This weekend's project was [{targetsboard}](https://github.com/Athospd/targetsboard), an alternative Shiny + React UI to monitor and (perhaps one day) control [{targets}](https://books.ropensci.org/targets/)' DAGs. For those familiar with {targets}, it serves as an alternative to the default `tar_watch()`.
+
+<video src="targetsboard.mp4" autoplay loop muted playsinline style="width: 100%; height: auto;" aria-label="targetsboard showing a targets DAG updating while tar_make() runs"></video>
+
+I absolutely LOVE the {targets} package, and I mostly did this project for fun (and it was indeed fun!). However, it will take some time to make it minimally viable, so I'm publishing it with the hope of finding skilled folks to help take the idea and develop a proper version.
+
+## The idea
+
+The main concept of this project is to propose a data orchestration tool designed with Data Scientists in mind, emphasizing reproducibility, reporting, and a robust feedback loop. It would be fantastic to have an Airflow-grade tool centered on Data Science!
+
+And honestly, I believe that R has what it takes to be a leading force in this area. R has the potential to be an enterprise-ready, first-class citizen in MLOps. Packages like {targets}, {shiny}, {reactR}, {tidyverse}, {quarto}, {vetiver}, {sparklyr}, {dbplyr}, etc., are simply AMAZING!
+
+## How to try it
+
+The package is at an ultra-early, experimental stage. Install the development version from GitHub:
+
+```r
+remotes::install_github("Athospd/targetsboard")
+```
+
+In your normal, day-to-day targets workflow, launch the board with `tar_board()`. It runs in the background and is served at `localhost:9999`:
+
+```r
+library(targetsboard)
+
+# launch the app
+app <- tar_board()
+
+# go to localhost:9999 where the board is being served
+browseURL("http://localhost:9999")
+
+# you can check it is alive, running on background
+app$is_alive()
+```
+
+It keeps track of your targets' metadata just like `tar_watch()` would. Run your pipeline as usual and watch the DAG update:
+
+```r
+tar_make()
+```
+
+When you are done, shut the app down:
+
+```r
+app$kill()
+```
+
+## Packages to put under your radar
+
+- [{targets}](https://books.ropensci.org/targets/): amazing data orchestration with a focus on data science.
+- [{reactR}](https://react-r.github.io/reactR/): a powerful templating toolkit to connect R with React components (I used the [reactflow](https://reactflow.dev/) React lib as the DAG interface).
+- [{shiny}](https://shiny.posit.co/): now also available for Python, a rich web app framework, awesome for us mortal data scientists.
+
+## Let's discuss it!
+
+What orchestration tools do you know that are already DS-friendly? What data orchestration tool do you like the most? What are your thoughts on my beloved R in the MLOps field? Please let me know.
+
+Code: <https://github.com/Athospd/targetsboard>

@@ -1,0 +1,113 @@
+---
+title: "Resume"
+description: "Data Scientist · Statistics · ML · Python · R · SQL · Spark · Databricks"
+---
+
+**Data scientist** with 13+ years working with data in finance, regulation and fraud prevention. Statistics background, with data engineering experience: I build models and the pipelines and data products around them, using Python, R, SQL, Spark and Databricks. Contact: [athos.damiani@gmail.com](mailto:athos.damiani@gmail.com) · [LinkedIn](https://www.linkedin.com/in/athosdamiani) · [GitHub](https://github.com/athospd)
+
+## Experience
+
+::: {.job}
+### Senior R/Shiny Developer — Halo
+[Aug 2025 – present · São Paulo / Remote · Technology consultancy]{.when}
+
+- Engineer an enterprise R/Shiny application for a pharmaceutical client, turning analytical workflows into interactive tools for clinical data exploration.
+- Work with cross-functional stakeholders on design, usability, scalability and compliance requirements.
+- *R, Shiny, Git*
+:::
+
+::: {.job}
+### Machine Learning Specialist — Serasa Experian
+[Jul 2024 – Aug 2025 · Brazil · Credit bureau]{.when}
+
+- Led initiatives bridging credit-risk data science and ML engineering, aligning technical and business stakeholders.
+- Improved model reliability and the path from analytical work to production delivery on Databricks.
+- *Python, Databricks, SQL, Git*
+:::
+
+::: {.job}
+### Data Scientist — Bank of England
+[Feb 2023 – Jul 2024 · United Kingdom · Central bank / regulator]{.when}
+
+- Delivered data products for strategic teams, including **data pipelines** and Shiny dashboards built with software-engineering practices.
+- Received an "Excelling" annual bonus award.
+- *R, SQL, Git*
+:::
+
+::: {.job}
+### Senior Data Scientist, Lending — Nubank
+[Oct 2021 – Dec 2022 · Brazil · Digital bank]{.when}
+
+- Built and monitored a core risk model supporting lending products, on a **Spark / Databricks** stack.
+- *R, Scala, Python, Spark, Databricks, Git*
+:::
+
+::: {.job}
+### Co-founder & Data Scientist — R6 Consulting / Curso-R
+[Feb 2017 – present · Brazil]{.when}
+
+- Co-founded the R6 data consultancy and Curso-R, a training initiative focused on teaching R.
+- Deliver data projects, training and open-source contributions to the R community.
+- *R, SQL, machine learning, web development, Git*
+:::
+
+::: {.job}
+### Specialist Data Scientist — Itaú Unibanco
+[Jan 2018 – May 2019 · Brazil · Financial services]{.when}
+
+- Built, deployed and monitored risk models; advised internal teams on credit and collections scoring.
+- *R, SAS, SQL, Hive, Git*
+:::
+
+::: {.job}
+### Specialist Data Scientist — EDP
+[Apr – Dec 2017 · Brazil · Energy]{.when}
+
+- Developed the company's first default score.
+- *R, SQL, machine learning*
+:::
+
+::: {.job}
+### Statistical Modeler — ClearSale
+[Aug 2015 – Mar 2017 · Brazil · Fraud prevention]{.when}
+
+- Developed predictive models for e-commerce fraud prevention, including machine-learning and text-mining applications.
+- *R, SQL, machine learning*
+:::
+
+<details>
+<summary>Earlier roles (2011 – 2015)</summary>
+
+- **Analyst, Legal Department — Itaú Unibanco** (2014–2015): model to support settlement-offer values in labour lawsuits.
+- **Junior Data Analyst — IBOPE** (2014): experimental design, forecasting, multivariate analysis, process automation.
+- **Data Scientist — Brazilian Association of Jurimetrics** (2013–2014): empirical research, relational databases, data collection, reporting and web applications.
+- **Statistical Consulting Intern — IME-USP** (2011–2012): consulting projects and data preparation in R.
+
+</details>
+
+## Skills
+
+| Area | Tools |
+|---|---|
+| Languages | Python, R, SQL, Scala · some JavaScript, HTML/CSS, C++ |
+| ML & MLOps | MLflow, end-to-end ML lifecycle, model monitoring, Torch |
+| Data engineering | SQL, Spark, PySpark, Databricks, Hive, Bash, Docker, Git |
+| Data products | Shiny, web apps, dashboards |
+
+## Education
+
+- **B.Sc. Statistics** — Institute of Mathematics and Statistics, University of São Paulo (2009–2013)
+- **M.Sc. studies (not completed)** — Polytechnic School, University of São Paulo (2019–2022). Topic: automatic acoustic detection of bird species with R and Torch. [Project](https://athospd.github.io/mestrado/)
+
+## Certifications
+
+Stanford Statistical Learning · Bayesian Methods for Machine Learning (with Honors) · Deep Learning Specialization courses (neural networks, CNNs, optimization, NLP)
+
+## Languages
+
+Portuguese (native) · English (C1, IELTS)
+
+## Publications
+
+- ABJ & CNJ (2015). *Time of the processes related to adoption in Brazil* (in Portuguese). [Report](https://www.cnj.jus.br/files/conteudo/destaques/arquivo/2015/07/8aab4515becd037933960ba8e91e1efc.pdf)
+- ABJ (2014). *The value of the cause and the value granted by moral damages in Special Civil Courts* (in Portuguese).

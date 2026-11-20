@@ -1,0 +1,75 @@
+/*-- scss:defaults --*/
+// Compact layer: loaded last on top of every theme (light, classic, tokyo).
+// Tightens spacing, margins and type scale for a denser, more direct look.
+// Remove it from the theme lists in _quarto-*.yml to get the roomier version back.
+$line-height-base: 1.5;
+$paragraph-margin-bottom: .75rem;
+$headings-margin-bottom: .5rem;
+$navbar-padding-y: .25rem;
+
+/*-- scss:rules --*/
+body { font-size: .92rem; }
+
+// navbar + page chrome
+.navbar { padding-top: .2rem; padding-bottom: .2rem; }
+.navbar .nav-link { padding-top: .3rem; padding-bottom: .3rem; }
+#quarto-content > * { padding-top: 0; }
+main.content { margin-top: .5rem; }
+#title-block-header { margin-block-end: .75rem; }
+#title-block-header .title { font-size: 1.8rem; margin-bottom: .2rem; }
+.quarto-title .description, #title-block-header .description { margin-top: 0; margin-bottom: 0; }
+.nav-footer { min-height: 2.5em; padding-top: .25rem; padding-bottom: .25rem; font-size: .85rem; }
+
+// headings
+h1, .h1, h2, .h2 { margin-top: 1.5rem; margin-bottom: .5rem; }
+h2, .h2 { font-size: 1.3rem; padding-bottom: .25rem; }
+h3, .h3 { font-size: 1.05rem; margin-top: 1rem; margin-bottom: .2rem; }
+main.content > section:first-of-type > h2:first-child { margin-top: .5rem; }
+
+// lists, definition lists, quotes, tables
+ul, ol { margin-bottom: .75rem; padding-left: 1.2rem; }
+li { margin-bottom: .15rem; }
+dt { margin-top: .5rem; }
+dd { margin-bottom: .25rem; }
+blockquote, .blockquote { margin: .5rem 0 .75rem; padding: .25rem 0 .25rem .9rem; }
+.table { margin-bottom: .75rem; }
+.table > :not(caption) > * > * { padding: .3rem .5rem; }
+hr { margin: 1rem 0; }
+details { margin: .5rem 0; }
+
+// home
+.hero {
+  padding: .75rem 0 .5rem;
+  h1 { font-size: 2rem; margin-top: 0; margin-bottom: .1rem; }
+  .role { font-size: .95rem; }
+  .lead { font-size: .98rem; margin-top: .5rem; margin-bottom: .5rem; display: block; }
+}
+.cta { margin-top: .5rem; }
+.cta a.btn { margin: .15rem .35rem .15rem 0; padding: .25rem .8rem; font-size: .85rem; }
+.terminal {
+  padding-top: 1.7rem; padding-bottom: .7rem;
+  line-height: 1.45;
+  font-size: .85rem;
+  margin: .75rem 0;
+  &::before { top: .4rem; }
+}
+.stack-tags span { margin: .1rem .1rem; padding: .05rem .5rem; font-size: .78rem; }
+.reco blockquote { margin: .5rem 0; }
+
+// resume
+.job { margin-bottom: .9rem; }
+.job h3 { margin-bottom: 0; }
+.job .when { display: block; font-size: .8rem; margin-bottom: .25rem; }
+.job ul { margin-bottom: 0; }
+
+// listings (home "latest posts" + blog)
+div.quarto-post { margin-bottom: .75rem; padding-bottom: .75rem; gap: 1rem; }
+div.quarto-post .listing-title { font-size: 1rem; }
+div.quarto-post .listing-description, div.quarto-post .description { margin-bottom: .2rem; }
+.quarto-listing { padding-bottom: .5rem; }
+
+// fixes: terminal trailing gap, intro-to-section gap, prompt glyph on icon links
+.terminal p:last-child { margin-bottom: 0; }
+main.content > p:has(+ section) { margin-bottom: 1rem; }
+.navbar .nav-link:has(.bi)::before { content: none; }
+.navbar .nav-link:has(.bi) { padding-left: .35rem; padding-right: .35rem; }

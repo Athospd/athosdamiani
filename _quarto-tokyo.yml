@@ -1,0 +1,9 @@
+# Profile "tokyo": same layout, Tokyo Night palette + Fira Code.
+format:
+  html:
+    theme:
+      light: [cosmo, theme/light.scss, theme/compact.scss]
+      dark: [darkly, theme/code-vibes-tokyo.scss, theme/compact.scss]
+    highlight-style:
+      light: github
+      dark: nord

@@ -1,0 +1,43 @@
+---
+title: "Projects"
+description: "Open-source contributions and personal projects, mostly in R."
+---
+
+## Data & ML engineering
+
+**[tidypredict — XGBoost → SQL](https://tidymodels.github.io/tidypredict/articles/xgboost.html)**
+: Contributed the translation of XGBoost models into SQL, so trained models can be scored inside the database without an R or Python runtime.
+
+**[treesnip](https://github.com/curso-r/treesnip)**
+: LightGBM and CatBoost engines for the tidymodels framework.
+
+**[embed — `step_woe()`](https://tidymodels.github.io/embed/reference/step_woe.html)**
+: Contributed a weight-of-evidence preprocessing step, used in credit-risk feature engineering.
+
+## Data ingestion & APIs
+
+**[wikiaves](https://github.com/athospd/wikiaves)**
+: R client for the WikiAves API — collects bird observation data and audio metadata.
+
+**[wavesurfer](https://github.com/athospd/wavesurfer)**
+: R/Shiny interface to wavesurfer.js for audio visualisation and labelling.
+
+## Research
+
+**[mestrado — acoustic bird detection](https://athospd.github.io/mestrado/)**
+: M.Sc. project (Polytechnic School, University of São Paulo) on automatic detection of nocturnal bird species from field recordings. An R package that reproduces the pipeline: collecting recordings (xeno-canto, WikiAves), slicing and labelling audio, train/test splits, and a 1D convolutional network on raw audio.
+
+## Deep learning
+
+**[torchaudio](https://github.com/curso-r/torchaudio)**
+: Audio deep-learning tools for R.
+
+**[facenet](https://github.com/curso-r/facenet)**
+: Face-recognition implementation with Torch.
+
+**[torchdatasets](https://mlverse.github.io/torchdatasets/)**
+: Contributed a dataset to the R torch datasets package.
+
+---
+
+More on [GitHub ↗](https://github.com/athospd)

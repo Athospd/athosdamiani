@@ -1,0 +1,35 @@
+/*-- scss:defaults --*/
+// "Pixel terminal" — DARK palette. Layout/rules live in theme/pixel.scss.
+$pt-bg:         #0b0d10;
+$pt-panel:      #12161b;
+$pt-border:     #262c35;
+$pt-text:       #cfd5dc;
+$pt-heading:    #eef1f4;
+$pt-muted:      #7c8692;
+$pt-accent:     #6ee7a0;   // phosphor mint — the one accent
+$pt-accent-ink: #0b0d10;   // text on top of the accent
+$pt-amber:      #f2b84b;   // cursor only
+$pt-shadow:     rgba(0, 0, 0, .55);
+$pt-dots:       rgba(255, 255, 255, .045);
+
+// terminal block (always dark)
+$pt-term-bg:     #07090c;
+$pt-term-bar:    #10141a;
+$pt-term-border: #262c35;
+$pt-term-text:   #cfd5dc;
+$pt-term-muted:  #5d6672;
+$pt-term-accent: #6ee7a0;
+
+// Bootstrap / Quarto
+$body-bg: $pt-bg;
+$body-color: $pt-text;
+$primary: $pt-accent;
+$link-color: $pt-accent;
+$headings-color: $pt-heading;
+$border-color: $pt-border;
+$navbar-bg: $pt-bg;
+$navbar-fg: $pt-text;
+$navbar-hl: $pt-accent;
+$footer-bg: $pt-panel;
+$code-color: $pt-accent;
+$code-block-bg: $pt-panel;

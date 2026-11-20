@@ -1,0 +1,89 @@
+/*-- scss:defaults --*/
+// "Code vibes — Tokyo Night": same terminal layout, Tokyo Night palette + Fira Code.
+// The original version is theme/code-vibes.scss (untouched).
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&display=swap');
+
+$cv-bg:      #1a1b26;   // editor background
+$cv-panel:   #24283b;   // cards / code blocks
+$cv-border:  #3b4261;
+$cv-text:    #c0caf5;
+$cv-muted:   #9aa5ce;
+$cv-green:   #9ece6a;   // prompt / accents
+$cv-cyan:    #7aa2f7;   // links
+$cv-purple:  #bb9af7;   // headings
+$cv-orange:  #ff9e64;   // cursor / highlights
+
+$font-family-sans-serif: "Fira Code", ui-monospace, Menlo, Consolas, monospace;
+$font-family-monospace:  "Fira Code", ui-monospace, Menlo, Consolas, monospace;
+$body-bg: $cv-bg;
+$body-color: $cv-text;
+$primary: $cv-green;
+$link-color: $cv-cyan;
+$headings-color: $cv-purple;
+$navbar-bg: $cv-bg;
+$navbar-fg: $cv-text;
+$navbar-hl: $cv-green;
+$footer-bg: $cv-bg;
+$code-color: $cv-green;
+$code-block-bg: $cv-panel;
+
+/*-- scss:rules --*/
+body { font-size: 0.95rem; }
+
+.navbar { border-bottom: 1px solid $cv-border; }
+.navbar .nav-link::before { content: "❯ "; color: $cv-purple; }
+
+h1, h2, h3 { letter-spacing: -0.02em; }
+h2::before { content: "## "; color: $cv-muted; }
+
+.hero {
+  padding: 2.5rem 0 1.5rem;
+  h1 { font-weight: 700; font-size: 2.4rem; margin-bottom: .25rem; color: $cv-text; }
+  h1::after { content: "_"; color: $cv-orange; animation: blink 1.1s steps(1) infinite; }
+  .role { color: $cv-green; font-size: 1.05rem; }
+  .lead { font-size: 1.05rem; max-width: 44rem; }
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+.terminal {
+  background: $cv-panel;
+  border: 1px solid $cv-border;
+  border-radius: 8px;
+  padding: 2.2rem 1.25rem 1rem;
+  position: relative;
+  line-height: 1.6;
+  box-shadow: 0 0 0 1px rgba($cv-cyan, .08), 0 10px 30px rgba(0,0,0,.45);
+  // window "traffic lights"
+  &::before {
+    content: "● ● ●";
+    position: absolute; top: .55rem; left: 1rem;
+    color: $cv-muted; letter-spacing: .2rem; font-size: .7rem;
+  }
+  .prompt { color: $cv-green; font-weight: 600; }
+  .muted  { color: $cv-muted; }
+}
+
+.cta a.btn { margin: .25rem .5rem .25rem 0; }
+.cta a.btn-outline-primary:hover { color: $cv-bg; }
+
+.stack-tags span {
+  display: inline-block;
+  font-size: .82rem;
+  color: $cv-green;
+  border: 1px solid $cv-border;
+  background: $cv-panel;
+  border-radius: 4px;
+  padding: .1rem .6rem;
+  margin: .15rem .2rem;
+}
+
+.job { margin-bottom: 1.6rem; }
+.job .when { color: $cv-muted; font-size: .85rem; }
+
+.reco blockquote { border-left: 3px solid $cv-green; color: $cv-muted; }
+
+div.sourceCode, pre { border: 1px solid $cv-border; border-radius: 6px; }
+
+.quarto-listing .listing-title a, .quarto-post .listing-title { color: $cv-cyan; }
+.listing-categories .listing-category,
+.quarto-category { border-color: $cv-border; color: $cv-green; }

@@ -1,0 +1,35 @@
+/*-- scss:defaults --*/
+// "Pixel terminal" — LIGHT ("paper") palette. Layout/rules live in theme/pixel.scss.
+$pt-bg:         #f4f3ee;
+$pt-panel:      #fbfaf6;
+$pt-border:     #d3d0c5;
+$pt-text:       #23272c;
+$pt-heading:    #0f1215;
+$pt-muted:      #6b7078;
+$pt-accent:     #0e7a4b;   // deep terminal green
+$pt-accent-ink: #fbfaf6;
+$pt-amber:      #c27d0e;
+$pt-shadow:     rgba(20, 23, 27, .16);
+$pt-dots:       rgba(20, 23, 27, .07);
+
+// terminal block stays dark on paper
+$pt-term-bg:     #14171c;
+$pt-term-bar:    #1c2027;
+$pt-term-border: #14171c;
+$pt-term-text:   #d6dbe1;
+$pt-term-muted:  #6f7884;
+$pt-term-accent: #6ee7a0;
+
+// Bootstrap / Quarto
+$body-bg: $pt-bg;
+$body-color: $pt-text;
+$primary: $pt-accent;
+$link-color: $pt-accent;
+$headings-color: $pt-heading;
+$border-color: $pt-border;
+$navbar-bg: $pt-bg;
+$navbar-fg: $pt-text;
+$navbar-hl: $pt-accent;
+$footer-bg: $pt-panel;
+$code-color: $pt-accent;
+$code-block-bg: $pt-panel;

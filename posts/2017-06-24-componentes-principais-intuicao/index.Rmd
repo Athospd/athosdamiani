@@ -1,0 +1,131 @@
+---
+title: "Principal Components: Intuition"
+description: "A simple graphical illustration to give some intuition about what a Principal Component Analysis does."
+date: 2017-06-24
+author: "Athos Damiani"
+categories: ["concepts", "pca", "principal components", "plotly"]
+image: componentes_principais.webp
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, message = FALSE,
+  warning = FALSE, comment = FALSE,
+  eval=TRUE, cache = TRUE
+)
+```
+
+Principal components are widely used in statistical modeling, but their rigorous mathematical definition makes PCA look like a more abstract concept than we can grasp, especially when people say **"maximize the total variance"** and **"reduce the dimensionality"**. The first reaction is a big "HUH?".
+
+Below are some 3D plots that give a good illustration of what these two statements mean and, even though it's a simple example, they'll help extrapolate the idea to more complex problems.
+
+1) The first plot is the representation with **100% of the information** in three dimensions.
+2) The second plot is how the same dataset looks with one dimension less (**dimensionality reduction**).
+3) When we drop a dimension, we lose information (it's no longer **100% of the total variance**), and this loss is measured by the variance explained by the dimensions we left behind.
+4) The first two dimensions project the data so that they show the **maximum total variance** possible in only two dimensions.
+
+
+**packages for the examples**
+
+```{r}
+library(magrittr)
+library(tidyr)
+library(dplyr)
+```
+
+Note: don't forget to rotate the plots! =)
+
+## Example 1 - Tetrahedron
+
+```{r}
+a <- 1
+tetraedro <- data.frame( x = c(a * sqrt(3)/3, - a * sqrt(3)/6, - a * sqrt(3)/6, 0),
+                         y = c(0, - a/2, a/2, 0),
+                         z = c(0, 0, 0, a * sqrt(6)/3),
+                         cor = c("a", "b", "c", "d"),
+                         id = 1:4)
+
+tetraedro_linhas <- combn(x = tetraedro$id, m = 2) %>%
+  t %>%
+  as.data.frame.matrix %>%
+  set_names(c("id1", "id2")) %>%
+  mutate(id_par = 1:n()) %>%
+  gather(id_ordem, id, id1, id2) %>%
+  left_join(tetraedro, by = "id") %>%
+  arrange(id_ordem)
+```
+
+**Contribution of the components to the total variance**
+```{r}
+tetraedro_pc <- prcomp(tetraedro %>% dplyr::select(x, y, z)) # PCA happens here
+knitr::kable(summary(tetraedro_pc)$importance)
+```
+
+**3 dimensions (100% of the variance)**
+
+```{r, cache = FALSE}
+library(plotly)
+
+plot_ly(tetraedro_linhas, x = ~x, y = ~y, z = ~z) %>%
+  add_lines() %>%
+  add_markers()
+
+```
+
+**2 dimensions (67% of the variance)**
+
+```{r, cache = FALSE}
+tetraedro_pc_pred <- tetraedro_pc %>% predict %>% as.data.frame
+plot_ly(tetraedro_pc_pred, x = ~PC2, y = ~PC3, z = ~PC3) %>%
+  add_lines() %>%
+  add_markers()
+```
+
+
+## Example 2 - A cool shape
+
+```{r}
+x <- c()
+y <- c()
+z <- c()
+c <- c()
+
+for (i in 1:62) {
+  r <- 20 * cos(i / 20)
+  x <- c(x, r * cos(i))
+  y <- c(y, r * sin(i))
+  z <- c(z, i)
+  c <- c(c, i)
+}
+
+forma_legal <- data.frame(x, y, z, c)
+```
+
+**Contribution of the components to the total variance**
+```{r}
+forma_legal_pc <- prcomp(forma_legal %>% dplyr::select(x, y, z)) # PCA happens here
+knitr::kable(summary(forma_legal_pc)$importance)
+```
+
+**3 dimensions (100% of the variance)**
+```{r, cache = FALSE}
+plot_ly(forma_legal, x = ~x, y = ~y, z = ~z, type = "scatter3d", mode = "markers+lines",
+        line = list(width = 6, color = ~c, colorscale = 'Viridis'),
+        marker = list(size = 3.5, color = ~c, colorscale = 'Greens',
+                      cmin = -20, cmax = 50))
+```
+
+**2 dimensions (82% of the variance)**
+```{r, cache = FALSE}
+forma_legal_pc_pred <- forma_legal_pc %>% predict %>% as.data.frame
+plot_ly(forma_legal_pc_pred, x = ~PC1, y = ~PC2, z = 1, type = 'scatter3d', mode = 'lines+markers',
+        line = list(width = 6, color = ~c, colorscale = 'Viridis'),
+        marker = list(size = 3.5, color = ~c, colorscale = 'Greens',
+                      cmin = -20, cmax = 50))
+```
+
+## Learn more
+
+My favorite book on this subject (and many others) is [An Introduction to Statistical Learning](http://www-bcf.usc.edu/~gareth/ISL/ISLR%20Seventh%20Printing.pdf).
+
+cheers

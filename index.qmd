@@ -1,0 +1,112 @@
+---
+pagetitle: "Data Scientist"
+title-block-banner: false
+page-layout: article
+listing:
+  id: latest
+  contents: posts
+  sort: "date desc"
+  max-items: 3
+  type: default
+  categories: false
+  sort-ui: false
+  filter-ui: false
+---
+
+::: {.hero}
+{{< include files/_xgboost-bg.md >}}
+
+::: {.hero-head}
+# Athos Damiani
+
+[[AI-friendly]{.l1} [human]{.l2}]{.ai-badge role="img" aria-label="Certified AI-friendly human" title="Certified AI-friendly human"}
+:::
+
+[Data Scientist · Statistics · ML · Data Engineering]{.role}
+
+[I build [[ML models and shiny apps]{.visually-hidden}]{.typer}, the pipelines that feed them and the infrastructure to run them in production. 13+ years in finance, regulation and fraud prevention.]{.lead}
+
+::: {.alumni}
+[Previously at]{.visually-hidden} [Nubank]{} [Bank of England]{} [Serasa Experian]{} [Itaú]{}
+:::
+
+::: {.cta}
+[Resume](resume.qmd){.btn .btn-primary}
+[Projects](projects.qmd){.btn .btn-outline-primary}
+[<i class="bi bi-github"></i> GitHub](https://github.com/athospd){.btn .btn-outline-primary}
+[<i class="bi bi-linkedin"></i> LinkedIn](https://www.linkedin.com/in/athosdamiani){.btn .btn-outline-primary}
+[<i class="bi bi-envelope"></i> Email](mailto:athos.damiani@gmail.com){.btn .btn-outline-primary}
+:::
+:::
+
+## Stack
+
+::: {.stack-tags}
+[Python]{.tag} [R]{.tag} [SQL]{.tag} [Spark]{.tag} [PySpark]{.tag} [Databricks]{.tag} [MLflow]{.tag} [AI]{.tag} [Torch]{.tag} [PyTorch]{.tag} [Scala]{.tag} [Docker]{.tag} [Git]{.tag} [Bash]{.tag} [Shiny]{.tag} [Posit Connect]{.tag}
+:::
+
+## What I do
+
+:::: {.do-grid}
+::: {.do-item .i-tree}
+### Credit & fraud models
+Risk, lending and fraud models, from first fit to monitoring.
+
+[Nubank]{.at} [Itaú]{.at} [Serasa Experian]{.at} [ClearSale]{.at}
+:::
+
+::: {.do-item .i-ship}
+### ML in production
+Deploy and monitor on Databricks. Wrote XGBoost-to-SQL scoring for tidypredict.
+
+[Databricks]{.at} [tidypredict]{.at}
+:::
+
+::: {.do-item .i-dag}
+### Data pipelines
+Tested, version-controlled batch pipelines.
+
+[Spark]{.at} [PySpark]{.at} [SQL]{.at} [R]{.at}
+:::
+
+::: {.do-item .i-app}
+### Data products
+Internal tools and dashboards for client teams.
+
+[Bank of England]{.at} [Global pharma]{.at} [Shiny]{.at}
+:::
+::::
+
+## Background
+
+:::: {.facts}
+::: {.fact .i-grad}
+**B.Sc. Statistics**
+
+University of São Paulo
+:::
+
+::: {.fact .i-team}
+**Co-founder, Curso-R**
+
+R training in Brazil
+:::
+
+::: {.fact .i-talk}
+**~10K followers**
+
+[Writing about data on LinkedIn](https://www.linkedin.com/in/athosdamiani)
+:::
+::::
+
+::: {.reco}
+> "One of the most brilliant data scientists I've ever worked with … curious, analytical, committed, hands-on."
+> — Carlos Abdalad, LinkedIn recommendation
+:::
+
+## Latest posts
+
+::: {#latest}
+:::
+
+[See all posts →](blog.qmd)

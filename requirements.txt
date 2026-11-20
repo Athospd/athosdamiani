@@ -1,0 +1,6 @@
+jupyter
+nbformat
+nbclient
+pyyaml
+duckdb
+pandas

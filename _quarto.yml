@@ -1,0 +1,64 @@
+# Which look to build. Switch back and forth by changing this one word:
+#   classic = original code-vibes theme
+#   tokyo   = Tokyo Night variant
+#   pixel   = pixel-terminal (current)
+# Or try one without editing: quarto preview --profile classic
+profile:
+  default: pixel
+
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "Athos Damiani"
+  description: "Data Scientist — statistics and machine learning, with data engineering experience. Python, R, SQL, Spark and Databricks."
+  site-url: https://athospd.github.io
+  repo-url: https://github.com/athospd/athospd.github.io
+  favicon: files/favicon.svg
+  open-graph: true
+  twitter-card: true
+  page-navigation: false
+  navbar:
+    left:
+      - text: "~/home"
+        href: index.qmd
+      - text: "~/resume"
+        href: resume.qmd
+      - text: "~/projects"
+        href: projects.qmd
+      - text: "~/blog"
+        href: blog.qmd
+    right:
+      - icon: github
+        href: https://github.com/athospd
+        aria-label: GitHub
+      - icon: linkedin
+        href: https://www.linkedin.com/in/athosdamiani
+        aria-label: LinkedIn
+      - icon: envelope
+        href: mailto:athos.damiani@gmail.com
+        aria-label: Email
+      - icon: rss
+        href: blog.xml
+        aria-label: RSS
+  page-footer:
+    left: "© 2026 Athos Damiani"
+    right: "Built with [Quarto](https://quarto.org) + R + Python"
+
+format:
+  html:
+    # Theme + code highlighting live in the profile files:
+    #   _quarto-classic.yml  -> original "code vibes" (GitHub dark)
+    #   _quarto-tokyo.yml    -> "code vibes" Tokyo Night variant
+    # The active one is set by `profile: default` at the top of this file.
+    respect-user-color-scheme: true
+    code-copy: true
+    code-overflow: wrap
+    toc: false
+    smooth-scroll: true
+
+execute:
+  # Re-run code only when a post's source changes.
+  # Results are stored in _freeze/ — commit that folder.
+  freeze: auto

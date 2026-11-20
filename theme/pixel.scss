@@ -1,0 +1,673 @@
+/*-- scss:defaults --*/
+// "Pixel terminal" — shared layout for light + dark.
+// Palettes: theme/pixel-dark.scss, theme/pixel-light.scss (they define the $pt-* colours).
+// Idea: a professional editor/terminal look; pixel art used only as accents
+// (2px notched borders, hard shadows, block cursor, dithered motif, tiny pixel labels).
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Silkscreen&display=swap');
+
+$font-family-sans-serif: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+$font-family-monospace:  "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+$headings-font-family:   $font-family-monospace;
+$headings-font-weight:   600;
+$line-height-base: 1.55;
+$paragraph-margin-bottom: .8rem;
+$headings-margin-bottom: .5rem;
+$border-radius: 0;
+$border-radius-sm: 0;
+$border-radius-lg: 0;
+$btn-border-radius: 0;
+$enable-shadows: false;
+$navbar-padding-y: .2rem;
+
+/*-- scss:rules --*/
+$pt-pixel: "Silkscreen", $font-family-monospace;
+$pt-mono:  $font-family-monospace;
+
+// 2px "pixel" outline with notched corners (no border-radius anywhere)
+@function px-ring($c, $s: 2px) {
+  @return 0 (-$s) 0 0 $c, 0 $s 0 0 $c, (-$s) 0 0 0 $c, $s 0 0 0 $c;
+}
+// a dashed pixel line, used for rules and dividers
+@function px-dash($c, $dir: 90deg) {
+  @return repeating-linear-gradient($dir, $c 0 4px, transparent 4px 8px);
+}
+
+// pixel-art assets (inline so the CSS has no path dependencies)
+$pt-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Cpath d='M2 3h2v2h-2zM4 5h2v2h-2zM6 7h2v2h-2zM4 9h2v2h-2zM2 11h2v2h-2zM9 11h5v2h-5z'/%3E%3C/svg%3E");   // >_ prompt, 16x16
+$pt-motif: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 15 10' shape-rendering='crispEdges'%3E%3Cpath fill-opacity='0.25' d='M0 3h1v1h-1zM1 0h1v1h-1zM8 7h1v1h-1z'/%3E%3Cpath fill-opacity='0.5' d='M2 4h1v1h-1zM2 5h1v1h-1zM3 4h1v1h-1zM4 4h1v1h-1zM5 4h1v1h-1zM6 4h1v1h-1zM7 4h1v1h-1zM8 4h1v1h-1zM9 4h1v1h-1zM10 4h1v1h-1zM10 6h1v1h-1zM10 7h1v1h-1zM10 8h1v1h-1zM10 9h1v1h-1zM11 4h1v1h-1zM11 6h1v1h-1zM11 9h1v1h-1zM12 4h1v1h-1zM12 5h1v1h-1zM12 6h1v1h-1zM12 9h1v1h-1zM13 6h1v1h-1zM13 9h1v1h-1zM14 6h1v1h-1zM14 7h1v1h-1zM14 8h1v1h-1zM14 9h1v1h-1z'/%3E%3Cpath fill-opacity='1.0' d='M0 6h1v1h-1zM0 7h1v1h-1zM0 8h1v1h-1zM0 9h1v1h-1zM1 6h1v1h-1zM1 9h1v1h-1zM2 6h1v1h-1zM2 9h1v1h-1zM3 6h1v1h-1zM3 9h1v1h-1zM4 6h1v1h-1zM4 7h1v1h-1zM4 8h1v1h-1zM4 9h1v1h-1zM5 0h1v1h-1zM5 1h1v1h-1zM5 2h1v1h-1zM5 3h1v1h-1zM6 0h1v1h-1zM6 3h1v1h-1zM7 0h1v1h-1zM7 3h1v1h-1zM8 0h1v1h-1zM8 3h1v1h-1zM9 0h1v1h-1zM9 1h1v1h-1zM9 2h1v1h-1zM9 3h1v1h-1z'/%3E%3C/svg%3E");   // pixel decision tree (hollow, one split), 15x10
+
+@keyframes pt-blink { 50% { opacity: 0; } }
+
+// ---------------------------------------------------------------- base
+html { scrollbar-color: $pt-border $pt-bg; }
+body {
+  font-size: .95rem;
+  background-color: $pt-bg;
+  // faint engineering-paper dot grid
+  background-image: radial-gradient($pt-dots 1px, transparent 1px);
+  background-size: 22px 22px;
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: $pt-accent; color: $pt-accent-ink; }
+:focus-visible { outline: 2px dashed $pt-accent; outline-offset: 3px; }
+
+h1, h2, h3, h4, .h1, .h2, .h3 { font-family: $pt-mono; color: $pt-heading; letter-spacing: -0.02em; }
+h3, .h3 { font-size: 1.02rem; margin-top: 1.1rem; margin-bottom: .25rem; }
+strong { color: $pt-heading; font-weight: 600; }
+
+main.content a:not(.btn):not(.anchorjs-link):not(.quarto-category):not(.listing-category),
+footer a {
+  color: $pt-accent;
+  text-decoration: underline;
+  text-decoration-color: rgba($pt-accent, .35);
+  text-underline-offset: 3px;
+  &:hover { background: $pt-accent; color: $pt-accent-ink; text-decoration: none; }
+}
+
+// square pixel bullets
+main.content ul:not([class]) {
+  list-style: none;
+  padding-left: 1.15rem;
+  margin-bottom: .8rem;
+  > li { position: relative; margin-bottom: .2rem; }
+  > li::before {
+    content: ""; position: absolute; left: -1.05rem; top: .62em;
+    width: 5px; height: 5px; background: $pt-accent;
+  }
+}
+
+hr { border: 0; height: 2px; opacity: 1; margin: 1.5rem 0; background: px-dash($pt-border); }
+
+// ---------------------------------------------------------------- navbar (tmux-ish tabs)
+.navbar {
+  background: $pt-bg !important;
+  border-bottom: 2px solid $pt-border;
+  font-family: $pt-mono;
+  font-size: .85rem;
+  padding-top: .15rem; padding-bottom: .15rem;
+}
+.navbar-brand { display: inline-flex; align-items: center; }
+.navbar-title {
+  font-family: $pt-mono; font-weight: 600; font-size: .9rem; color: $pt-heading;
+  &::before {
+    content: ""; display: inline-block; width: 16px; height: 16px;
+    margin-right: .55rem; vertical-align: -3px;
+    background: $pt-accent;
+    -webkit-mask: $pt-glyph center / contain no-repeat;
+    mask: $pt-glyph center / contain no-repeat;
+  }
+}
+.navbar-nav.me-auto { counter-reset: tab; gap: .15rem; }
+.navbar-nav.me-auto .nav-item { counter-increment: tab; }
+.navbar-nav.me-auto .nav-link {
+  padding: .3rem .65rem !important;
+  color: $pt-text;
+  &::before {
+    content: counter(tab);
+    font-family: $pt-pixel; font-size: .6rem;
+    color: $pt-muted; margin-right: .45rem; vertical-align: 1px;
+  }
+  &:hover { background: rgba($pt-accent, .1); color: $pt-heading; }
+  &.active, &.active:hover {
+    background: $pt-accent; color: $pt-accent-ink;
+    &::before { color: $pt-accent-ink; opacity: .7; }
+  }
+}
+.navbar .nav-link:has(.bi) { padding-left: .35rem !important; padding-right: .35rem !important; color: $pt-muted;
+  &:hover { color: $pt-accent; } }
+
+// ---------------------------------------------------------------- page chrome
+#quarto-content > * { padding-top: 0; }
+main.content { margin-top: .5rem; counter-reset: sec; }
+
+#title-block-header {
+  margin: 1.4rem 0 1.25rem;
+  padding-bottom: .9rem;
+  background: px-dash($pt-border) left bottom / 100% 2px no-repeat;
+  .title {
+    font-size: 1.9rem; font-weight: 700; margin: 0 0 .25rem;
+    &::before {
+      content: ""; display: inline-block; width: .42em; height: .42em;
+      background: $pt-accent; margin-right: .5em; vertical-align: .14em;
+    }
+  }
+  .description, .subtitle {
+    font-family: $pt-mono; font-size: .82rem; color: $pt-muted; margin: 0;
+    &::before { content: "// "; color: $pt-accent; }
+  }
+}
+.quarto-title-meta { margin-top: .6rem; font-family: $pt-mono; font-size: .8rem; }
+.quarto-title-meta-heading { font-family: $pt-pixel; font-size: .58rem; color: $pt-muted; letter-spacing: .04em; }
+.quarto-categories { margin-top: .5rem; }
+.quarto-category, .listing-category {
+  font-family: $pt-mono; font-size: .7rem !important; text-transform: lowercase;
+  color: $pt-accent !important; background: $pt-panel; border: 0 !important; border-radius: 0 !important;
+  box-shadow: px-ring($pt-border); padding: .05rem .45rem !important; margin: .2rem .5rem .2rem .1rem !important;
+  opacity: 1 !important;
+}
+
+// numbered section headings:  [01] What I do - - - - - -
+main.content h2 {
+  counter-increment: sec;
+  display: flex; align-items: center; gap: .65rem;
+  font-size: 1.12rem; font-weight: 600;
+  margin: 2.1rem 0 .8rem; padding: 0; border: 0;
+  &::before {
+    content: counter(sec, decimal-leading-zero);
+    font-family: $pt-pixel; font-size: .62rem; font-weight: 400; letter-spacing: 0;
+    color: $pt-accent; background: rgba($pt-accent, .12);
+    padding: .2rem .35rem .15rem;
+  }
+  &::after {
+    content: ""; flex: 1; height: 2px; min-width: 2rem;
+    background: px-dash($pt-border);
+  }
+  .anchorjs-link { order: 1; }
+}
+
+// statusline footer (vim-ish)
+.nav-footer {
+  min-height: 0; padding: 0;
+  background: $pt-panel; border-top: 2px solid $pt-border;
+  font-family: $pt-mono; font-size: .74rem; color: $pt-muted;
+  align-items: stretch;
+  > div { padding: 0; display: flex; align-items: center; }
+  p { margin: 0; }
+}
+.nav-footer-left::before {
+  content: "NORMAL"; font-family: $pt-pixel; font-size: .6rem;
+  background: $pt-accent; color: $pt-accent-ink;
+  padding: .45rem .75rem .4rem; margin-right: .9rem; align-self: stretch; display: flex; align-items: center;
+}
+.nav-footer-right { padding-right: 1rem !important; }
+.nav-footer-right::after { content: "utf-8 · lf"; margin-left: 1rem; padding-left: 1rem; border-left: 2px solid $pt-border; }
+
+// ---------------------------------------------------------------- home: hero
+.hero {
+  position: relative;
+  padding: 1.6rem 0 .5rem;
+  h1 {
+    font-size: 2.5rem; font-weight: 700; letter-spacing: -0.035em;
+    margin: 0 0 .35rem; line-height: 1.1;
+    &::after {
+      content: ""; display: inline-block; width: .5em; height: .82em;
+      margin-left: .12em; vertical-align: -0.06em;
+      background: $pt-amber; animation: pt-blink 1.05s steps(1) infinite;
+    }
+  }
+  .role { font-family: $pt-mono; font-size: .86rem; color: $pt-accent; letter-spacing: .01em; }
+  .lead { display: block; font-size: 1.04rem; font-weight: 400; max-width: 34rem; margin: .8rem 0 0; color: $pt-text; }
+  // pixel motif: an unbalanced decision tree (leaves shaded by class)
+  &::after {
+    content: ""; position: absolute; right: 0; top: 2rem;
+    width: 165px; height: 110px;
+    background: $pt-accent; opacity: .85;
+    -webkit-mask: $pt-motif center / 100% 100% no-repeat;
+    mask: $pt-motif center / 100% 100% no-repeat;
+    image-rendering: pixelated;
+  }
+}
+@media (max-width: 860px) { .hero::after { display: none; } }
+
+// animated background: boosted trees fitting a noisy sine (files/xgboost-bg.svg,
+// built by files/make_xgboost_bg.py). Colours are fed in as CSS variables.
+.hero { isolation: isolate; }
+.hero:has(.xgb-bg)::after { display: none; }   // the chart replaces the static tree motif
+.xgb-bg {
+  position: absolute; z-index: -1; pointer-events: none;
+  top: 0; bottom: 0; left: 52%; right: 0;
+  --xgb-dot:   #{rgba($pt-muted, .38)};
+  --xgb-truth: #{rgba($pt-muted, .55)};
+  --xgb-fit:   #{rgba($pt-accent, .7)};
+  --xgb-label: #{rgba($pt-muted, .8)};
+  // fade in from the text side so the lead paragraph stays clean
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 30%);
+  mask-image: linear-gradient(90deg, transparent, #000 30%);
+  svg { display: block; width: 100%; height: 100%; }
+}
+@media (max-width: 860px) { .xgb-bg { display: none; } }   // no room beside the text
+
+// buttons: flat, pixel ring, hard offset shadow
+.cta { margin-top: 1.2rem; display: flex; flex-wrap: wrap; gap: .9rem; }
+.btn {
+  font-family: $pt-mono; font-size: .8rem; font-weight: 500;
+  border: 0; border-radius: 0; padding: .42rem .95rem;
+  transition: transform .08s steps(2), box-shadow .08s steps(2);
+}
+.cta a.btn { margin: 0; }
+.btn-primary {
+  background: $pt-accent; color: $pt-accent-ink;
+  box-shadow: px-ring($pt-accent), 5px 5px 0 2px $pt-shadow;
+  &:hover, &:focus { background: $pt-accent; color: $pt-accent-ink;
+    transform: translate(2px, 2px); box-shadow: px-ring($pt-accent), 2px 2px 0 2px $pt-shadow; }
+  &::after { content: " →"; }
+}
+.btn-outline-primary {
+  background: transparent; color: $pt-text;
+  box-shadow: px-ring($pt-border);
+  &:hover, &:focus { background: transparent; color: $pt-accent; box-shadow: px-ring($pt-accent); }
+}
+
+// ---------------------------------------------------------------- home: terminal
+.terminal {
+  position: relative;
+  margin: 1.6rem 4px .6rem;
+  padding: 2.5rem 1.15rem 1rem;
+  background-color: $pt-term-bg;
+  // faint scanlines
+  background-image: repeating-linear-gradient(0deg, rgba(255,255,255,.022) 0 1px, transparent 1px 3px);
+  color: $pt-term-text;
+  font-family: $pt-mono; font-size: .82rem; line-height: 1.7;
+  box-shadow: px-ring($pt-term-border), 7px 7px 0 2px $pt-shadow;
+  // title bar
+  &::before {
+    content: "athos@sao-paulo: ~ — zsh";
+    position: absolute; top: 0; left: 0; right: 0; height: 1.65rem;
+    display: flex; align-items: center; padding-left: 1.15rem;
+    font-family: $pt-pixel; font-size: .58rem; letter-spacing: .04em; color: $pt-term-muted;
+    background: $pt-term-bar; border-bottom: 2px solid $pt-term-border;
+  }
+  // window buttons as pixel squares
+  &::after {
+    content: ""; position: absolute; top: .55rem; right: 1.1rem;
+    width: 8px; height: 8px; background: $pt-term-muted;
+    box-shadow: -14px 0 0 $pt-term-muted, -28px 0 0 $pt-term-accent;
+  }
+  p:last-child { margin-bottom: 0; }
+  .prompt { color: $pt-term-accent; font-weight: 600; }
+  // trailing "_" becomes a blinking block cursor
+  .muted {
+    display: inline-block; width: .6em; height: 1.1em; vertical-align: -0.2em;
+    color: transparent; background: $pt-term-text;
+    animation: pt-blink 1.05s steps(1) infinite;
+  }
+}
+
+// ---------------------------------------------------------------- home: stack, quote
+.stack-tags { display: flex; flex-wrap: wrap; gap: .7rem .8rem; padding: 2px; }
+.stack-tags span {
+  font-family: $pt-mono; font-size: .76rem; color: $pt-text;
+  background: $pt-panel; padding: .12rem .55rem;
+  box-shadow: px-ring($pt-border);
+  &:hover { color: $pt-accent; box-shadow: px-ring($pt-accent); }
+}
+
+blockquote, .blockquote, .reco blockquote {
+  margin: 1rem 0; padding: .1rem 0 .1rem 1.1rem;
+  border: 0; color: $pt-muted; font-style: normal;
+  background: repeating-linear-gradient(180deg, $pt-accent 0 4px, transparent 4px 8px) left top / 3px 100% no-repeat;
+  p { margin-bottom: .2rem; }
+}
+
+// ---------------------------------------------------------------- resume: timeline
+.job {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 1.15rem;
+  &::before {   // rail
+    content: ""; position: absolute; left: 3px; top: 1.15rem; bottom: -1.15rem; width: 2px;
+    background: px-dash($pt-border, 180deg);
+  }
+  &::after {    // node
+    content: ""; position: absolute; left: 0; top: .42rem; width: 8px; height: 8px;
+    background: $pt-bg; box-shadow: inset 0 0 0 2px $pt-muted;
+  }
+  &:first-of-type::after { background: $pt-accent; box-shadow: none; }
+  &:not(:has(+ .job))::before { display: none; }
+  h3 { margin: 0 0 .1rem; font-size: 1rem; }
+  .when { display: block; font-family: $pt-mono; font-size: .74rem; color: $pt-muted; margin-bottom: .35rem; }
+  ul { margin-bottom: 0; }
+  li:last-child em { font-family: $pt-mono; font-style: normal; font-size: .78rem; color: $pt-muted; }
+}
+
+details {
+  margin: .9rem 0;
+  summary {
+    list-style: none; cursor: pointer;
+    font-family: $pt-mono; font-size: .85rem; color: $pt-accent;
+    &::-webkit-details-marker { display: none; }
+    &::before { content: "[+] "; }
+  }
+  &[open] summary::before { content: "[-] "; }
+  > ul { margin-top: .6rem; }
+}
+
+// tables
+.table { font-size: .88rem; margin-bottom: 1rem; --bs-table-bg: transparent; }
+.table > :not(caption) > * > * { padding: .4rem .6rem; border-bottom: 0;
+  background: px-dash($pt-border) left bottom / 100% 1px no-repeat; }
+.table thead th { font-family: $pt-pixel; font-size: .6rem; font-weight: 400; color: $pt-muted; }
+.table td:first-child { font-family: $pt-mono; color: $pt-heading; white-space: nowrap; }
+
+// ---------------------------------------------------------------- projects (definition lists)
+dl { margin-bottom: 1rem; }
+dt { font-family: $pt-mono; font-weight: 600; font-size: .9rem; margin-top: .85rem;
+  a { font-weight: 600; } }
+dd { margin: .2rem 0 0; padding-left: .9rem; color: $pt-muted;
+  background: px-dash($pt-border, 180deg) left top / 2px 100% no-repeat; }
+
+// ---------------------------------------------------------------- listings
+div.quarto-post {
+  gap: 1.25rem; margin: 0 -.75rem .35rem; padding: .7rem .75rem;
+  border-bottom: 0 !important;
+  &:hover { background: $pt-panel; box-shadow: px-ring($pt-border); }
+  .thumbnail:has(.listing-item-img-placeholder) { display: none; }
+  .metadata { flex: 0 0 6.5rem; }
+  .listing-date { font-family: $pt-mono; font-size: .74rem; color: $pt-muted; }
+  .listing-title { font-family: $pt-mono; font-size: .98rem; font-weight: 600; margin-bottom: .2rem !important;
+    a, & { color: $pt-heading; text-decoration: none; } }
+  &:hover .listing-title { color: $pt-accent; }
+  .listing-subtitle, .listing-description { font-size: .88rem; color: $pt-muted; }
+  a { text-decoration: none; color: inherit; }
+  // whole item clickable: the title link's ::after covers the item; category tags stay on top
+  position: relative; cursor: pointer;
+  .listing-title a::after { content: ""; position: absolute; inset: 0; z-index: 1; }
+  .listing-category { position: relative; z-index: 2; }
+}
+.quarto-listing-category-title { font-family: $pt-pixel; font-size: .62rem; color: $pt-muted; }
+.quarto-listing-category .category { font-family: $pt-mono; font-size: .8rem; color: $pt-muted;
+  &:hover, &.active { color: $pt-accent; } }
+
+// ---------------------------------------------------------------- blog: toolbar (sort · filter · view switch)
+.listing-actions-group {
+  align-items: center; flex-wrap: wrap; gap: .75rem 1rem; margin-bottom: 1.1rem;
+  .quarto-listing-sort, .quarto-listing-filter { margin: 0; }
+  .quarto-listing-filter { margin-left: auto; width: 220px; }
+  .input-group { box-shadow: px-ring($pt-border); flex-wrap: nowrap;
+    &:focus-within { box-shadow: px-ring($pt-accent); } }
+  .input-group-text, .form-control, .form-select {
+    font-family: $pt-mono; font-size: .76rem !important; color: $pt-text;
+    background-color: $pt-panel; border: 0; border-radius: 0; box-shadow: none !important;
+  }
+  .input-group-text { color: $pt-muted; padding-right: .2rem; }
+  .form-control::placeholder { color: $pt-muted; }
+  .form-select { padding-top: .3rem; padding-bottom: .3rem; cursor: pointer; }
+}
+.pt-view-switch {
+  display: flex; box-shadow: px-ring($pt-border);
+  button {
+    display: inline-flex; align-items: center; gap: .35rem;
+    font-family: $pt-mono; font-size: .74rem; color: $pt-muted;
+    background: $pt-panel; border: 0; padding: .3rem .65rem; cursor: pointer;
+    &:hover { color: $pt-accent; }
+    &[aria-pressed="true"] { background: $pt-accent; color: $pt-accent-ink; }
+  }
+}
+
+// ---------------------------------------------------------------- blog: cards view
+// Same listing DOM as the list view, laid out as a grid: <html class="pt-view-cards">.
+html.pt-view-cards #listing-listing .list {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.1rem;
+  padding: 2px;   // room for the outer pixel ring
+  @media (max-width: 767.98px) { grid-template-columns: 1fr; }
+
+  div.quarto-post {
+    flex-direction: column; gap: .35rem; margin: 0; padding: .85rem 1rem 1rem;
+    background: $pt-panel; box-shadow: px-ring($pt-border);
+    &:hover { box-shadow: px-ring($pt-accent), 4px 4px 0 2px $pt-shadow; }
+    .thumbnail { order: -2; flex: 0 0 auto; margin: -.85rem -1rem .4rem;
+      img { margin: 0; aspect-ratio: 16 / 9; } }
+    .metadata { order: -1; flex: 0 0 auto; margin: 0; padding: 0; }
+    .body { flex: 1 1 auto; display: flex; flex-direction: column; }
+    .listing-title { order: 1; }
+    .listing-description { order: 2; margin-bottom: .6rem; }
+    .listing-categories { order: 3; margin-top: auto; padding-bottom: 0; }
+  }
+}
+
+// ---------------------------------------------------------------- code
+div.sourceCode {
+  background: $pt-panel; border: 0; border-radius: 0;
+  box-shadow: px-ring($pt-border);
+  margin: 1rem 2px;
+}
+pre, div.sourceCode pre { border: 0; border-radius: 0; font-size: .82rem; }
+.cell-output pre { background: transparent; padding-left: .9rem; color: $pt-muted;
+  background: px-dash($pt-border, 180deg) left top / 2px 100% no-repeat; }
+:not(pre) > code { background: rgba($pt-accent, .09); color: $pt-accent; padding: .05rem .3rem; border-radius: 0; font-size: .86em; }
+.code-copy-button { border-radius: 0 !important; }
+.callout { border-radius: 0 !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero h1::after, .terminal .muted { animation: none; }
+  .btn { transition: none; }
+}
+
+// ---------------------------------------------------------------- fixes / overrides
+// home has no visible title block: drop the empty header (and its dashed rule)
+#title-block-header:not(:has(.title)) { display: none; }
+// buttons and tags are wrapped in a <p> by pandoc: lay the <p> out instead
+.cta { display: block; }
+.cta p, .stack-tags p { display: flex; flex-wrap: wrap; gap: .9rem; margin: 0; }
+.stack-tags { display: block; padding: 2px; }
+.stack-tags p { gap: .7rem .8rem; }
+.stack-tags span { margin: 0 !important; }
+// listings: plain text, no link underline/inverse
+main.content .quarto-listing a, main.content .quarto-listing a:hover {
+  text-decoration: none !important; background: none !important; color: inherit !important;
+}
+div.quarto-post .listing-title { color: $pt-heading !important; }
+div.quarto-post:hover .listing-title { color: $pt-accent !important; }
+div.quarto-post .listing-description { color: $pt-muted !important; }
+.quarto-listing-category-title { font-size: .62rem !important; font-weight: 400; letter-spacing: .04em; margin-top: 1.4rem; }
+// resume: tighten the gap between dates and bullets
+.job p { margin-bottom: .3rem; }
+@media (max-width: 576px) {
+  .hero h1 { font-size: 1.9rem; }
+  .terminal { overflow-wrap: anywhere; font-size: .78rem; }
+  .nav-footer-right::after { display: none; }
+}
+// icons inside hero buttons
+.cta .btn .bi { margin-right: .35rem; font-size: .9em; }
+
+// ---------------------------------------------------------------- hero: typewriter word
+// <span class="typer"><span class="visually-hidden">ML models and shiny apps</span></span>:
+// the real text is for screen readers only; the ::after types/backspaces "ML models" <-> "shiny apps"
+// in the text flow, so the following comma stays right after the word as it changes width.
+// The span reserves the width of the longest phrase (both phrases, invisible, in ::before,
+// stacked in the same grid cell), so the rest of the sentence stays put while the word changes.
+.typer {
+  display: inline-grid; justify-items: start;
+  white-space: nowrap;
+  &::before, &::after { grid-area: 1 / 1; }
+  &::before {
+    // both phrases, one per line, collapsed to zero height: the cell takes the wider one's width
+    content: "ML models\A shiny apps"; white-space: pre;
+    height: 0; overflow: hidden; visibility: hidden;
+    order: 1;   // after the visible word, so the word (not this) sets the text baseline
+    font-weight: 500; padding-right: 2px; border-right: 2px solid transparent;
+  }
+  &::after {
+    content: "ML models";
+    color: $pt-accent; font-weight: 500;
+    padding-right: 2px;
+    border-right: 2px solid $pt-amber;
+    animation: pt-typer 8.59s step-end infinite, pt-caret 1.05s step-end infinite;
+  }
+}
+@keyframes pt-typer {
+  0.00% { content: "ML models"; }
+  30.27% { content: "ML model"; }
+  31.20% { content: "ML mode"; }
+  32.13% { content: "ML mod"; }
+  33.06% { content: "ML mo"; }
+  33.99% { content: "ML m"; }
+  34.92% { content: "ML "; }
+  35.86% { content: "ML"; }
+  36.79% { content: "M"; }
+  37.72% { content: ""; }
+  38.65% { content: "s"; }
+  39.93% { content: "sh"; }
+  41.21% { content: "shi"; }
+  42.49% { content: "shin"; }
+  43.77% { content: "shiny"; }
+  45.05% { content: "shiny "; }
+  46.33% { content: "shiny a"; }
+  47.61% { content: "shiny ap"; }
+  48.89% { content: "shiny app"; }
+  50.17% { content: "shiny apps"; }
+  80.44% { content: "shiny app"; }
+  81.37% { content: "shiny ap"; }
+  82.31% { content: "shiny a"; }
+  83.24% { content: "shiny "; }
+  84.17% { content: "shiny"; }
+  85.10% { content: "shin"; }
+  86.03% { content: "shi"; }
+  86.96% { content: "sh"; }
+  87.89% { content: "s"; }
+  88.82% { content: ""; }
+  89.76% { content: "M"; }
+  91.04% { content: "ML"; }
+  92.32% { content: "ML "; }
+  93.60% { content: "ML m"; }
+  94.88% { content: "ML mo"; }
+  96.16% { content: "ML mod"; }
+  97.44% { content: "ML mode"; }
+  98.72% { content: "ML model"; }
+  100% { content: "ML models"; }
+}
+@keyframes pt-caret { 50% { border-right-color: transparent; } }
+// Reduced motion: still swap the words (a few letters changing in place, nothing moves across
+// the screen), but hold the cursor steady instead of blinking.
+@media (prefers-reduced-motion: reduce) {
+  .typer::after { animation: pt-typer 8.59s step-end infinite; }
+}
+
+// ---------------------------------------------------------------- home: pixel icons
+// 16x16 pixel glyphs used as CSS masks, painted with $pt-accent, so they follow the light/dark theme.
+@function px-icon($d) {
+  @return url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Cpath fill-rule='evenodd' d='#{$d}'/%3E%3C/svg%3E");
+}
+$pt-icons: (
+  // decision tree: root, split, two leaves
+  tree: "M6 1h4v3h-4zM7 4h2v2h-2zM2 6h12v2h-12zM2 8h2v2h-2zM12 8h2v2h-2zM0 10h6v5h-6zM10 10h6v5h-6z",
+  // arrow up into a tray: ship to prod
+  ship: "M7 1h2v1h-2zM6 2h4v1h-4zM5 3h6v1h-6zM4 4h8v1h-8zM7 5h2v6h-2zM1 9h2v4h-2zM13 9h2v4h-2zM1 13h14v2h-14z",
+  // three nodes, two edges into the sink: a DAG
+  dag: "M1 1h5v4h-5zM10 1h5v4h-5zM6 2h4v2h-4zM2 5h2v6h-2zM12 5h2v6h-2zM2 11h3v2h-3zM11 11h3v2h-3zM5 10h6v5h-6z",
+  // app window with a little bar chart inside
+  app: "M0 1h16v14h-16zM2 5h12v8h-12zM4 9h2v3h-2zM7 7h2v5h-2zM10 8h2v4h-2z",
+  // mortarboard
+  grad: "M7 1h2v1h-2zM5 2h6v1h-6zM3 3h10v1h-10zM1 4h14v1h-14zM3 5h10v1h-10zM5 6h6v1h-6zM4 7h8v4h-8zM6 11h4v1h-4zM14 5h1v6h-1zM13 11h3v3h-3z",
+  // two people
+  team: "M2 1h4v4h-4zM10 1h4v4h-4zM1 6h6v8h-6zM9 6h6v8h-6z",
+  // speech bubble with text lines
+  talk: "M0 1h16v10h-16zM3 4h10v1h-10zM3 7h7v1h-7zM3 11h4v2h-4zM3 13h2v2h-2z",
+);
+@each $name, $d in $pt-icons {
+  .i-#{$name} { --pt-icon: #{px-icon($d)}; }
+}
+.do-item::before, .fact::before {
+  content: ""; display: block; flex: none;
+  width: 20px; height: 20px;
+  background: $pt-accent;
+  -webkit-mask: var(--pt-icon) center / contain no-repeat;
+  mask: var(--pt-icon) center / contain no-repeat;
+  image-rendering: pixelated;
+}
+
+// ---------------------------------------------------------------- home: hero employers
+// Legibility over the background chart: the text keeps a clear left column, the chart lives on
+// the right (see .xgb-bg), and a halo in the page colour cleans up any remaining overlap.
+.hero .lead { max-width: 27rem; }
+.hero .lead, .hero .role, .alumni {
+  position: relative;
+  text-shadow: 0 0 3px $pt-bg, 0 0 6px $pt-bg, 0 0 10px $pt-bg;
+}
+.alumni { margin-top: 1rem; }
+.alumni p {
+  display: flex; flex-wrap: wrap; align-items: center; gap: .35rem 0; margin: 0;
+  font-family: $pt-mono; font-size: .9rem; font-weight: 600; color: $pt-heading;
+  > span:not(.visually-hidden) {
+    display: inline-flex; align-items: center;
+    // pixel square between names
+    &:not(:last-child)::after {
+      content: ""; width: 5px; height: 5px; margin: 0 .8rem; background: $pt-accent;
+    }
+  }
+}
+.alumni p::before {
+  content: "ex"; margin-right: .6rem;
+  font-family: $pt-pixel; font-size: .6rem; font-weight: 400; color: $pt-muted;
+}
+
+// ---------------------------------------------------------------- home: what I do
+.do-grid {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0; margin: 0 2px;
+  box-shadow: px-ring($pt-border);
+  background: $pt-panel;
+  @media (max-width: 640px) { grid-template-columns: 1fr; }
+}
+.do-item {
+  display: grid; grid-template-columns: 20px 1fr; column-gap: .85rem; align-content: start;
+  padding: 1rem 1.1rem 1.05rem;
+  // inner dashed grid lines between cells, not around the outside
+  background: px-dash($pt-border, 180deg) right top / 2px 100% no-repeat,
+              px-dash($pt-border) left bottom / 100% 2px no-repeat;
+  &:nth-child(2n) { background: px-dash($pt-border) left bottom / 100% 2px no-repeat; }
+  &:nth-last-child(-n + 2):nth-child(odd) { background: px-dash($pt-border, 180deg) right top / 2px 100% no-repeat; }
+  &:nth-last-child(-n + 2):nth-child(odd) ~ & { background: none; }
+  &::before { grid-row: 1 / span 3; margin-top: .1rem; }
+  > * { grid-column: 2; }
+  h3 { margin: 0 0 .25rem; font-size: .95rem; }
+  p { margin: 0; font-size: .88rem; color: $pt-muted; }
+  p:last-child { margin-top: .6rem; display: flex; flex-wrap: wrap; gap: .3rem .9rem; }
+  .at {
+    font-family: $pt-mono; font-size: .72rem; color: $pt-text;
+    display: inline-flex; align-items: center;
+    &::before { content: ""; width: 4px; height: 4px; margin-right: .4rem; background: $pt-accent; }
+  }
+  @media (max-width: 640px) {
+    &, &:nth-child(2n), &:nth-last-child(-n + 2):nth-child(odd) {
+      background: px-dash($pt-border) left bottom / 100% 2px no-repeat;
+    }
+    &:last-child { background: none; }
+  }
+}
+
+// ---------------------------------------------------------------- home: background facts
+.facts {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem 1.5rem;
+  margin-bottom: 1.2rem;
+  @media (max-width: 640px) { grid-template-columns: 1fr; }
+}
+.fact {
+  display: grid; grid-template-columns: 20px 1fr; column-gap: .75rem; align-items: start;
+  &::before { grid-row: 1 / span 2; margin-top: .05rem; }
+  p { grid-column: 2; margin: 0; font-size: .86rem; color: $pt-muted; line-height: 1.4; }
+  p:first-child { font-family: $pt-mono; font-size: .9rem; }
+}
+
+// ---------------------------------------------------------------- hero: "AI-friendly human" stamp
+// A joke certification stamp beside the name: pixel robot + two lines, drawn in the accent colour
+// so it follows the light/dark theme. Tilted like a rubber stamp; straightens on hover.
+$pt-robot: "M7 0h2v2h-2zM2 3h12v9h-12zM4 5h3v3h-3zM9 5h3v3h-3zM5 9h6v1h-6zM0 6h2v3h-2zM14 6h2v3h-2zM5 12h6v1h-6zM3 13h10v3h-10z";
+.hero-head {
+  display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1.4rem;
+  margin: 0 0 .35rem;
+  h1 { margin: 0; }
+  > p { margin: 0; }
+}
+.ai-badge {
+  display: inline-grid; grid-template-columns: auto auto; align-items: center;
+  column-gap: .5rem;
+  padding: .35rem .6rem .35rem .5rem;
+  color: $pt-accent; background: $pt-bg;
+  box-shadow: px-ring($pt-accent);
+  transform: rotate(-5deg);
+  transition: transform .12s steps(3);
+  cursor: default; user-select: none;
+  &::before {
+    content: ""; grid-row: 1 / span 2;
+    width: 22px; height: 22px; background: currentColor;
+    -webkit-mask: px-icon($pt-robot) center / contain no-repeat;
+    mask: px-icon($pt-robot) center / contain no-repeat;
+  }
+  .l1 { font-family: $pt-mono; font-size: .74rem; font-weight: 700; line-height: 1.1; color: $pt-heading; }
+  .l2 { font-family: $pt-pixel; font-size: .6rem; line-height: 1.2; letter-spacing: .06em;
+    &::after { content: " ✓"; font-family: $pt-mono; font-weight: 700; } }
+  &:hover { transform: rotate(0deg); }
+}
+@media (prefers-reduced-motion: reduce) { .ai-badge { transition: none; } }

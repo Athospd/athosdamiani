@@ -1,0 +1,51 @@
+/*-- scss:defaults --*/
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+$font-family-sans-serif: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+$font-family-monospace: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+$primary: #0f766e;           // teal
+$body-color: #1f2937;
+$link-color: $primary;
+$navbar-bg: #ffffff;
+$navbar-fg: #1f2937;
+$navbar-hl: $primary;
+
+/*-- scss:rules --*/
+.navbar .nav-link,
+.navbar-title { font-family: $font-family-monospace; font-size: 0.95rem; }
+
+.hero {
+  padding: 2.5rem 0 1.5rem;
+  h1 { font-weight: 800; font-size: 2.6rem; margin-bottom: .25rem; }
+  .role { font-family: $font-family-monospace; color: $primary; font-size: 1.1rem; }
+  .lead { font-size: 1.2rem; max-width: 42rem; }
+}
+
+.terminal {
+  font-family: $font-family-monospace;
+  background: #f6f8fa;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  font-size: .92rem;
+  line-height: 1.6;
+  .prompt { color: $primary; font-weight: 600; }
+  .muted  { color: #6b7280; }
+}
+
+.cta a.btn { margin: .25rem .5rem .25rem 0; font-family: $font-family-monospace; }
+
+.stack-tags span {
+  display: inline-block;
+  font-family: $font-family-monospace;
+  font-size: .85rem;
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  padding: .1rem .7rem;
+  margin: .15rem .2rem;
+}
+
+.job { margin-bottom: 1.6rem; }
+.job .when { font-family: $font-family-monospace; color: #6b7280; font-size: .9rem; }
+
+.reco blockquote { border-left: 3px solid $primary; font-style: italic; }

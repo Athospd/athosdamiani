@@ -1,0 +1,17 @@
+/.quarto/
+/_site/
+.Rproj.user
+.Rhistory
+.RData
+__pycache__/
+.ipynb_checkpoints/
+# NOTE: do NOT ignore _freeze/ — commit it so CI reuses your rendered results
+
+**/*.quarto_ipynb
+
+# knitr caches from legacy posts that set cache=TRUE (outputs are frozen in _freeze/)
+**/index_cache/
+posts/**/index_files/
+
+# agent handoff notes (local only)
+/_HANDOFF*.md

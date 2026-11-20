@@ -1,0 +1,119 @@
+---
+title: "Top 10 packages for data science, 2026 edition"
+description: "Nine years after my first top 10, an updated list: tidymodels, Quarto, targets and torch move in, and dplyr and tidyr join the rest of the tidyverse."
+date: 2026-11-20
+author: "Athos Damiani"
+categories: ["top 10", "packages", "r"]
+image: podium-2026.png
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, error = FALSE, collapse = TRUE)
+```
+
+In 2017 I wrote my [top 10 packages for data science](../2017-02-21-top10-pacotes-para-data-science/). Nine years later, some of them are still on my list, some were replaced by their successors, and some new ones changed the way I work. Here is the 2026 edition.
+
+![](podium-2026.png)
+
+### [10. purrr](https://purrr.tidyverse.org/) (vector and list manipulation)
+
+Still here, and still putting the `for` loop at risk of extinction. `map()` and friends apply functions over vectors and lists without i, j, k indices, and they are the natural way to work with *list-columns*. Since version 1.1, `in_parallel()` runs the same `map()` calls in parallel, too.
+
+### [9. tidymodels](https://www.tidymodels.org/) (statistical modeling)
+
+*Replaces caret.* It was made by caret's own author, Max Kuhn, as its successor. The pieces of the modeling process are separate packages that fit together: {rsample} for train/test splits and cross-validation, {recipes} for preprocessing, {parsnip} for one interface to many engines (glmnet, ranger, xgboost, lightgbm...), {tune} for hyperparameter tuning, and {yardstick} for metrics. Most posts on this blog with a model in them use it, like the [untuned vs tuned xgboost](../2026-11-20-xgboost-untuned-vs-tuned/) one.
+
+### [8. Quarto](https://quarto.org/) (reports)
+
+*Replaces knitr/rmarkdown.* Quarto is RMarkdown's successor, from the same team. Same idea, write the analysis and let the tool make the pdf, word or html, but it works with R, Python and Julia alike, and it does websites, books, slides and dashboards out of the box. knitr is still under the hood when the code is R.
+
+PS: this blog is made with Quarto!
+
+### [7. stringr](https://stringr.tidyverse.org/) (string manipulation)
+
+Everything to extract, create and transform strings, with [regex](https://stringr.tidyverse.org/articles/regular-expressions.html) support. Nine years later, I still use it every week.
+
+### [6. lubridate](https://lubridate.tidyverse.org/) (date manipulation)
+
+Dates are still an endless source of headaches, and lubridate is still the cure: parsing, arithmetic, comparisons, rounding, time zones.
+
+### [5. shiny](https://shiny.posit.co/) (web apps)
+
+Web applications without html, css or javascript. Shiny is more mature than ever, with modern themes from {bslib}, and it now exists for Python too.
+
+### [4. targets](https://docs.ropensci.org/targets/) (pipelines)
+
+*New on the list.* {targets} turns an analysis into a pipeline of steps that know their dependencies. Change one step and only what depends on it runs again; everything else is skipped. For projects with a long data preparation or slow models, it's the difference between waiting hours and waiting seconds, and the results are reproducible by design.
+
+### [3. tidyverse](https://www.tidyverse.org/) (data manipulation)
+
+*Replaces dplyr (3rd) and tidyr (4th).* In 2017 they were two separate medals. Today `library(tidyverse)` loads them together with ggplot2, readr, tibble, purrr, stringr, forcats and lubridate, and that's how most people use them. dplyr's verbs (`filter()`, `arrange()`, `select()`, `distinct()`, `mutate()`, `summarise()`) are the same, now with `.by` for grouping in one line, and tidyr's `gather()`/`spread()` became `pivot_longer()`/`pivot_wider()`.
+
+### [2. ggplot2](https://ggplot2.tidyverse.org/) (visualization)
+
+Still the silver medal and still the most famous R package. The [grammar of graphics](https://vita.had.co.nz/papers/layered-grammar.pdf) is as useful as ever, and the ecosystem around it ({patchwork}, {gganimate}, {ggiraph} and many more) keeps growing. A must in any data scientist's toolbox.
+
+### [1. torch](https://torch.mlverse.org/) (deep learning)
+
+*Replaces magrittr.* The pipe was my gold medal in 2017. It won so completely that base R has had its own pipe, `|>`, since R 4.1, so magrittr retires from the list with honors.
+
+The gold medal now goes to {torch}: deep learning in R, built directly on the C++ library behind PyTorch (LibTorch), without Python. Tensors on the GPU, automatic differentiation and neural network modules, with an R interface. Automatic differentiation alone makes it worth learning: any model you can write as a function, you can fit with gradient descent. A few posts on this blog use it, like [simple audio classification](../2021-02-04-simple-audio-classification-with-torch/) and the [learning rate](../2026-11-20-learning-rate/) one.
+
+### Honorable mentions
+
+- **keras3** (deep learning with a high-level API)
+- **torchvision** (images, datasets and pretrained models for torch)
+- **forcats** (factor utilities)
+- **Rcpp** (R to C++)
+- **FactoMineR** (multivariate analysis)
+- **DBI** (database connection)
+- **httr2/xml2/rvest** (web tools)
+- **janitor** (data cleaning for modeling)
+- **roxygen2** (R package creation)
+- **devtools/usethis** (package development tools)
+- **htmlwidgets** (integration between R and JavaScript libraries)
+- **leaflet** (interactive maps)
+
+## What the downloads say
+
+A top 10 is a matter of taste, but the download counts are data. The CRAN logs of Posit's mirror are public, so here are the 2017 list and the 2026 list, with downloads in the month before each post.
+
+```{r}
+library(tidyverse)
+options(knitr.kable.NA = "")
+
+downloads <- function(pkgs, from, to) {
+  url <- str_glue("https://cranlogs.r-pkg.org/downloads/total/{from}:{to}/{str_flatten(pkgs, ',')}")
+  jsonlite::fromJSON(url) |> select(package, downloads)
+}
+
+top_2017 <- c("magrittr", "ggplot2", "dplyr", "tidyr", "shiny", "lubridate", "stringr", "rmarkdown", "caret", "purrr")
+top_2026 <- c("torch", "ggplot2", "tidyverse", "targets", "shiny", "lubridate", "stringr", "quarto", "tidymodels", "purrr")
+
+pkgs <- union(top_2017, top_2026)
+
+bind_rows(
+  feb_2017 = downloads(pkgs, "2017-01-21", "2017-02-20"),
+  nov_2026 = downloads(pkgs, "2026-10-20", "2026-11-18"),
+  .id = "month"
+) |>
+  pivot_wider(names_from = month, values_from = downloads) |>
+  mutate(
+    feb_2017 = na_if(feb_2017, 0), # torch, targets, tidymodels and quarto didn't exist yet
+    rank_2017 = match(package, top_2017),
+    rank_2026 = match(package, top_2026)
+  ) |>
+  arrange(rank_2026, rank_2017) |>
+  knitr::kable(format.args = list(big.mark = ","))
+```
+
+A few things stand out:
+
+- ggplot2 is the most downloaded package on CRAN that you'd install on purpose. Only rlang, a low-level dependency of almost everything, beats it.
+- magrittr still has more than 1.6 million downloads a month, mostly as a dependency of other packages, even with the native pipe in base R.
+- torch and targets are far from the top in downloads. They're on my list because of what they do for my work, not because everyone uses them (yet).
+- Quarto is a command-line tool, not an R package. The `quarto` R package only calls it, so its downloads say little about how many people use Quarto.
+
+These numbers only count Posit's CRAN mirror, so they are a sample, not the whole picture.
+
+What about you, do you agree? Tell me which packages live in your heart! =)

@@ -2257,6 +2257,396 @@ font-style: inherit;">"rmse"</span>)</span></code></pre></div></div>
   <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-20-xgboost-untuned-vs-tuned/xgboost.png" medium="image" type="image/png" height="65" width="144"/>
 </item>
 <item>
+  <title>Top 10 packages for data science, 2026 edition</title>
+  <dc:creator>Athos Damiani</dc:creator>
+  <link>https://athospd.github.io/athosdamiani/posts/2026-11-20-top10-packages-2026/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>In 2017 I wrote my <a href="../2017-02-21-top10-pacotes-para-data-science/">top 10 packages for data science</a>. Nine years later, some of them are still on my list, some were replaced by their successors, and some new ones changed the way I work. Here is the 2026 edition.</p>
+<p><img src="https://athospd.github.io/athosdamiani/posts/2026-11-20-top10-packages-2026/podium-2026.png" class="img-fluid"></p>
+<section id="purrr-vector-and-list-manipulation" class="level3">
+<h3 class="anchored" data-anchor-id="purrr-vector-and-list-manipulation"><a href="https://purrr.tidyverse.org/">10. purrr</a> (vector and list manipulation)</h3>
+<p>Still here, and still putting the <code>for</code> loop at risk of extinction. <code>map()</code> and friends apply functions over vectors and lists without i, j, k indices, and they are the natural way to work with <em>list-columns</em>. Since version 1.1, <code>in_parallel()</code> runs the same <code>map()</code> calls in parallel, too.</p>
+</section>
+<section id="tidymodels-statistical-modeling" class="level3">
+<h3 class="anchored" data-anchor-id="tidymodels-statistical-modeling"><a href="https://www.tidymodels.org/">9. tidymodels</a> (statistical modeling)</h3>
+<p><em>Replaces caret.</em> It was made by caret’s own author, Max Kuhn, as its successor. The pieces of the modeling process are separate packages that fit together: {rsample} for train/test splits and cross-validation, {recipes} for preprocessing, {parsnip} for one interface to many engines (glmnet, ranger, xgboost, lightgbm…), {tune} for hyperparameter tuning, and {yardstick} for metrics. Most posts on this blog with a model in them use it, like the <a href="../2026-11-20-xgboost-untuned-vs-tuned/">untuned vs tuned xgboost</a> one.</p>
+</section>
+<section id="quarto-reports" class="level3">
+<h3 class="anchored" data-anchor-id="quarto-reports"><a href="https://quarto.org/">8. Quarto</a> (reports)</h3>
+<p><em>Replaces knitr/rmarkdown.</em> Quarto is RMarkdown’s successor, from the same team. Same idea, write the analysis and let the tool make the pdf, word or html, but it works with R, Python and Julia alike, and it does websites, books, slides and dashboards out of the box. knitr is still under the hood when the code is R.</p>
+<p>PS: this blog is made with Quarto!</p>
+</section>
+<section id="stringr-string-manipulation" class="level3">
+<h3 class="anchored" data-anchor-id="stringr-string-manipulation"><a href="https://stringr.tidyverse.org/">7. stringr</a> (string manipulation)</h3>
+<p>Everything to extract, create and transform strings, with <a href="https://stringr.tidyverse.org/articles/regular-expressions.html">regex</a> support. Nine years later, I still use it every week.</p>
+</section>
+<section id="lubridate-date-manipulation" class="level3">
+<h3 class="anchored" data-anchor-id="lubridate-date-manipulation"><a href="https://lubridate.tidyverse.org/">6. lubridate</a> (date manipulation)</h3>
+<p>Dates are still an endless source of headaches, and lubridate is still the cure: parsing, arithmetic, comparisons, rounding, time zones.</p>
+</section>
+<section id="shiny-web-apps" class="level3">
+<h3 class="anchored" data-anchor-id="shiny-web-apps"><a href="https://shiny.posit.co/">5. shiny</a> (web apps)</h3>
+<p>Web applications without html, css or javascript. Shiny is more mature than ever, with modern themes from {bslib}, and it now exists for Python too.</p>
+</section>
+<section id="targets-pipelines" class="level3">
+<h3 class="anchored" data-anchor-id="targets-pipelines"><a href="https://docs.ropensci.org/targets/">4. targets</a> (pipelines)</h3>
+<p><em>New on the list.</em> {targets} turns an analysis into a pipeline of steps that know their dependencies. Change one step and only what depends on it runs again; everything else is skipped. For projects with a long data preparation or slow models, it’s the difference between waiting hours and waiting seconds, and the results are reproducible by design.</p>
+</section>
+<section id="tidyverse-data-manipulation" class="level3">
+<h3 class="anchored" data-anchor-id="tidyverse-data-manipulation"><a href="https://www.tidyverse.org/">3. tidyverse</a> (data manipulation)</h3>
+<p><em>Replaces dplyr (3rd) and tidyr (4th).</em> In 2017 they were two separate medals. Today <code>library(tidyverse)</code> loads them together with ggplot2, readr, tibble, purrr, stringr, forcats and lubridate, and that’s how most people use them. dplyr’s verbs (<code>filter()</code>, <code>arrange()</code>, <code>select()</code>, <code>distinct()</code>, <code>mutate()</code>, <code>summarise()</code>) are the same, now with <code>.by</code> for grouping in one line, and tidyr’s <code>gather()</code>/<code>spread()</code> became <code>pivot_longer()</code>/<code>pivot_wider()</code>.</p>
+</section>
+<section id="ggplot2-visualization" class="level3">
+<h3 class="anchored" data-anchor-id="ggplot2-visualization"><a href="https://ggplot2.tidyverse.org/">2. ggplot2</a> (visualization)</h3>
+<p>Still the silver medal and still the most famous R package. The <a href="https://vita.had.co.nz/papers/layered-grammar.pdf">grammar of graphics</a> is as useful as ever, and the ecosystem around it ({patchwork}, {gganimate}, {ggiraph} and many more) keeps growing. A must in any data scientist’s toolbox.</p>
+</section>
+<section id="torch-deep-learning" class="level3">
+<h3 class="anchored" data-anchor-id="torch-deep-learning"><a href="https://torch.mlverse.org/">1. torch</a> (deep learning)</h3>
+<p><em>Replaces magrittr.</em> The pipe was my gold medal in 2017. It won so completely that base R has had its own pipe, <code>|&gt;</code>, since R 4.1, so magrittr retires from the list with honors.</p>
+<p>The gold medal now goes to {torch}: deep learning in R, built directly on the C++ library behind PyTorch (LibTorch), without Python. Tensors on the GPU, automatic differentiation and neural network modules, with an R interface. Automatic differentiation alone makes it worth learning: any model you can write as a function, you can fit with gradient descent. A few posts on this blog use it, like <a href="../2021-02-04-simple-audio-classification-with-torch/">simple audio classification</a> and the <a href="../2026-11-20-learning-rate/">learning rate</a> one.</p>
+</section>
+<section id="honorable-mentions" class="level3">
+<h3 class="anchored" data-anchor-id="honorable-mentions">Honorable mentions</h3>
+<ul>
+<li><strong>keras3</strong> (deep learning with a high-level API)</li>
+<li><strong>torchvision</strong> (images, datasets and pretrained models for torch)</li>
+<li><strong>forcats</strong> (factor utilities)</li>
+<li><strong>Rcpp</strong> (R to C++)</li>
+<li><strong>FactoMineR</strong> (multivariate analysis)</li>
+<li><strong>DBI</strong> (database connection)</li>
+<li><strong>httr2/xml2/rvest</strong> (web tools)</li>
+<li><strong>janitor</strong> (data cleaning for modeling)</li>
+<li><strong>roxygen2</strong> (R package creation)</li>
+<li><strong>devtools/usethis</strong> (package development tools)</li>
+<li><strong>htmlwidgets</strong> (integration between R and JavaScript libraries)</li>
+<li><strong>leaflet</strong> (interactive maps)</li>
+</ul>
+</section>
+<section id="what-the-downloads-say" class="level2">
+<h2 class="anchored" data-anchor-id="what-the-downloads-say">What the downloads say</h2>
+<p>A top 10 is a matter of taste, but the download counts are data. The CRAN logs of Posit’s mirror are public, so here are the 2017 list and the 2026 list, with downloads in the month before each post.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tidyverse)</span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">options</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">knitr.kable.NA =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>)</span>
+<span id="cb1-3"></span>
+<span id="cb1-4">downloads <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(pkgs, from, to) {</span>
+<span id="cb1-5">  url <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str_glue</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"https://cranlogs.r-pkg.org/downloads/total/{from}:{to}/{str_flatten(pkgs, ',')}"</span>)</span>
+<span id="cb1-6">  jsonlite<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">fromJSON</span>(url) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">select</span>(package, downloads)</span>
+<span id="cb1-7">}</span>
+<span id="cb1-8"></span>
+<span id="cb1-9">top_2017 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"magrittr"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ggplot2"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dplyr"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tidyr"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"shiny"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"lubridate"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"stringr"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"rmarkdown"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"caret"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"purrr"</span>)</span>
+<span id="cb1-10">top_2026 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"torch"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ggplot2"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tidyverse"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"targets"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"shiny"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"lubridate"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"stringr"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"quarto"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tidymodels"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"purrr"</span>)</span>
+<span id="cb1-11"></span>
+<span id="cb1-12">pkgs <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">union</span>(top_2017, top_2026)</span>
+<span id="cb1-13"></span>
+<span id="cb1-14"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">bind_rows</span>(</span>
+<span id="cb1-15">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">feb_2017 =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">downloads</span>(pkgs, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2017-01-21"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2017-02-20"</span>),</span>
+<span id="cb1-16">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">nov_2026 =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">downloads</span>(pkgs, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2026-10-20"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2026-11-18"</span>),</span>
+<span id="cb1-17">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">.id =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"month"</span></span>
+<span id="cb1-18">) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span id="cb1-19">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pivot_wider</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">names_from =</span> month, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">values_from =</span> downloads) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span id="cb1-20">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(</span>
+<span id="cb1-21">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">feb_2017 =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">na_if</span>(feb_2017, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>), <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># torch, targets, tidymodels and quarto didn't exist yet</span></span>
+<span id="cb1-22">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">rank_2017 =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">match</span>(package, top_2017),</span>
+<span id="cb1-23">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">rank_2026 =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">match</span>(package, top_2026)</span>
+<span id="cb1-24">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span id="cb1-25">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrange</span>(rank_2026, rank_2017) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span id="cb1-26">  knitr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">kable</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">format.args =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">big.mark =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">","</span>))</span></code></pre></div></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">package</th>
+<th style="text-align: right;">feb_2017</th>
+<th style="text-align: right;">nov_2026</th>
+<th style="text-align: right;">rank_2017</th>
+<th style="text-align: right;">rank_2026</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">torch</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">43,751</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ggplot2</td>
+<td style="text-align: right;">437,680</td>
+<td style="text-align: right;">2,115,852</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">tidyverse</td>
+<td style="text-align: right;">49,273</td>
+<td style="text-align: right;">864,499</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">targets</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">12,599</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">shiny</td>
+<td style="text-align: right;">148,314</td>
+<td style="text-align: right;">919,605</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">lubridate</td>
+<td style="text-align: right;">91,281</td>
+<td style="text-align: right;">602,683</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">stringr</td>
+<td style="text-align: right;">342,351</td>
+<td style="text-align: right;">1,187,180</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">quarto</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">56,386</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">tidymodels</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">98,256</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">purrr</td>
+<td style="text-align: right;">63,867</td>
+<td style="text-align: right;">1,205,141</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">magrittr</td>
+<td style="text-align: right;">355,815</td>
+<td style="text-align: right;">1,688,325</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">dplyr</td>
+<td style="text-align: right;">296,973</td>
+<td style="text-align: right;">1,754,169</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">tidyr</td>
+<td style="text-align: right;">144,913</td>
+<td style="text-align: right;">1,106,347</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rmarkdown</td>
+<td style="text-align: right;">208,673</td>
+<td style="text-align: right;">1,371,005</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">caret</td>
+<td style="text-align: right;">87,426</td>
+<td style="text-align: right;">132,869</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>A few things stand out:</p>
+<ul>
+<li>ggplot2 is the most downloaded package on CRAN that you’d install on purpose. Only rlang, a low-level dependency of almost everything, beats it.</li>
+<li>magrittr still has more than 1.6 million downloads a month, mostly as a dependency of other packages, even with the native pipe in base R.</li>
+<li>torch and targets are far from the top in downloads. They’re on my list because of what they do for my work, not because everyone uses them (yet).</li>
+<li>Quarto is a command-line tool, not an R package. The <code>quarto</code> R package only calls it, so its downloads say little about how many people use Quarto.</li>
+</ul>
+<p>These numbers only count Posit’s CRAN mirror, so they are a sample, not the whole picture.</p>
+<p>What about you, do you agree? Tell me which packages live in your heart! =)</p>
+
+
+</section>
+
+ ]]></description>
+  <category>top 10</category>
+  <category>packages</category>
+  <category>r</category>
+  <guid>https://athospd.github.io/athosdamiani/posts/2026-11-20-top10-packages-2026/</guid>
+  <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
+  <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-20-top10-packages-2026/podium-2026.png" medium="image" type="image/png" height="81" width="144"/>
+</item>
+<item>
   <title>Querying Parquet with SQL from R, no warehouse needed</title>
   <dc:creator>Athos Damiani</dc:creator>
   <link>https://athospd.github.io/athosdamiani/posts/2026-11-17-parquet-sql-from-r/</link>
@@ -12126,100 +12516,6 @@ font-style: inherit;">""</span>)</span></code></pre></div></div>
   <guid>https://athospd.github.io/athosdamiani/posts/2017-03-27-lollapalooza-sp-2017-segundo-spotify/</guid>
   <pubDate>Mon, 27 Mar 2017 00:00:00 GMT</pubDate>
   <media:content url="https://athospd.github.io/athosdamiani/posts/2017-03-27-lollapalooza-sp-2017-segundo-spotify/lolla-spotify_s.webp" medium="image" type="image/webp"/>
-</item>
-<item>
-  <title>Top 10 packages for data science</title>
-  <dc:creator>Athos Damiani</dc:creator>
-  <link>https://athospd.github.io/athosdamiani/posts/2017-02-21-top10-pacotes-para-data-science/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<p>R has changed a lot in the last 5 years thanks to new packages focused on the most practical, day-to-day problems of a data scientist. Below is my top 10 of the packages that revolutionized the way of programming in R and made my work faster and more enjoyable:</p>
-<section id="purrr-vector-and-list-manipulation" class="level3">
-<h3 class="anchored" data-anchor-id="purrr-vector-and-list-manipulation"><a href="https://jennybc.github.io/purrr-tutorial">10. purrr</a> (vector and list manipulation)</h3>
-<p>Our tenth place has put the <code>for</code> loop at risk of extinction. With it, applying functions over vectors, lists or combinations of both takes a few lines and no confusing i, j, k indices. And with the arrival of <a href="https://cran.r-project.org/web/packages/tibble/tibble.pdf">tibbles</a>, your data.frames can now hold much more than mere numbers and strings, and purrr is your strongest ally when creating the so-called <a href="https://jennybc.github.io/purrr-tutorial/ls13_list-columns.html"><em>list-columns</em></a>.</p>
-</section>
-<section id="caret-statistical-modeling" class="level3">
-<h3 class="anchored" data-anchor-id="caret-statistical-modeling"><a href="http://caret.r-forge.r-project.org/">9. caret</a> (statistical modeling)</h3>
-<p>If you are after statistical modeling (a basic tool of the data scientist), give <a href="http://caret.r-forge.r-project.org/">caret</a> a chance. This package brings together the most established predictive modeling algorithms (aka <em>machine learning</em>) ever made in R, and it also implements the typical tools of the model building process, for example cross-validation, hyperparameter tuning, train/test sets, preprocessing and even parallelization. Besides the different model fitting techniques, their diagnostics and visualizations were also conveniently gathered, all in one place, which makes searching for parts in R’s gigantic bucket less costly.</p>
-</section>
-<section id="knitrrmarkdown-reports" class="level3">
-<h3 class="anchored" data-anchor-id="knitrrmarkdown-reports"><a href="https://yihui.name/knitr/">8. knitr/rmarkdown</a> (reports)</h3>
-<p>The <a href="https://yihui.name/knitr/">knitr</a> and <a href="http://rmarkdown.rstudio.com/">rmarkdown</a> duo turned R from ugly duckling into the king of the spotlight. After them, reports in R are easy, pretty and flexible. Writing in RMarkdown is like writing a draft that is later turned into a decent file in any format: pdf, word and html are the most common. The idea behind RMarkdown is to bring the focus to the analysis and leave the frills in the background as much as possible.</p>
-<p>PS: every post on this blog is made with RMarkdown!</p>
-</section>
-<section id="stringr-string-manipulation" class="level3">
-<h3 class="anchored" data-anchor-id="stringr-string-manipulation"><a href="https://cran.r-project.org/web/packages/stringr/vignettes/stringr.html">7. stringr</a> (string manipulation)</h3>
-<p>Stringr gives you everything to extract, create and transform strings. Its functions accept <a href="https://stat.ethz.ch/R-manual/R-devel/library/base/html/regex.html">regex</a>, extremely versatile and efficient. Text mining becomes child’s play.</p>
-</section>
-<section id="lubridate-date-manipulation" class="level3">
-<h3 class="anchored" data-anchor-id="lubridate-date-manipulation"><a href="https://cran.r-project.org/web/packages/lubridate/vignettes/lubridate.html">6. lubridate</a> (date manipulation)</h3>
-<p>If there is one thing that can give you an endless headache, it’s dates. That’s why <a href="https://cran.r-project.org/web/packages/lubridate/vignettes/lubridate.html">lubridate</a> was invented. Everything you’d like to do with dates and times this package provides, from addition and subtraction to logical comparisons and rounding. It’s the ideal tool for dealing with time.</p>
-</section>
-<section id="shiny-web-apps" class="level3">
-<h3 class="anchored" data-anchor-id="shiny-web-apps"><a href="https://shiny.rstudio.com/">5. shiny</a> (web apps)</h3>
-<p><a href="https://shiny.rstudio.com/">Shiny</a> gives a data analyst the power to build web applications without any prior knowledge of html, css and javascript. Believe it or not, building interactive, data-driven websites is no longer exclusive to web developers. With a slightly long learning curve, you can create anything from static dashboards to custom maps à la google maps! It’s a great way to present results and works very well as the final product of management tools.</p>
-</section>
-<section id="tidyr-reshaping-data.frames" class="level3">
-<h3 class="anchored" data-anchor-id="tidyr-reshaping-data.frames"><a href="https://blog.rstudio.org/2014/07/22/introducing-tidyr/">4. tidyr</a> (reshaping data.frames)</h3>
-<p>Its main functions are <code>gather()</code> and <code>spread()</code>. They pivot/unpivot data.frames, or melt/cast data.frames. It deserves our fourth place because it has great synergy with the third and second places. Quite often we need to rearrange a set of columns into a pair of key/value columns or vice versa. Pivoting/unpivoting is particularly annoying to do in SQL, and <a href="https://blog.rstudio.org/2014/07/22/introducing-tidyr/">tidyr</a> makes it look trivial. It also has other useful functions that I recommend checking out (e.g.&nbsp;<code>unite()</code>, <code>separete()</code>).</p>
-</section>
-<section id="dplyr-data.frame-manipulation" class="level3">
-<h3 class="anchored" data-anchor-id="dplyr-data.frame-manipulation"><a href="https://cran.rstudio.com/web/packages/dplyr/vignettes/introduction.html">3. dplyr</a> (data.frame manipulation)</h3>
-<p>Our bronze medal goes to <a href="https://cran.rstudio.com/web/packages/dplyr/vignettes/introduction.html">dplyr</a> because it brought the data manipulation verbs to the simplest and most intuitive level. They are:</p>
-<ul>
-<li><code>filter()</code> filters rows</li>
-<li><code>arrange()</code> sorts rows</li>
-<li><code>select()</code> selects columns</li>
-<li><code>distinct()</code> removes duplicated rows</li>
-<li><code>mutate()</code> builds new columns</li>
-<li><code>group_by()</code> + <code>summarise()</code> summarises values by one or more factors</li>
-</ul>
-<p>And the package goes far beyond these verbs. It’s worth exploring its functions if you need to get your dataset ready for analysis.</p>
-<p>PS: it was made to work with the <em>“pipe”</em> (%&gt;%).</p>
-</section>
-<section id="ggplot2-visualization" class="level3">
-<h3 class="anchored" data-anchor-id="ggplot2-visualization"><a href="http://docs.ggplot2.org/current/">2. ggplot2</a> (visualization)</h3>
-<p>The silver medal goes to what I think is the most famous R package.</p>
-<p>R is known for its rich graphics capabilities, but it was <a href="http://docs.ggplot2.org/current/">ggplot2</a> that brought the joy of living to users who care even a little about how their visualizations look. <a href="http://docs.ggplot2.org/current/">ggplot2</a> lets you use the <a href="http://vita.had.co.nz/papers/layered-grammar.pdf"><em>grammar of graphics</em></a> to build layered, customizable plots. There is a small learning curve, but the time invested pays off with the first plot you make. Plots that would be true feats of engineering in base R take no more than 5 lines of <a href="http://docs.ggplot2.org/current/">ggplot2</a>, and they look prettier too!</p>
-<p>A must in any data scientist’s toolbox.</p>
-</section>
-<section id="magrittr-pipe" class="level3">
-<h3 class="anchored" data-anchor-id="magrittr-pipe"><a href="https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html">1. magrittr</a> (pipe!)</h3>
-<p>The gold medal gives us the famous <em>pipe</em> (%&gt;%). Instead of <code>h(g(f(x)))</code>, write <code>x %&gt;% f %&gt;% g %&gt;% h</code>. That’s it! That’s all the <em>pipe</em> does. You may wonder why on earth this deserves our first place, but believe me: the <em>pipe</em> is revolutionary. It changed the way of programming in R. The gain in code readability and programming speed is unimaginable. And it opened the door to packages that wouldn’t be viable without it, including dplyr and tidyr.</p>
-<p>That’s why it deserves first place on our list and a spot in our page’s logo.</p>
-</section>
-<section id="honorable-mentions" class="level3">
-<h3 class="anchored" data-anchor-id="honorable-mentions">Honorable mentions</h3>
-<p>Other packages also deserve a highlight! The honorable mention medals go to:</p>
-<ul>
-<li><strong>forcats</strong> (factor utilities)</li>
-<li><strong>Rcpp</strong> (R to C++)</li>
-<li><strong>FactoMiner</strong> (multivariate analysis)</li>
-<li><strong>RODBC</strong> (database connection)</li>
-<li><strong>httr/xml2/rvest</strong> (web tools)</li>
-<li><strong>flexdashboard</strong> (rmarkdown in dashboard format)</li>
-<li><strong>janitor</strong> (data cleaning for modeling)</li>
-<li><strong>plyr</strong> (manipulation of vectors, lists and data.frames)</li>
-<li><strong>roxygen2</strong> (R package creation)</li>
-<li><strong>devtools</strong> (miscellaneous tools)</li>
-<li><strong>htmlwidgets</strong> (integration between R and JavaScript libraries)</li>
-<li><strong>leaflet</strong> (interactive maps)</li>
-</ul>
-<p>What about you, do you agree? Tell us in the comments which packages live in your heart! =)</p>
-
-
-</section>
-
- ]]></description>
-  <category>top 10</category>
-  <category>packages</category>
-  <guid>https://athospd.github.io/athosdamiani/posts/2017-02-21-top10-pacotes-para-data-science/</guid>
-  <pubDate>Tue, 21 Feb 2017 00:00:00 GMT</pubDate>
-  <media:content url="https://athospd.github.io/athosdamiani/posts/2017-02-21-top10-pacotes-para-data-science/podio-pacotes.webp" medium="image" type="image/webp"/>
 </item>
 </channel>
 </rss>

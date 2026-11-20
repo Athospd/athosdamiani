@@ -190,11 +190,6 @@ main.content h2 {
   h1 {
     font-size: 2.5rem; font-weight: 700; letter-spacing: -0.035em;
     margin: 0 0 .35rem; line-height: 1.1;
-    &::after {
-      content: ""; display: inline-block; width: .5em; height: .82em;
-      margin-left: .12em; vertical-align: -0.06em;
-      background: $pt-amber; animation: pt-blink 1.05s steps(1) infinite;
-    }
   }
   .role { font-family: $pt-mono; font-size: .86rem; color: $pt-accent; letter-spacing: .01em; }
   .lead { display: block; font-size: 1.04rem; font-weight: 400; max-width: 34rem; margin: .8rem 0 0; color: $pt-text; }
@@ -430,7 +425,7 @@ pre, div.sourceCode pre { border: 0; border-radius: 0; font-size: .82rem; }
 .callout { border-radius: 0 !important; }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero h1::after, .terminal .muted { animation: none; }
+  .terminal .muted { animation: none; }
   .btn { transition: none; }
 }
 
@@ -476,14 +471,12 @@ div.quarto-post .listing-description { color: $pt-muted !important; }
     content: "ML models\A shiny apps"; white-space: pre;
     height: 0; overflow: hidden; visibility: hidden;
     order: 1;   // after the visible word, so the word (not this) sets the text baseline
-    font-weight: 500; padding-right: 2px; border-right: 2px solid transparent;
+    font-weight: 500;
   }
   &::after {
     content: "ML models";
     color: $pt-accent; font-weight: 500;
-    padding-right: 2px;
-    border-right: 2px solid $pt-amber;
-    animation: pt-typer 8.59s step-end infinite, pt-caret 1.05s step-end infinite;
+    animation: pt-typer 8.59s step-end infinite;
   }
 }
 @keyframes pt-typer {
@@ -527,12 +520,8 @@ div.quarto-post .listing-description { color: $pt-muted !important; }
   98.72% { content: "ML model"; }
   100% { content: "ML models"; }
 }
-@keyframes pt-caret { 50% { border-right-color: transparent; } }
-// Reduced motion: still swap the words (a few letters changing in place, nothing moves across
-// the screen), but hold the cursor steady instead of blinking.
-@media (prefers-reduced-motion: reduce) {
-  .typer::after { animation: pt-typer 8.59s step-end infinite; }
-}
+// Reduced motion: the word swap still runs (a few letters changing in place, nothing moves
+// across the screen); no rule here turns it off.
 
 // ---------------------------------------------------------------- home: pixel icons
 // 16x16 pixel glyphs used as CSS masks, painted with $pt-accent, so they follow the light/dark theme.
@@ -652,22 +641,27 @@ $pt-robot: "M7 0h2v2h-2zM2 3h12v9h-12zM4 5h3v3h-3zM9 5h3v3h-3zM5 9h6v1h-6zM0 6h2
 }
 .ai-badge {
   display: inline-grid; grid-template-columns: auto auto; align-items: center;
-  column-gap: .5rem;
-  padding: .35rem .6rem .35rem .5rem;
-  color: $pt-accent; background: $pt-bg;
-  box-shadow: px-ring($pt-accent);
-  transform: rotate(-5deg);
-  transition: transform .12s steps(3);
+  column-gap: .35rem;
+  padding: .2rem .4rem .2rem .3rem;
+  color: $pt-muted; background: $pt-bg;
+  box-shadow: px-ring($pt-border, 1px);
+  transform: rotate(-4deg);
+  opacity: .85;
+  transition: transform .12s steps(3), opacity .12s steps(3), color .12s steps(3);
   cursor: default; user-select: none;
   &::before {
     content: ""; grid-row: 1 / span 2;
-    width: 22px; height: 22px; background: currentColor;
+    width: 14px; height: 14px; background: $pt-accent;
     -webkit-mask: px-icon($pt-robot) center / contain no-repeat;
     mask: px-icon($pt-robot) center / contain no-repeat;
   }
-  .l1 { font-family: $pt-mono; font-size: .74rem; font-weight: 700; line-height: 1.1; color: $pt-heading; }
-  .l2 { font-family: $pt-pixel; font-size: .6rem; line-height: 1.2; letter-spacing: .06em;
-    &::after { content: " ✓"; font-family: $pt-mono; font-weight: 700; } }
-  &:hover { transform: rotate(0deg); }
+  .l1 { font-family: $pt-mono; font-size: .62rem; font-weight: 600; line-height: 1.1; }
+  .l2 { font-family: $pt-pixel; font-size: .5rem; line-height: 1.2; letter-spacing: .06em;
+    &::after { content: " ✓"; font-family: $pt-mono; font-weight: 700; color: $pt-accent; } }
+  &:hover { transform: rotate(0deg); opacity: 1; color: $pt-text; }
 }
 @media (prefers-reduced-motion: reduce) { .ai-badge { transition: none; } }
+
+// resume: download button (no trailing arrow: it downloads, it doesn't navigate)
+.btn-download::after { content: none !important; }
+.cta:has(.btn-download) { margin: 1rem 0 .5rem; }

@@ -5,6 +5,10 @@ description: "Data Scientist · Statistics · ML · Python · R · SQL · Spark 
 
 **Data scientist** with 13+ years working with data in finance, regulation and fraud prevention. Statistics background, with data engineering experience: I build models and the pipelines and data products around them, using Python, R, SQL, Spark and Databricks. Contact: [athos.damiani@gmail.com](mailto:athos.damiani@gmail.com) · [LinkedIn](https://www.linkedin.com/in/athosdamiani) · [GitHub](https://github.com/athospd)
 
+::: {.cta}
+[<i class="bi bi-download"></i> Download CV (PDF)](files/Athos_Damiani_CV.pdf){.btn .btn-primary .btn-download download="Athos_Damiani_CV.pdf"}
+:::
+
 ## Experience
 
 ::: {.job}

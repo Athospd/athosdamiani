@@ -110,287 +110,6 @@ font-style: inherit;">kill</span>()</span></code></pre></div></div>
   <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-20-targetsboard/thumbnail.png" medium="image" type="image/png" height="72" width="144"/>
 </item>
 <item>
-  <title>Winding a cosine around a circle: the Fourier transform in a GIF</title>
-  <dc:creator>Athos Damiani</dc:creator>
-  <link>https://athospd.github.io/athosdamiani/posts/2026-11-20-fourier-transform-gif/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<p>A while ago I <a href="https://www.linkedin.com/posts/athosdamiani_rstats-rstats-python-share-6961686612699168768-cPvc/">posted on LinkedIn</a> an #rstats GIF inspired by 3Blue1Brown’s <a href="https://www.youtube.com/watch?v=spUNpyF58BY">But what is the Fourier Transform? A visual introduction</a>. This post is that GIF, with the <a href="https://gist.github.com/Athospd/e554e9090564984a527bb81db1728b0c">code</a> behind it.</p>
-<p><img src="https://athospd.github.io/athosdamiani/posts/2026-11-20-fourier-transform-gif/fourier.gif" class="img-fluid"></p>
-<section id="the-idea" class="level2">
-<h2 class="anchored" data-anchor-id="the-idea">The idea</h2>
-<p>Take a signal <img src="https://latex.codecogs.com/png.latex?g(t)">, here <img src="https://latex.codecogs.com/png.latex?g(t)%20=%20%5Ccos(20t)"> for <img src="https://latex.codecogs.com/png.latex?t"> between 0 and 1, and wrap it around the origin of the complex plane. Each point of the signal becomes <img src="https://latex.codecogs.com/png.latex?g(t)%5C,e%5E%7Bi%5Comega%20t%7D">: the angle comes from <img src="https://latex.codecogs.com/png.latex?t"> and the winding frequency <img src="https://latex.codecogs.com/png.latex?%5Comega">, and the distance from the origin comes from <img src="https://latex.codecogs.com/png.latex?g(t)">.</p>
-<p>Then take the centre of mass of the wrapped curve, the average of all its points:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7Bg%7D(%5Comega)%20=%20%5Cfrac%7B1%7D%7BT%7D%5Cint_0%5ET%20g(t)%5C,e%5E%7Bi%5Comega%20t%7D%5C,dt%0A"></p>
-<ul>
-<li><strong>left panel</strong>: the wrapped curve for the current <img src="https://latex.codecogs.com/png.latex?%5Comega"> and its centre of mass (red dot).</li>
-<li><strong>right panel</strong>: the real part of the centre of mass as <img src="https://latex.codecogs.com/png.latex?%5Comega"> goes from 0.4 to 40.</li>
-</ul>
-<p>For most winding frequencies the curve spreads evenly around the origin and the centre of mass stays near 0. When <img src="https://latex.codecogs.com/png.latex?%5Comega%20=%2020">, the frequency of the cosine, the peaks of the signal all land on the same side of the circle and the centre of mass jumps to about 0.5. That spike is the frequency showing up in the Fourier transform.</p>
-</section>
-<section id="the-code" class="level2">
-<h2 class="anchored" data-anchor-id="the-code">The code</h2>
-<p><code>f()</code> is the signal and <code>expi()</code> is <img src="https://latex.codecogs.com/png.latex?e%5E%7Bix%7D"> written as <img src="https://latex.codecogs.com/png.latex?%5Ccos%20x%20+%20i%20%5Csin%20x">. For each <code>a</code>, <code>x</code> runs from 0 to <code>a * L</code> and the signal is evaluated at <code>x / (a * L)</code>, which goes from 0 to 1. So <code>expi(x) * f(x / (a * L))</code> is <img src="https://latex.codecogs.com/png.latex?g(t)%5C,e%5E%7Bi%5Comega%20t%7D"> with <img src="https://latex.codecogs.com/png.latex?%5Comega%20=%20a%20L">.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1">f <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(x) <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cos</span>(x<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20</span>)</span>
-<span id="cb1-2">expi <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(x) <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cos</span>(x) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sin</span>(x)<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>i</span>
-<span id="cb1-3">L <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">40</span></span>
-<span id="cb1-4">medias_Re <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>()</span>
-<span id="cb1-5">fs <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>()</span>
-<span id="cb1-6">as <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">seq</span>(<span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.01</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">l =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">140</span>)</span></code></pre></div></div>
-</div>
-<p>The original gist writes the GIF with <code>animation::saveGIF()</code>, which needs ImageMagick, and pauses with <code>Sys.sleep(0.1)</code> between frames. Here <code>gifski::save_gif()</code> records each plot as a frame instead, so <code>par(mfrow = c(1,2))</code> moves inside the block to apply to the GIF’s device.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">gifski<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">save_gif</span>({</span>
-<span id="cb2-2">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">par</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">mfrow =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>))</span>
-<span id="cb2-3">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span>(a <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> as) {</span>
-<span id="cb2-4">    x <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">seq</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, a<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">40</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">l =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">500</span>)</span>
-<span id="cb2-5">    ft <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">expi</span>(x)<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">f</span>(x<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span>(a<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>L))</span>
-<span id="cb2-6">    media_Re <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">Re</span>(ft))</span>
-<span id="cb2-7">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">plot</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">Re</span>(ft), <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">Im</span>(ft), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">xlim =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.2</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.2</span>), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ylim =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.2</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.2</span>), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">main =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"cos(20t) - Mass Center on Complex Plane"</span>)</span>
-<span id="cb2-8">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">points</span>(media_Re, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">Im</span>(ft)), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">col =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"red"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">cex =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">pch =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">16</span> )</span>
-<span id="cb2-9">    medias_Re <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(medias_Re, media_Re)</span>
-<span id="cb2-10">    fs <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(fs, a<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>L)</span>
-<span id="cb2-11">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">plot</span>(fs, medias_Re, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"l"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">xlim =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">40</span>), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ylim =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.11</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.51</span>))</span>
-<span id="cb2-12">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">points</span>(a<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>L, media_Re, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">col =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"red"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">cex =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">pch =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">16</span>)</span>
-<span id="cb2-13">  }</span>
-<span id="cb2-14">}, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">gif_file =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"fourier.gif"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">width =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">600</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">height =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">300</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">delay =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.1</span>)</span></code></pre></div></div>
-</div>
-<p>The video goes further, from this centre-of-mass picture to the Fourier transform formula itself.</p>
-
-
-</section>
-
- ]]></description>
-  <category>concepts</category>
-  <category>r</category>
-  <category>fourier transform</category>
-  <category>animation</category>
-  <guid>https://athospd.github.io/athosdamiani/posts/2026-11-20-fourier-transform-gif/</guid>
-  <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
-  <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-20-fourier-transform-gif/fourier.png" medium="image" type="image/png" height="72" width="144"/>
-</item>
-<item>
   <title>Gentle introduction to the learning rate parameter</title>
   <dc:creator>Athos Damiani</dc:creator>
   <link>https://athospd.github.io/athosdamiani/posts/2026-11-20-learning-rate/</link>
@@ -705,686 +424,6 @@ font-style: inherit;">0.1</span>)</span></code></pre></div></div>
   <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-20-learning-rate/learning_rate.png" medium="image" type="image/png" height="108" width="144"/>
 </item>
 <item>
-  <title>Untuned vs tuned xgboost, one tree at a time</title>
-  <dc:creator>Athos Damiani</dc:creator>
-  <link>https://athospd.github.io/athosdamiani/posts/2026-11-20-xgboost-untuned-vs-tuned/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<p>A while ago I <a href="https://www.linkedin.com/posts/athosdamiani_rstats-python-datascience-share-6963297319974785024-xrKM/">posted on LinkedIn</a> an “untuned vs tuned xgboost fit” GIF. This post rebuilds it from the <a href="https://gist.github.com/Athospd/1295babba90315b4e5002262c24b08a0">original code</a>, with both models side by side.</p>
-<p><img src="https://athospd.github.io/athosdamiani/posts/2026-11-20-xgboost-untuned-vs-tuned/xgboost.gif" class="img-fluid"></p>
-<ul>
-<li><strong>points</strong>: 1,000 noisy observations of a sine curve.</li>
-<li><strong>purple</strong>: the true curve, <img src="https://latex.codecogs.com/png.latex?%5Csin(2%5Cpi%20x)">.</li>
-<li><strong>orange</strong>: the model’s prediction after each boosting round. Each round adds one tree, and each tree adds a few steps to the curve.</li>
-</ul>
-<p>Both panels use the same data and the same algorithm. Only the hyperparameters differ. With the defaults, the curve takes big steps early on and then starts chasing the noise. With tuned hyperparameters, it moves to the sine in smaller steps and stays smooth.</p>
-<section id="the-data" class="level2">
-<h2 class="anchored" data-anchor-id="the-data">The data</h2>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(tidyverse)</span>
-<span id="cb1-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(tidymodels)</span>
-<span id="cb1-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(gganimate)</span>
-<span id="cb1-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">theme_set</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">theme_minimal</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">16</span>))</span>
-<span id="cb1-5"></span>
-<span id="cb1-6"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb1-7">dados <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tibble</span>(</span>
-<span id="cb1-8">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">runif</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1000</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.5</span>,</span>
-<span id="cb1-9">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sin</span>(x <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> pi <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rnorm</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1000</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">sd =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.3</span>)</span>
-<span id="cb1-10">)</span></code></pre></div></div>
-</div>
-<p>The noise has standard deviation 0.3, so no model can get a root mean squared error (RMSE) below about 0.3 on new data.</p>
-</section>
-<section id="two-models" class="level2">
-<h2 class="anchored" data-anchor-id="two-models">Two models</h2>
-<p>The tuned model uses the hyperparameters from the gist. The untuned one keeps <code>boost_tree()</code>’s defaults: 15 trees, <code>tree_depth = 6</code> and <code>learn_rate = 0.3</code>. Both start from the same <code>base_score</code>, the mean of <code>y</code>.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">trees <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">30</span></span>
-<span id="cb2-2"></span>
-<span id="cb2-3">tuned <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">boost_tree</span>(</span>
-<span id="cb2-4">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">mode =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"regression"</span>,</span>
-<span id="cb2-5">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">mtry =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>,</span>
-<span id="cb2-6">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">trees =</span> trees,</span>
-<span id="cb2-7">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">min_n =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>,</span>
-<span id="cb2-8">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">tree_depth =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>,</span>
-<span id="cb2-9">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">learn_rate =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.1</span>,</span>
-<span id="cb2-10">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">sample_size =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>,</span>
-<span id="cb2-11">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">loss_reduction =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.1</span></span>
-<span id="cb2-12">) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb2-13">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set_engine</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"xgboost"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">base_score =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(dados<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>y))</span>
-<span id="cb2-14"></span>
-<span id="cb2-15">untuned <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">boost_tree</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">mode =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"regression"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb2-16">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set_engine</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"xgboost"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">base_score =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(dados<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>y))</span>
-<span id="cb2-17"></span>
-<span id="cb2-18">ajustes <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">list</span>(</span>
-<span id="cb2-19">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">untuned =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">fit</span>(untuned, y <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> x, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">data =</span> dados),</span>
-<span id="cb2-20">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">tuned   =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">fit</span>(tuned, y <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> x, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">data =</span> dados)</span>
-<span id="cb2-21">)</span></code></pre></div></div>
-</div>
-</section>
-<section id="one-prediction-per-boosting-round" class="level2">
-<h2 class="anchored" data-anchor-id="one-prediction-per-boosting-round">One prediction per boosting round</h2>
-<p><code>iterationrange = c(1, step + 1)</code> tells xgboost to predict with only the first <code>step</code> trees. The gist used the older <code>ntreelimit = step - 1</code>, but <code>ntreelimit = 0</code> means “all trees”, so its first frame showed the final fit. Here step 0 is the starting point, the <code>base_score</code>, and steps past the last tree (the untuned model has 15) keep the full model.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">dados_xgb <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> dados <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">select</span>(x) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">as.matrix</span>()</span>
-<span id="cb3-2"></span>
-<span id="cb3-3">predict_xgb <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(ajuste, step) {</span>
-<span id="cb3-4">  pred <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> (step <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>) {</span>
-<span id="cb3-5">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rep</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(dados<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>y), <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">nrow</span>(dados))</span>
-<span id="cb3-6">  } <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">else</span> {</span>
-<span id="cb3-7">    xgboost<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">predict.xgb.Booster</span>(ajuste<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>fit, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">newdata =</span> dados_xgb, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">iterationrange =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">min</span>(step, ajuste<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>fit<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>niter) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>))</span>
-<span id="cb3-8">  }</span>
-<span id="cb3-9">  dados <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">pred =</span> pred)</span>
-<span id="cb3-10">}</span>
-<span id="cb3-11"></span>
-<span id="cb3-12">df <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">expand_grid</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">modelo =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">names</span>(ajustes), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">step =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span>trees) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb3-13">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">preds =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">map2</span>(modelo, step, <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">predict_xgb</span>(ajustes[[.x]], .y))) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb3-14">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">unnest</span>(preds) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb3-15">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">modelo =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">factor</span>(modelo, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">levels =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">names</span>(ajustes)))</span></code></pre></div></div>
-</div>
-</section>
-<section id="the-gif" class="level2">
-<h2 class="anchored" data-anchor-id="the-gif">The GIF</h2>
-<p>Same plot as the gist, with one panel per model.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">gif <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> df <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb4-2">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ggplot</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> x)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb4-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_point</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> y), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">size =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.5</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">alpha =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.3</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb4-4">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">stat_function</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">fun =</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sin</span>(. <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> pi <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"purple"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">linewidth =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.5</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb4-5">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_step</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> pred), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"orange"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">linewidth =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.5</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb4-6">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">facet_wrap</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> modelo) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb4-7">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">transition_time</span>(step) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb4-8">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Step: {frame_time}'</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb4-9">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ease_aes</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"linear"</span>)</span>
-<span id="cb4-10"></span>
-<span id="cb4-11">anim <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">animate</span>(gif, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">nframes =</span> trees <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">fps =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">end_pause =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">width =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1000</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">height =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">450</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">units =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"px"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">res =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>)</span>
-<span id="cb4-12"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">anim_save</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"xgboost.gif"</span>, anim)</span></code></pre></div></div>
-</div>
-</section>
-<section id="how-much-better" class="level2">
-<h2 class="anchored" data-anchor-id="how-much-better">How much better?</h2>
-<p>The GIF shows the difference. RMSE puts a number on it: on the training data, and on 5,000 new points from the same curve.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>)</span>
-<span id="cb5-2">novos <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tibble</span>(</span>
-<span id="cb5-3">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">runif</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5000</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.5</span>,</span>
-<span id="cb5-4">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sin</span>(x <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> pi <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rnorm</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5000</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">sd =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.3</span>)</span>
-<span id="cb5-5">)</span>
-<span id="cb5-6"></span>
-<span id="cb5-7">rmse_de <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(ajuste, d) <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rmse_vec</span>(d<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>y, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">predict</span>(ajuste, d)<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>.pred)</span>
-<span id="cb5-8"></span>
-<span id="cb5-9"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tibble</span>(</span>
-<span id="cb5-10">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">modelo =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">names</span>(ajustes),</span>
-<span id="cb5-11">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">rmse_treino =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">map_dbl</span>(ajustes, rmse_de, dados),</span>
-<span id="cb5-12">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">rmse_novos  =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">map_dbl</span>(ajustes, rmse_de, novos)</span>
-<span id="cb5-13">) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb5-14">  knitr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">kable</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">digits =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>)</span></code></pre></div></div>
-<div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
-<thead>
-<tr class="header">
-<th style="text-align: left;">modelo</th>
-<th style="text-align: right;">rmse_treino</th>
-<th style="text-align: right;">rmse_novos</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">untuned</td>
-<td style="text-align: right;">0.241</td>
-<td style="text-align: right;">0.322</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">tuned</td>
-<td style="text-align: right;">0.287</td>
-<td style="text-align: right;">0.310</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>The untuned model has the lower error on the training data, below the 0.3 noise level, which means it fitted part of the noise. On new data the order flips and the tuned model wins.</p>
-</section>
-<section id="tuning-for-real" class="level2">
-<h2 class="anchored" data-anchor-id="tuning-for-real">Tuning for real</h2>
-<p>The hyperparameters above came with the gist. In practice you find them with cross-validation, for example with {tune}:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1">spec <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">boost_tree</span>(</span>
-<span id="cb6-2">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">mode =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"regression"</span>,</span>
-<span id="cb6-3">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">trees =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tune</span>(), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">tree_depth =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tune</span>(), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">learn_rate =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tune</span>(), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">loss_reduction =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tune</span>()</span>
-<span id="cb6-4">) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb6-5">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set_engine</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"xgboost"</span>)</span>
-<span id="cb6-6"></span>
-<span id="cb6-7">resultados <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tune_grid</span>(spec, y <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> x, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">resamples =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">vfold_cv</span>(dados, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">v =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">grid =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20</span>)</span>
-<span id="cb6-8"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">show_best</span>(resultados, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">metric =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"rmse"</span>)</span></code></pre></div></div>
-</div>
-<p>Defaults are a starting point, not a model. Tune your models, folks!</p>
-
-
-</section>
-
- ]]></description>
-  <category>machine learning</category>
-  <category>xgboost</category>
-  <category>tidymodels</category>
-  <category>r</category>
-  <category>animation</category>
-  <guid>https://athospd.github.io/athosdamiani/posts/2026-11-20-xgboost-untuned-vs-tuned/</guid>
-  <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
-  <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-20-xgboost-untuned-vs-tuned/xgboost.png" medium="image" type="image/png" height="65" width="144"/>
-</item>
-<item>
   <title>Dropping highly correlated features can throw away the signal</title>
   <dc:creator>Athos Damiani</dc:creator>
   <link>https://athospd.github.io/athosdamiani/posts/2026-11-20-feature-selection-by-correlation/</link>
@@ -1396,6 +435,19 @@ font-style: inherit;">"rmse"</span>)</span></code></pre></div></div>
 
 <p>I’ve filtered out one feature of every pair with <img src="https://latex.codecogs.com/png.latex?%5Ctext%7Bcor%7D(X_i,%20X_k)%20%3E%200.97"> for most of my career. The reasoning: if two features are almost the same, keeping both adds nothing.</p>
 <p>A while ago I <a href="https://www.linkedin.com/posts/athosdamiani_feat-selection-by-correlation-when-lgbmn-activity-7256640466937425920-Ivvd">posted on LinkedIn</a> a simulation where that rule fails. When the signal lives in a ratio or a difference of two features, <img src="https://latex.codecogs.com/png.latex?X_1/X_2"> or <img src="https://latex.codecogs.com/png.latex?X_1%20-%20X_2">, both features matter, even with <img src="https://latex.codecogs.com/png.latex?%5Ctext%7Bcor%7D(X_1,%20X_2)%20=%200.99">. This post walks through the <a href="https://gist.github.com/Athospd/5d60c99c4ce1a5461e7f59c26669c7d0">simulation code</a>.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Spoiler
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Avoid using linear correlation for feature selection. Use the random feature strategy instead: compare each feature’s importance to the importance of features that are pure noise. More details down below.</p>
+</div>
+</div>
 <section id="the-data" class="level2">
 <h2 class="anchored" data-anchor-id="the-data">The data</h2>
 <div class="cell">
@@ -2215,6 +1267,12 @@ font-style: inherit;">2</span>)</span>
 <p>The correlation between two features tells you whether they carry the same values, not whether they carry the same information about the target. The rule works when the second feature is a noisy copy of the first. It fails when the signal is in how they differ.</p>
 <p>Checking $ ext{cor}(X_1, f(X_1, X_2))$ for ratios, differences and the like helps, but only for the combinations you think of. A better question to ask is whether the model uses the feature at all, and how that compares to a feature that is pure noise.</p>
 <p>That is the random probe idea. Add one or more random features, the probes, to the data, fit a model, and rank every feature by its importance. A probe can’t carry any information about the target, so its importance is the level a useless feature reaches by chance. Features that rank below the probes are candidates to drop. The method goes back to Stoppiglia, Dreyfus, Dubois and Oussar, <a href="https://www.jmlr.org/papers/v3/stoppiglia03a.html">Ranking a Random Feature for Variable and Feature Selection</a> (JMLR, 2003), which also gives a statistical stopping rule for where to cut the ranking.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://athospd.github.io/athosdamiani/posts/2026-11-20-feature-selection-by-correlation/random-probes.png" class="img-fluid figure-img"></p>
+<figcaption>The random probe strategy: add noise features, fit a tree model, rank features by importance, and drop those below the best probe.</figcaption>
+</figure>
+</div>
 <p>A random forest is a good model for the ranking: it captures interactions such as the ratio here without you having to build them, and its feature importance comes for free. Ready-made tools:</p>
 <ul>
 <li>R: <a href="https://www.jstatsoft.org/v36/i11">{Boruta}</a> (Kursa and Rudnicki, <em>Journal of Statistical Software</em>, 2010) wraps a random forest. Its probes, the “shadow” features, are shuffled copies of each real feature. A feature is kept when its importance beats the best shadow more often than chance would allow, over many runs. Boruta looks for <em>all</em> relevant features, so it keeps redundant ones too: the opposite of the correlation filter.</li>
@@ -2236,6 +1294,967 @@ font-style: inherit;">2</span>)</span>
   <guid>https://athospd.github.io/athosdamiani/posts/2026-11-20-feature-selection-by-correlation/</guid>
   <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
   <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-20-feature-selection-by-correlation/feature-selection.png" medium="image" type="image/png" height="101" width="144"/>
+</item>
+<item>
+  <title>Winding a cosine around a circle: the Fourier transform in a GIF</title>
+  <dc:creator>Athos Damiani</dc:creator>
+  <link>https://athospd.github.io/athosdamiani/posts/2026-11-20-fourier-transform-gif/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>A while ago I <a href="https://www.linkedin.com/posts/athosdamiani_rstats-rstats-python-share-6961686612699168768-cPvc/">posted on LinkedIn</a> an #rstats GIF inspired by 3Blue1Brown’s <a href="https://www.youtube.com/watch?v=spUNpyF58BY">But what is the Fourier Transform? A visual introduction</a>. This post is that GIF, with the <a href="https://gist.github.com/Athospd/e554e9090564984a527bb81db1728b0c">code</a> behind it.</p>
+<p><img src="https://athospd.github.io/athosdamiani/posts/2026-11-20-fourier-transform-gif/fourier.gif" class="img-fluid"></p>
+<section id="the-idea" class="level2">
+<h2 class="anchored" data-anchor-id="the-idea">The idea</h2>
+<p>Take a signal <img src="https://latex.codecogs.com/png.latex?g(t)">, here <img src="https://latex.codecogs.com/png.latex?g(t)%20=%20%5Ccos(20t)"> for <img src="https://latex.codecogs.com/png.latex?t"> between 0 and 1, and wrap it around the origin of the complex plane. Each point of the signal becomes <img src="https://latex.codecogs.com/png.latex?g(t)%5C,e%5E%7Bi%5Comega%20t%7D">: the angle comes from <img src="https://latex.codecogs.com/png.latex?t"> and the winding frequency <img src="https://latex.codecogs.com/png.latex?%5Comega">, and the distance from the origin comes from <img src="https://latex.codecogs.com/png.latex?g(t)">.</p>
+<p>Then take the centre of mass of the wrapped curve, the average of all its points:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7Bg%7D(%5Comega)%20=%20%5Cfrac%7B1%7D%7BT%7D%5Cint_0%5ET%20g(t)%5C,e%5E%7Bi%5Comega%20t%7D%5C,dt%0A"></p>
+<ul>
+<li><strong>left panel</strong>: the wrapped curve for the current <img src="https://latex.codecogs.com/png.latex?%5Comega"> and its centre of mass (red dot).</li>
+<li><strong>right panel</strong>: the real part of the centre of mass as <img src="https://latex.codecogs.com/png.latex?%5Comega"> goes from 0.4 to 40.</li>
+</ul>
+<p>For most winding frequencies the curve spreads evenly around the origin and the centre of mass stays near 0. When <img src="https://latex.codecogs.com/png.latex?%5Comega%20=%2020">, the frequency of the cosine, the peaks of the signal all land on the same side of the circle and the centre of mass jumps to about 0.5. That spike is the frequency showing up in the Fourier transform.</p>
+</section>
+<section id="the-code" class="level2">
+<h2 class="anchored" data-anchor-id="the-code">The code</h2>
+<p><code>f()</code> is the signal and <code>expi()</code> is <img src="https://latex.codecogs.com/png.latex?e%5E%7Bix%7D"> written as <img src="https://latex.codecogs.com/png.latex?%5Ccos%20x%20+%20i%20%5Csin%20x">. For each <code>a</code>, <code>x</code> runs from 0 to <code>a * L</code> and the signal is evaluated at <code>x / (a * L)</code>, which goes from 0 to 1. So <code>expi(x) * f(x / (a * L))</code> is <img src="https://latex.codecogs.com/png.latex?g(t)%5C,e%5E%7Bi%5Comega%20t%7D"> with <img src="https://latex.codecogs.com/png.latex?%5Comega%20=%20a%20L">.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1">f <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(x) <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cos</span>(x<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span>)</span>
+<span id="cb1-2">expi <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(x) <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cos</span>(x) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sin</span>(x)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>i</span>
+<span id="cb1-3">L <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">40</span></span>
+<span id="cb1-4">medias_Re <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>()</span>
+<span id="cb1-5">fs <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>()</span>
+<span id="cb1-6">as <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.01</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">l =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">140</span>)</span></code></pre></div></div>
+</div>
+<p>The original gist writes the GIF with <code>animation::saveGIF()</code>, which needs ImageMagick, and pauses with <code>Sys.sleep(0.1)</code> between frames. Here <code>gifski::save_gif()</code> records each plot as a frame instead, so <code>par(mfrow = c(1,2))</code> moves inside the block to apply to the GIF’s device.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">gifski<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">save_gif</span>({</span>
+<span id="cb2-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">par</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mfrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>))</span>
+<span id="cb2-3">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span>(a <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> as) {</span>
+<span id="cb2-4">    x <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, a<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">40</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">l =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">500</span>)</span>
+<span id="cb2-5">    ft <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">expi</span>(x)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">f</span>(x<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>(a<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>L))</span>
+<span id="cb2-6">    media_Re <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mean</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Re</span>(ft))</span>
+<span id="cb2-7">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Re</span>(ft), <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Im</span>(ft), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xlim =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.2</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.2</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ylim =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.2</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.2</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">main =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cos(20t) - Mass Center on Complex Plane"</span>)</span>
+<span id="cb2-8">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">points</span>(media_Re, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mean</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Im</span>(ft)), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">col =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"red"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">cex =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">pch =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">16</span> )</span>
+<span id="cb2-9">    medias_Re <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(medias_Re, media_Re)</span>
+<span id="cb2-10">    fs <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(fs, a<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>L)</span>
+<span id="cb2-11">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot</span>(fs, medias_Re, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"l"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xlim =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">40</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ylim =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.11</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.51</span>))</span>
+<span id="cb2-12">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">points</span>(a<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>L, media_Re, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">col =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"red"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">cex =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">pch =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">16</span>)</span>
+<span id="cb2-13">  }</span>
+<span id="cb2-14">}, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">gif_file =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"fourier.gif"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">width =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">600</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">height =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">300</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">delay =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.1</span>)</span></code></pre></div></div>
+</div>
+<p>The video goes further, from this centre-of-mass picture to the Fourier transform formula itself.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>concepts</category>
+  <category>r</category>
+  <category>fourier transform</category>
+  <category>animation</category>
+  <guid>https://athospd.github.io/athosdamiani/posts/2026-11-20-fourier-transform-gif/</guid>
+  <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
+  <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-20-fourier-transform-gif/fourier.png" medium="image" type="image/png" height="72" width="144"/>
+</item>
+<item>
+  <title>Untuned vs tuned xgboost, one tree at a time</title>
+  <dc:creator>Athos Damiani</dc:creator>
+  <link>https://athospd.github.io/athosdamiani/posts/2026-11-20-xgboost-untuned-vs-tuned/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>A while ago I <a href="https://www.linkedin.com/posts/athosdamiani_rstats-python-datascience-share-6963297319974785024-xrKM/">posted on LinkedIn</a> an “untuned vs tuned xgboost fit” GIF. This post rebuilds it from the <a href="https://gist.github.com/Athospd/1295babba90315b4e5002262c24b08a0">original code</a>, with both models side by side.</p>
+<p><img src="https://athospd.github.io/athosdamiani/posts/2026-11-20-xgboost-untuned-vs-tuned/xgboost.gif" class="img-fluid"></p>
+<ul>
+<li><strong>points</strong>: 1,000 noisy observations of a sine curve.</li>
+<li><strong>purple</strong>: the true curve, <img src="https://latex.codecogs.com/png.latex?%5Csin(2%5Cpi%20x)">.</li>
+<li><strong>orange</strong>: the model’s prediction after each boosting round. Each round adds one tree, and each tree adds a few steps to the curve.</li>
+</ul>
+<p>Both panels use the same data and the same algorithm. Only the hyperparameters differ. With the defaults, the curve takes big steps early on and then starts chasing the noise. With tuned hyperparameters, it moves to the sine in smaller steps and stays smooth.</p>
+<section id="the-data" class="level2">
+<h2 class="anchored" data-anchor-id="the-data">The data</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tidyverse)</span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tidymodels)</span>
+<span id="cb1-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(gganimate)</span>
+<span id="cb1-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_set</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_minimal</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">16</span>))</span>
+<span id="cb1-5"></span>
+<span id="cb1-6"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb1-7">dados <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tibble</span>(</span>
+<span id="cb1-8">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">runif</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1000</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>,</span>
+<span id="cb1-9">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sin</span>(x <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> pi <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rnorm</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1000</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">sd =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.3</span>)</span>
+<span id="cb1-10">)</span></code></pre></div></div>
+</div>
+<p>The noise has standard deviation 0.3, so no model can get a root mean squared error (RMSE) below about 0.3 on new data.</p>
+</section>
+<section id="two-models" class="level2">
+<h2 class="anchored" data-anchor-id="two-models">Two models</h2>
+<p>The tuned model uses the hyperparameters from the gist. The untuned one keeps <code>boost_tree()</code>’s defaults: 15 trees, <code>tree_depth = 6</code> and <code>learn_rate = 0.3</code>. Both start from the same <code>base_score</code>, the mean of <code>y</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">trees <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">30</span></span>
+<span id="cb2-2"></span>
+<span id="cb2-3">tuned <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">boost_tree</span>(</span>
+<span id="cb2-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mode =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"regression"</span>,</span>
+<span id="cb2-5">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mtry =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb2-6">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">trees =</span> trees,</span>
+<span id="cb2-7">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">min_n =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb2-8">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">tree_depth =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span>,</span>
+<span id="cb2-9">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">learn_rate =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.1</span>,</span>
+<span id="cb2-10">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">sample_size =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb2-11">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">loss_reduction =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.1</span></span>
+<span id="cb2-12">) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb2-13">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set_engine</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"xgboost"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">base_score =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mean</span>(dados<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>y))</span>
+<span id="cb2-14"></span>
+<span id="cb2-15">untuned <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">boost_tree</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mode =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"regression"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb2-16">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set_engine</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"xgboost"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">base_score =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mean</span>(dados<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>y))</span>
+<span id="cb2-17"></span>
+<span id="cb2-18">ajustes <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(</span>
+<span id="cb2-19">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">untuned =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">fit</span>(untuned, y <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> x, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> dados),</span>
+<span id="cb2-20">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">tuned   =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">fit</span>(tuned, y <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> x, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> dados)</span>
+<span id="cb2-21">)</span></code></pre></div></div>
+</div>
+</section>
+<section id="one-prediction-per-boosting-round" class="level2">
+<h2 class="anchored" data-anchor-id="one-prediction-per-boosting-round">One prediction per boosting round</h2>
+<p><code>iterationrange = c(1, step + 1)</code> tells xgboost to predict with only the first <code>step</code> trees. The gist used the older <code>ntreelimit = step - 1</code>, but <code>ntreelimit = 0</code> means “all trees”, so its first frame showed the final fit. Here step 0 is the starting point, the <code>base_score</code>, and steps past the last tree (the untuned model has 15) keep the full model.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">dados_xgb <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> dados <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">select</span>(x) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.matrix</span>()</span>
+<span id="cb3-2"></span>
+<span id="cb3-3">predict_xgb <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(ajuste, step) {</span>
+<span id="cb3-4">  pred <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> (step <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>) {</span>
+<span id="cb3-5">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rep</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mean</span>(dados<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>y), <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">nrow</span>(dados))</span>
+<span id="cb3-6">  } <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span> {</span>
+<span id="cb3-7">    xgboost<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">predict.xgb.Booster</span>(ajuste<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>fit, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">newdata =</span> dados_xgb, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">iterationrange =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">min</span>(step, ajuste<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>fit<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>niter) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>))</span>
+<span id="cb3-8">  }</span>
+<span id="cb3-9">  dados <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">pred =</span> pred)</span>
+<span id="cb3-10">}</span>
+<span id="cb3-11"></span>
+<span id="cb3-12">df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">expand_grid</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">modelo =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">names</span>(ajustes), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">step =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>trees) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-13">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">preds =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">map2</span>(modelo, step, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">predict_xgb</span>(ajustes[[.x]], .y))) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-14">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unnest</span>(preds) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-15">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">modelo =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">factor</span>(modelo, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">levels =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">names</span>(ajustes)))</span></code></pre></div></div>
+</div>
+</section>
+<section id="the-gif" class="level2">
+<h2 class="anchored" data-anchor-id="the-gif">The GIF</h2>
+<p>Same plot as the gist, with one panel per model.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">gif <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> df <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> x)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb4-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_point</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> y), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.5</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">alpha =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.3</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb4-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">stat_function</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fun =</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sin</span>(. <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> pi <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"purple"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linewidth =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.5</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb4-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_step</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> pred), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"orange"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linewidth =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.5</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb4-6">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">facet_wrap</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> modelo) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb4-7">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">transition_time</span>(step) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb4-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Step: {frame_time}'</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb4-9">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ease_aes</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"linear"</span>)</span>
+<span id="cb4-10"></span>
+<span id="cb4-11">anim <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">animate</span>(gif, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">nframes =</span> trees <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fps =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">end_pause =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">width =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1000</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">height =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">450</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">units =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"px"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">res =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>)</span>
+<span id="cb4-12"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">anim_save</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"xgboost.gif"</span>, anim)</span></code></pre></div></div>
+</div>
+</section>
+<section id="how-much-better" class="level2">
+<h2 class="anchored" data-anchor-id="how-much-better">How much better?</h2>
+<p>The GIF shows the difference. RMSE puts a number on it: on the training data, and on 5,000 new points from the same curve.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)</span>
+<span id="cb5-2">novos <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tibble</span>(</span>
+<span id="cb5-3">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">runif</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5000</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>,</span>
+<span id="cb5-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sin</span>(x <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> pi <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rnorm</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5000</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">sd =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.3</span>)</span>
+<span id="cb5-5">)</span>
+<span id="cb5-6"></span>
+<span id="cb5-7">rmse_de <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(ajuste, d) <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rmse_vec</span>(d<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>y, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">predict</span>(ajuste, d)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>.pred)</span>
+<span id="cb5-8"></span>
+<span id="cb5-9"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tibble</span>(</span>
+<span id="cb5-10">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">modelo =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">names</span>(ajustes),</span>
+<span id="cb5-11">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">rmse_treino =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">map_dbl</span>(ajustes, rmse_de, dados),</span>
+<span id="cb5-12">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">rmse_novos  =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">map_dbl</span>(ajustes, rmse_de, novos)</span>
+<span id="cb5-13">) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb5-14">  knitr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">kable</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">digits =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>)</span></code></pre></div></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">modelo</th>
+<th style="text-align: right;">rmse_treino</th>
+<th style="text-align: right;">rmse_novos</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">untuned</td>
+<td style="text-align: right;">0.241</td>
+<td style="text-align: right;">0.322</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">tuned</td>
+<td style="text-align: right;">0.287</td>
+<td style="text-align: right;">0.310</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The untuned model has the lower error on the training data, below the 0.3 noise level, which means it fitted part of the noise. On new data the order flips and the tuned model wins.</p>
+</section>
+<section id="tuning-for-real" class="level2">
+<h2 class="anchored" data-anchor-id="tuning-for-real">Tuning for real</h2>
+<p>The hyperparameters above came with the gist. In practice you find them with cross-validation, for example with {tune}:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1">spec <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">boost_tree</span>(</span>
+<span id="cb6-2">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mode =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"regression"</span>,</span>
+<span id="cb6-3">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">trees =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tune</span>(), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">tree_depth =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tune</span>(), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">learn_rate =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tune</span>(), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">loss_reduction =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tune</span>()</span>
+<span id="cb6-4">) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb6-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set_engine</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"xgboost"</span>)</span>
+<span id="cb6-6"></span>
+<span id="cb6-7">resultados <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tune_grid</span>(spec, y <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> x, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">resamples =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">vfold_cv</span>(dados, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">v =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">grid =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span>)</span>
+<span id="cb6-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">show_best</span>(resultados, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">metric =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"rmse"</span>)</span></code></pre></div></div>
+</div>
+<p>Defaults are a starting point, not a model. Tune your models, folks!</p>
+
+
+</section>
+
+ ]]></description>
+  <category>machine learning</category>
+  <category>xgboost</category>
+  <category>tidymodels</category>
+  <category>r</category>
+  <category>animation</category>
+  <guid>https://athospd.github.io/athosdamiani/posts/2026-11-20-xgboost-untuned-vs-tuned/</guid>
+  <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
+  <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-20-xgboost-untuned-vs-tuned/xgboost.png" medium="image" type="image/png" height="65" width="144"/>
 </item>
 <item>
   <title>Querying Parquet with SQL from R, no warehouse needed</title>

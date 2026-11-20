@@ -86,8 +86,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b78bc898bbbbb594d628fcbdab6526fe.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-8dbe56779b0b26c1bac7a8b40c445ca1.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark-e87017d30d300fe3c5a23c23bcef7708.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-7a5991e87a7fdc810a04bd96fe44dbc3.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-fa0bbbf340a139748e6af9eeca2f05c9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -454,6 +454,19 @@ window.Quarto = {
 
 <p>I’ve filtered out one feature of every pair with <span class="math inline">\(\text{cor}(X_i, X_k) &gt; 0.97\)</span> for most of my career. The reasoning: if two features are almost the same, keeping both adds nothing.</p>
 <p>A while ago I <a href="https://www.linkedin.com/posts/athosdamiani_feat-selection-by-correlation-when-lgbmn-activity-7256640466937425920-Ivvd">posted on LinkedIn</a> a simulation where that rule fails. When the signal lives in a ratio or a difference of two features, <span class="math inline">\(X_1/X_2\)</span> or <span class="math inline">\(X_1 - X_2\)</span>, both features matter, even with <span class="math inline">\(\text{cor}(X_1, X_2) = 0.99\)</span>. This post walks through the <a href="https://gist.github.com/Athospd/5d60c99c4ce1a5461e7f59c26669c7d0">simulation code</a>.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Spoiler
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Avoid using linear correlation for feature selection. Use the random feature strategy instead: compare each feature’s importance to the importance of features that are pure noise. More details <a href="#what-to-check-instead">down below</a>.</p>
+</div>
+</div>
 <section id="the-data" class="level2">
 <h2 class="anchored" data-anchor-id="the-data">The data</h2>
 <div class="cell">
@@ -618,6 +631,12 @@ window.Quarto = {
 <p>The correlation between two features tells you whether they carry the same values, not whether they carry the same information about the target. The rule works when the second feature is a noisy copy of the first. It fails when the signal is in how they differ.</p>
 <p>Checking $ ext{cor}(X_1, f(X_1, X_2))$ for ratios, differences and the like helps, but only for the combinations you think of. A better question to ask is whether the model uses the feature at all, and how that compares to a feature that is pure noise.</p>
 <p>That is the random probe idea. Add one or more random features, the probes, to the data, fit a model, and rank every feature by its importance. A probe can’t carry any information about the target, so its importance is the level a useless feature reaches by chance. Features that rank below the probes are candidates to drop. The method goes back to Stoppiglia, Dreyfus, Dubois and Oussar, <a href="https://www.jmlr.org/papers/v3/stoppiglia03a.html">Ranking a Random Feature for Variable and Feature Selection</a> (JMLR, 2003), which also gives a statistical stopping rule for where to cut the ranking.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="random-probes.png" class="img-fluid figure-img"></p>
+<figcaption>The random probe strategy: add noise features, fit a tree model, rank features by importance, and drop those below the best probe.</figcaption>
+</figure>
+</div>
 <p>A random forest is a good model for the ranking: it captures interactions such as the ratio here without you having to build them, and its feature importance comes for free. Ready-made tools:</p>
 <ul>
 <li>R: <a href="https://www.jstatsoft.org/v36/i11">{Boruta}</a> (Kursa and Rudnicki, <em>Journal of Statistical Software</em>, 2010) wraps a random forest. Its probes, the “shadow” features, are shuffled copies of each real feature. A feature is kept when its importance beats the best shadow more often than chance would allow, over many runs. Boruta looks for <em>all</em> relevant features, so it keeps redundant ones too: the opposite of the correlation filter.</li>

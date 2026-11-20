@@ -110,287 +110,6 @@ font-style: inherit;">kill</span>()</span></code></pre></div></div>
   <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-20-targetsboard/thumbnail.png" medium="image" type="image/png" height="72" width="144"/>
 </item>
 <item>
-  <title>Winding a cosine around a circle: the Fourier transform in a GIF</title>
-  <dc:creator>Athos Damiani</dc:creator>
-  <link>https://athospd.github.io/athosdamiani/posts/2026-11-20-fourier-transform-gif/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<p>A while ago I <a href="https://www.linkedin.com/posts/athosdamiani_rstats-rstats-python-share-6961686612699168768-cPvc/">posted on LinkedIn</a> an #rstats GIF inspired by 3Blue1Brown’s <a href="https://www.youtube.com/watch?v=spUNpyF58BY">But what is the Fourier Transform? A visual introduction</a>. This post is that GIF, with the <a href="https://gist.github.com/Athospd/e554e9090564984a527bb81db1728b0c">code</a> behind it.</p>
-<p><img src="https://athospd.github.io/athosdamiani/posts/2026-11-20-fourier-transform-gif/fourier.gif" class="img-fluid"></p>
-<section id="the-idea" class="level2">
-<h2 class="anchored" data-anchor-id="the-idea">The idea</h2>
-<p>Take a signal <img src="https://latex.codecogs.com/png.latex?g(t)">, here <img src="https://latex.codecogs.com/png.latex?g(t)%20=%20%5Ccos(20t)"> for <img src="https://latex.codecogs.com/png.latex?t"> between 0 and 1, and wrap it around the origin of the complex plane. Each point of the signal becomes <img src="https://latex.codecogs.com/png.latex?g(t)%5C,e%5E%7Bi%5Comega%20t%7D">: the angle comes from <img src="https://latex.codecogs.com/png.latex?t"> and the winding frequency <img src="https://latex.codecogs.com/png.latex?%5Comega">, and the distance from the origin comes from <img src="https://latex.codecogs.com/png.latex?g(t)">.</p>
-<p>Then take the centre of mass of the wrapped curve, the average of all its points:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7Bg%7D(%5Comega)%20=%20%5Cfrac%7B1%7D%7BT%7D%5Cint_0%5ET%20g(t)%5C,e%5E%7Bi%5Comega%20t%7D%5C,dt%0A"></p>
-<ul>
-<li><strong>left panel</strong>: the wrapped curve for the current <img src="https://latex.codecogs.com/png.latex?%5Comega"> and its centre of mass (red dot).</li>
-<li><strong>right panel</strong>: the real part of the centre of mass as <img src="https://latex.codecogs.com/png.latex?%5Comega"> goes from 0.4 to 40.</li>
-</ul>
-<p>For most winding frequencies the curve spreads evenly around the origin and the centre of mass stays near 0. When <img src="https://latex.codecogs.com/png.latex?%5Comega%20=%2020">, the frequency of the cosine, the peaks of the signal all land on the same side of the circle and the centre of mass jumps to about 0.5. That spike is the frequency showing up in the Fourier transform.</p>
-</section>
-<section id="the-code" class="level2">
-<h2 class="anchored" data-anchor-id="the-code">The code</h2>
-<p><code>f()</code> is the signal and <code>expi()</code> is <img src="https://latex.codecogs.com/png.latex?e%5E%7Bix%7D"> written as <img src="https://latex.codecogs.com/png.latex?%5Ccos%20x%20+%20i%20%5Csin%20x">. For each <code>a</code>, <code>x</code> runs from 0 to <code>a * L</code> and the signal is evaluated at <code>x / (a * L)</code>, which goes from 0 to 1. So <code>expi(x) * f(x / (a * L))</code> is <img src="https://latex.codecogs.com/png.latex?g(t)%5C,e%5E%7Bi%5Comega%20t%7D"> with <img src="https://latex.codecogs.com/png.latex?%5Comega%20=%20a%20L">.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1">f <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(x) <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cos</span>(x<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20</span>)</span>
-<span id="cb1-2">expi <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(x) <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cos</span>(x) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sin</span>(x)<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>i</span>
-<span id="cb1-3">L <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">40</span></span>
-<span id="cb1-4">medias_Re <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>()</span>
-<span id="cb1-5">fs <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>()</span>
-<span id="cb1-6">as <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">seq</span>(<span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.01</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">l =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">140</span>)</span></code></pre></div></div>
-</div>
-<p>The original gist writes the GIF with <code>animation::saveGIF()</code>, which needs ImageMagick, and pauses with <code>Sys.sleep(0.1)</code> between frames. Here <code>gifski::save_gif()</code> records each plot as a frame instead, so <code>par(mfrow = c(1,2))</code> moves inside the block to apply to the GIF’s device.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">gifski<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">save_gif</span>({</span>
-<span id="cb2-2">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">par</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">mfrow =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>))</span>
-<span id="cb2-3">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span>(a <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> as) {</span>
-<span id="cb2-4">    x <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">seq</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, a<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">40</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">l =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">500</span>)</span>
-<span id="cb2-5">    ft <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">expi</span>(x)<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">f</span>(x<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span>(a<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>L))</span>
-<span id="cb2-6">    media_Re <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">Re</span>(ft))</span>
-<span id="cb2-7">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">plot</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">Re</span>(ft), <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">Im</span>(ft), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">xlim =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.2</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.2</span>), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ylim =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.2</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.2</span>), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">main =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"cos(20t) - Mass Center on Complex Plane"</span>)</span>
-<span id="cb2-8">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">points</span>(media_Re, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">Im</span>(ft)), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">col =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"red"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">cex =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">pch =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">16</span> )</span>
-<span id="cb2-9">    medias_Re <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(medias_Re, media_Re)</span>
-<span id="cb2-10">    fs <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(fs, a<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>L)</span>
-<span id="cb2-11">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">plot</span>(fs, medias_Re, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"l"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">xlim =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">40</span>), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ylim =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.11</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.51</span>))</span>
-<span id="cb2-12">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">points</span>(a<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>L, media_Re, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">col =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"red"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">cex =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">pch =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">16</span>)</span>
-<span id="cb2-13">  }</span>
-<span id="cb2-14">}, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">gif_file =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"fourier.gif"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">width =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">600</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">height =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">300</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">delay =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.1</span>)</span></code></pre></div></div>
-</div>
-<p>The video goes further, from this centre-of-mass picture to the Fourier transform formula itself.</p>
-
-
-</section>
-
- ]]></description>
-  <category>concepts</category>
-  <category>r</category>
-  <category>fourier transform</category>
-  <category>animation</category>
-  <guid>https://athospd.github.io/athosdamiani/posts/2026-11-20-fourier-transform-gif/</guid>
-  <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
-  <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-20-fourier-transform-gif/fourier.png" medium="image" type="image/png" height="72" width="144"/>
-</item>
-<item>
   <title>Gentle introduction to the learning rate parameter</title>
   <dc:creator>Athos Damiani</dc:creator>
   <link>https://athospd.github.io/athosdamiani/posts/2026-11-20-learning-rate/</link>
@@ -703,6 +422,287 @@ font-style: inherit;">0.1</span>)</span></code></pre></div></div>
   <guid>https://athospd.github.io/athosdamiani/posts/2026-11-20-learning-rate/</guid>
   <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
   <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-20-learning-rate/learning_rate.png" medium="image" type="image/png" height="108" width="144"/>
+</item>
+<item>
+  <title>Winding a cosine around a circle: the Fourier transform in a GIF</title>
+  <dc:creator>Athos Damiani</dc:creator>
+  <link>https://athospd.github.io/athosdamiani/posts/2026-11-20-fourier-transform-gif/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>A while ago I <a href="https://www.linkedin.com/posts/athosdamiani_rstats-rstats-python-share-6961686612699168768-cPvc/">posted on LinkedIn</a> an #rstats GIF inspired by 3Blue1Brown’s <a href="https://www.youtube.com/watch?v=spUNpyF58BY">But what is the Fourier Transform? A visual introduction</a>. This post is that GIF, with the <a href="https://gist.github.com/Athospd/e554e9090564984a527bb81db1728b0c">code</a> behind it.</p>
+<p><img src="https://athospd.github.io/athosdamiani/posts/2026-11-20-fourier-transform-gif/fourier.gif" class="img-fluid"></p>
+<section id="the-idea" class="level2">
+<h2 class="anchored" data-anchor-id="the-idea">The idea</h2>
+<p>Take a signal <img src="https://latex.codecogs.com/png.latex?g(t)">, here <img src="https://latex.codecogs.com/png.latex?g(t)%20=%20%5Ccos(20t)"> for <img src="https://latex.codecogs.com/png.latex?t"> between 0 and 1, and wrap it around the origin of the complex plane. Each point of the signal becomes <img src="https://latex.codecogs.com/png.latex?g(t)%5C,e%5E%7Bi%5Comega%20t%7D">: the angle comes from <img src="https://latex.codecogs.com/png.latex?t"> and the winding frequency <img src="https://latex.codecogs.com/png.latex?%5Comega">, and the distance from the origin comes from <img src="https://latex.codecogs.com/png.latex?g(t)">.</p>
+<p>Then take the centre of mass of the wrapped curve, the average of all its points:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7Bg%7D(%5Comega)%20=%20%5Cfrac%7B1%7D%7BT%7D%5Cint_0%5ET%20g(t)%5C,e%5E%7Bi%5Comega%20t%7D%5C,dt%0A"></p>
+<ul>
+<li><strong>left panel</strong>: the wrapped curve for the current <img src="https://latex.codecogs.com/png.latex?%5Comega"> and its centre of mass (red dot).</li>
+<li><strong>right panel</strong>: the real part of the centre of mass as <img src="https://latex.codecogs.com/png.latex?%5Comega"> goes from 0.4 to 40.</li>
+</ul>
+<p>For most winding frequencies the curve spreads evenly around the origin and the centre of mass stays near 0. When <img src="https://latex.codecogs.com/png.latex?%5Comega%20=%2020">, the frequency of the cosine, the peaks of the signal all land on the same side of the circle and the centre of mass jumps to about 0.5. That spike is the frequency showing up in the Fourier transform.</p>
+</section>
+<section id="the-code" class="level2">
+<h2 class="anchored" data-anchor-id="the-code">The code</h2>
+<p><code>f()</code> is the signal and <code>expi()</code> is <img src="https://latex.codecogs.com/png.latex?e%5E%7Bix%7D"> written as <img src="https://latex.codecogs.com/png.latex?%5Ccos%20x%20+%20i%20%5Csin%20x">. For each <code>a</code>, <code>x</code> runs from 0 to <code>a * L</code> and the signal is evaluated at <code>x / (a * L)</code>, which goes from 0 to 1. So <code>expi(x) * f(x / (a * L))</code> is <img src="https://latex.codecogs.com/png.latex?g(t)%5C,e%5E%7Bi%5Comega%20t%7D"> with <img src="https://latex.codecogs.com/png.latex?%5Comega%20=%20a%20L">.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1">f <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(x) <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cos</span>(x<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span>)</span>
+<span id="cb1-2">expi <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(x) <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cos</span>(x) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sin</span>(x)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>i</span>
+<span id="cb1-3">L <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">40</span></span>
+<span id="cb1-4">medias_Re <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>()</span>
+<span id="cb1-5">fs <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>()</span>
+<span id="cb1-6">as <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.01</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">l =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">140</span>)</span></code></pre></div></div>
+</div>
+<p>The original gist writes the GIF with <code>animation::saveGIF()</code>, which needs ImageMagick, and pauses with <code>Sys.sleep(0.1)</code> between frames. Here <code>gifski::save_gif()</code> records each plot as a frame instead, so <code>par(mfrow = c(1,2))</code> moves inside the block to apply to the GIF’s device.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">gifski<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">save_gif</span>({</span>
+<span id="cb2-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">par</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mfrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>))</span>
+<span id="cb2-3">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span>(a <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> as) {</span>
+<span id="cb2-4">    x <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, a<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">40</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">l =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">500</span>)</span>
+<span id="cb2-5">    ft <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">expi</span>(x)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">f</span>(x<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>(a<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>L))</span>
+<span id="cb2-6">    media_Re <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mean</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Re</span>(ft))</span>
+<span id="cb2-7">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Re</span>(ft), <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Im</span>(ft), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xlim =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.2</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.2</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ylim =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.2</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.2</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">main =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cos(20t) - Mass Center on Complex Plane"</span>)</span>
+<span id="cb2-8">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">points</span>(media_Re, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mean</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Im</span>(ft)), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">col =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"red"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">cex =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">pch =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">16</span> )</span>
+<span id="cb2-9">    medias_Re <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(medias_Re, media_Re)</span>
+<span id="cb2-10">    fs <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(fs, a<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>L)</span>
+<span id="cb2-11">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot</span>(fs, medias_Re, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"l"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xlim =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">40</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ylim =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.11</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.51</span>))</span>
+<span id="cb2-12">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">points</span>(a<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>L, media_Re, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">col =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"red"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">cex =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">pch =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">16</span>)</span>
+<span id="cb2-13">  }</span>
+<span id="cb2-14">}, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">gif_file =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"fourier.gif"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">width =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">600</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">height =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">300</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">delay =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.1</span>)</span></code></pre></div></div>
+</div>
+<p>The video goes further, from this centre-of-mass picture to the Fourier transform formula itself.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>concepts</category>
+  <category>r</category>
+  <category>fourier transform</category>
+  <category>animation</category>
+  <guid>https://athospd.github.io/athosdamiani/posts/2026-11-20-fourier-transform-gif/</guid>
+  <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
+  <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-20-fourier-transform-gif/fourier.png" medium="image" type="image/png" height="72" width="144"/>
 </item>
 <item>
   <title>Querying Parquet with SQL from R, no warehouse needed</title>

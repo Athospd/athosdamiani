@@ -8,7 +8,7 @@ image: xgboost.png
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, collapse = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, error = FALSE, collapse = TRUE)
 ```
 
 A while ago I [posted on LinkedIn](https://www.linkedin.com/posts/athosdamiani_rstats-python-datascience-share-6963297319974785024-xrKM/) an "untuned vs tuned xgboost fit" GIF. This post rebuilds it from the [original code](https://gist.github.com/Athospd/1295babba90315b4e5002262c24b08a0), with both models side by side.
@@ -68,7 +68,7 @@ ajustes <- list(
 
 ## One prediction per boosting round
 
-`ntreelimit` tells xgboost to predict with only the first `step` trees. The gist called it with `step - 1`, but `ntreelimit = 0` means "all trees", so its first frame showed the final fit. Here step 0 is the starting point, the `base_score`, and steps past the last tree (the untuned model has 15) keep the full model.
+`iterationrange = c(1, step + 1)` tells xgboost to predict with only the first `step` trees. The gist used the older `ntreelimit = step - 1`, but `ntreelimit = 0` means "all trees", so its first frame showed the final fit. Here step 0 is the starting point, the `base_score`, and steps past the last tree (the untuned model has 15) keep the full model.
 
 ```{r}
 dados_xgb <- dados %>% select(x) %>% as.matrix()
@@ -77,7 +77,7 @@ predict_xgb <- function(ajuste, step) {
   pred <- if (step == 0) {
     rep(mean(dados$y), nrow(dados))
   } else {
-    xgboost:::predict.xgb.Booster(ajuste$fit, newdata = dados_xgb, ntreelimit = min(step, ajuste$fit$niter))
+    xgboost:::predict.xgb.Booster(ajuste$fit, newdata = dados_xgb, iterationrange = c(1, min(step, ajuste$fit$niter) + 1))
   }
   dados %>% mutate(pred = pred)
 }

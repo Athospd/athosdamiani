@@ -1,5 +1,6 @@
 ---
 title: "Lollapalooza according to Spotify"
+description: "Web scraping the Lollapalooza São Paulo 2017 schedule and joining it with band popularity from the Spotify API, in R."
 date: 2017-03-27
 author: "Athos Damiani"
 categories: ["analysis", "spotify", "lollapalooza", "api"]

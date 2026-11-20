@@ -1,5 +1,6 @@
 ---
 pagetitle: "Data Scientist"
+description: "Athos Damiani, data scientist: statistics and machine learning, with data engineering experience. Blog posts on R, Python, modeling and data tools."
 title-block-banner: false
 page-layout: article
 listing:

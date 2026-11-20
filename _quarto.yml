@@ -52,6 +52,11 @@ format:
     #   _quarto-classic.yml  -> original "code vibes" (GitHub dark)
     #   _quarto-tokyo.yml    -> "code vibes" Tokyo Night variant
     # The active one is set by `profile: default` at the top of this file.
+    # Google Search Console verification + GoatCounter visit counter (no cookies)
+    include-in-header:
+      text: |
+        <meta name="google-site-verification" content="xdYfXUjiYSZwebPPg21eOi8eNECcdGLFIDFr1KoCw8Q" />
+        <script data-goatcounter="https://athosdamiani.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
     respect-user-color-scheme: true
     code-copy: true
     code-overflow: wrap

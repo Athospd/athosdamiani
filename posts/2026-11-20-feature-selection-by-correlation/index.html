@@ -86,8 +86,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b78bc898bbbbb594d628fcbdab6526fe.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-92b68146f8e39240a836cd34799ad18c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark-5aa70ca03f8c5fcd7263a47770ed5d2f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-8dbe56779b0b26c1bac7a8b40c445ca1.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-e87017d30d300fe3c5a23c23bcef7708.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -616,7 +616,14 @@ window.Quarto = {
 <section id="what-to-check-instead" class="level2">
 <h2 class="anchored" data-anchor-id="what-to-check-instead">What to check instead</h2>
 <p>The correlation between two features tells you whether they carry the same values, not whether they carry the same information about the target. The rule works when the second feature is a noisy copy of the first. It fails when the signal is in how they differ.</p>
-<p>Before dropping a feature, check its correlation with combinations of it and its partner, <span class="math inline">\(\text{cor}(X_1, f(X_1, X_2))\)</span> for ratios, differences and the like. Here <code>X_06_12</code> has a weak correlation with both <code>X_12m</code> and <code>X_06m</code>: neither one alone stands in for it.</p>
+<p>Checking $ ext{cor}(X_1, f(X_1, X_2))$ for ratios, differences and the like helps, but only for the combinations you think of. A better question to ask is whether the model uses the feature at all, and how that compares to a feature that is pure noise.</p>
+<p>That is the random probe idea. Add one or more random features, the probes, to the data, fit a model, and rank every feature by its importance. A probe can’t carry any information about the target, so its importance is the level a useless feature reaches by chance. Features that rank below the probes are candidates to drop. The method goes back to Stoppiglia, Dreyfus, Dubois and Oussar, <a href="https://www.jmlr.org/papers/v3/stoppiglia03a.html">Ranking a Random Feature for Variable and Feature Selection</a> (JMLR, 2003), which also gives a statistical stopping rule for where to cut the ranking.</p>
+<p>A random forest is a good model for the ranking: it captures interactions such as the ratio here without you having to build them, and its feature importance comes for free. Ready-made tools:</p>
+<ul>
+<li>R: <a href="https://www.jstatsoft.org/v36/i11">{Boruta}</a> (Kursa and Rudnicki, <em>Journal of Statistical Software</em>, 2010) wraps a random forest. Its probes, the “shadow” features, are shuffled copies of each real feature. A feature is kept when its importance beats the best shadow more often than chance would allow, over many runs. Boruta looks for <em>all</em> relevant features, so it keeps redundant ones too: the opposite of the correlation filter.</li>
+<li>Python: <a href="https://feature-engine.trainindata.com/en/latest/api_doc/selection/ProbeFeatureSelection.html"><code>ProbeFeatureSelection</code></a> from feature-engine adds random probe features, fits a scikit-learn model with cross-validation, and drops the features whose importance is below the probes’ (their mean, their maximum, or the mean plus 3 standard deviations).</li>
+</ul>
+<p>The simulation already has probes: <code>random1</code>, <code>random2</code> and <code>random3</code>. In the feature importance plot of the model with both features, <code>X_12m</code> and <code>X_06m</code> are far above all three, so the probe rule keeps both, which is what this data needs. The correlation filter would have dropped one of them.</p>
 <p>The gist also has commented-out versions with the product, the difference and the sum in place of the ratio, if you want to try them.</p>
 <p>Was this obvious to you? New? Or misleading in practice? I’d like to know.</p>
 

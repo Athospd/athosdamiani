@@ -378,6 +378,11 @@ div.quarto-post {
   .input-group-text { color: $pt-muted; padding-right: .2rem; }
   .form-control::placeholder { color: $pt-muted; }
   .form-select { padding-top: .3rem; padding-bottom: .3rem; cursor: pointer; }
+  // phones: filter on its own full-width row, then sort (stretching) + view switch
+  @media (max-width: 575.98px) {
+    .quarto-listing-filter { order: -1; flex: 1 1 100%; width: auto; margin-left: 0; }
+    .quarto-listing-sort { flex: 1 1 0; min-width: 0; }
+  }
 }
 .pt-view-switch {
   display: flex; box-shadow: px-ring($pt-border);

@@ -84,11 +84,9 @@ This is the part I care most about. A rewrite that *looks* right isn't enough, s
 
 It also never touches your files. Your scripts, data and `renv.lock` stay as they are; targetfy only adds the pipeline, the functions, and the report next to them. If you already have a `_targets.R`, it writes `targets_analysis.R` with its own store instead, so your existing pipeline's cache is safe. And it installs nothing: if a package is missing, it tells you.
 
-At the end, it shows you the pipeline's graph with `tar_glimpse()`:
+At the end, it runs `tar_glimpse()` and shows you the pipeline's graph. This is the real one for the example above:
 
-```
-sales_file → sales → sales_clean → model → model_summary → coefs_file
-```
+![](glimpse.png)
 
 ## Then, optionally, make it faster
 

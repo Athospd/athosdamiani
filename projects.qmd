@@ -17,7 +17,7 @@ description: "Open-source contributions and personal projects, mostly in R."
 ## AI tooling
 
 **[targetfy](https://github.com/Athospd/targetfy)**
-: A Claude Code skill that converts R scripts into an equivalent [{targets}](https://books.ropensci.org/targets/) pipeline. It leaves your scripts untouched and accepts the conversion only when both versions give the same results.
+: A Claude Code skill that converts R scripts into an equivalent [{targets}](https://books.ropensci.org/targets/) pipeline. It leaves your scripts untouched and accepts the conversion only when both versions give the same results. [▶ Watch the video](https://www.youtube.com/watch?v=f4F8yNo_d8Y)
 
 ## Data ingestion & APIs
 

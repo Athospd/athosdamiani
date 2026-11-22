@@ -485,8 +485,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="it-checks-its-own-work">It checks its own work</h2>
 <p>This is the part I care most about. A rewrite that <em>looks</em> right isn’t enough, so targetfy doesn’t decide on its own that the pipeline is correct. A bundled R script runs your original scripts and the new pipeline, each in a throwaway copy of the project, and compares the results: the final objects and the files written. The conversion is accepted only when they match. If they don’t, Claude reads what differs, fixes the pipeline and tries again.</p>
 <p>It also never touches your files. Your scripts, data and <code>renv.lock</code> stay as they are; targetfy only adds the pipeline, the functions, and the report next to them. If you already have a <code>_targets.R</code>, it writes <code>targets_analysis.R</code> with its own store instead, so your existing pipeline’s cache is safe. And it installs nothing: if a package is missing, it tells you.</p>
-<p>At the end, it shows you the pipeline’s graph with <code>tar_glimpse()</code>:</p>
-<pre><code>sales_file → sales → sales_clean → model → model_summary → coefs_file</code></pre>
+<p>At the end, it runs <code>tar_glimpse()</code> and shows you the pipeline’s graph. This is the real one for the example above:</p>
+<p><img src="glimpse.png" class="img-fluid"></p>
 </section>
 <section id="then-optionally-make-it-faster" class="level2">
 <h2 class="anchored" data-anchor-id="then-optionally-make-it-faster">Then, optionally, make it faster</h2>
@@ -501,7 +501,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="try-it" class="level2">
 <h2 class="anchored" data-anchor-id="try-it">Try it</h2>
 <p>You need <a href="https://claude.com/claude-code">Claude Code</a> and R with <code>targets</code>, <code>tarchetypes</code>, <code>callr</code> and <code>jsonlite</code>. Install the skill with:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/Athospd/targetfy.git ~/.claude/skills/targetfy</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/Athospd/targetfy.git ~/.claude/skills/targetfy</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Then open your project in Claude Code and ask it to convert your script, or a sequence of scripts in run order (<code>01_load.R</code>, <code>02_model.R</code>, …). When one script saves an <code>.rds</code> that the next one reads, that becomes a direct link between steps.</p>
 <p>For now it supports plain <code>.R</code> files. R Markdown and Quarto documents are planned.</p>
 <p>It’s new, so I’d love to hear how it does on your scripts. Issues and ideas are welcome on <a href="https://github.com/Athospd/targetfy">GitHub</a>.</p>

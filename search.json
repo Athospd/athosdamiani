@@ -67,7 +67,7 @@
     "href": "projects.html#ai-tooling",
     "title": "Projects",
     "section": "AI tooling",
-    "text": "AI tooling\n\ntargetfy\n\nA Claude Code skill that converts existing R scripts into an equivalent {targets} pipeline. It never edits your scripts: it writes the pipeline next to them, runs both versions in throwaway copies and accepts the conversion only when their results match. It can then add dynamic branching, storage formats and parallel workers."
+    "text": "AI tooling\n\ntargetfy\n\nA Claude Code skill that converts R scripts into an equivalent {targets} pipeline. It leaves your scripts untouched and accepts the conversion only when both versions give the same results."
   },
   {
     "objectID": "projects.html#data-ingestion-apis",
@@ -81,7 +81,7 @@
     "href": "projects.html#research",
     "title": "Projects",
     "section": "Research",
-    "text": "Research\n\nmestrado — acoustic bird detection\n\nM.Sc. project (Polytechnic School, University of São Paulo) on automatic detection of nocturnal bird species from field recordings. An R package that reproduces the pipeline: collecting recordings (xeno-canto, WikiAves), slicing and labelling audio, train/test splits, and a 1D convolutional network on raw audio."
+    "text": "Research\n\nmestrado — acoustic bird detection\n\nM.Sc. project (Polytechnic School, University of São Paulo) on automatic detection of nocturnal bird species in field recordings. An R package reproduces the pipeline, from collecting and labelling audio to a 1D convolutional network on raw audio."
   },
   {
     "objectID": "projects.html#deep-learning",

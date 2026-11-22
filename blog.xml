@@ -10,7 +10,275 @@
 <atom:link href="https://athospd.github.io/athosdamiani/blog.xml" rel="self" type="application/rss+xml"/>
 <description>Notes on data science, data engineering and code — written in Quarto with R and Python.</description>
 <generator>quarto-1.11.9</generator>
-<lastBuildDate>Fri, 20 Nov 2026 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sat, 21 Nov 2026 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>targetfy: turn your R scripts into a {targets} pipeline</title>
+  <dc:creator>Athos Damiani</dc:creator>
+  <link>https://athospd.github.io/athosdamiani/posts/2026-11-21-targetfy/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p><img src="https://athospd.github.io/athosdamiani/posts/2026-11-21-targetfy/targetfy.png" class="img-fluid"></p>
+<p>I like <a href="https://books.ropensci.org/targets/">{targets}</a>. It made the top 4 of my <a href="../2026-11-20-top10-packages-2026/">2026 package list</a>. But most of my R code doesn’t start as a pipeline. It starts as a script, <code>analysis.R</code>, that I run top to bottom, and it grows. By the time I’d like caching, the work to rewrite it is enough to keep putting it off.</p>
+<p>So I wrote <a href="https://github.com/Athospd/targetfy"><strong>targetfy</strong></a>, a skill for <a href="https://claude.com/claude-code">Claude Code</a> that does the rewrite for me. You point it at your scripts and it writes the equivalent {targets} pipeline. This is the first post about it, so here’s what it does and how to try it.</p>
+<section id="why-targets" class="level2">
+<h2 class="anchored" data-anchor-id="why-targets">Why {targets}?</h2>
+<p>If you haven’t used it: {targets} turns your analysis into a graph of steps, the <em>targets</em>, and remembers each step’s result. When you change something, <code>tar_make()</code> reruns only the steps that depend on the change and skips the rest. A model that takes an hour doesn’t refit because you changed a plot’s title.</p>
+</section>
+<section id="a-small-example" class="level2">
+<h2 class="anchored" data-anchor-id="a-small-example">A small example</h2>
+<p>Here’s a typical script:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rm</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">list =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ls</span>())</span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">setwd</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C:/my/project"</span>)</span>
+<span id="cb1-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(stats)</span>
+<span id="cb1-4">df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">read.csv</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"data/sales.csv"</span>)</span>
+<span id="cb1-5">df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> df[df<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>year <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2020</span>, ]</span>
+<span id="cb1-6">df<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>rev <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">log</span>(df<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>rev)</span>
+<span id="cb1-7">model <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">lm</span>(rev <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> region, df)</span>
+<span id="cb1-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summary</span>(model))</span>
+<span id="cb1-9">model_summary <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summary</span>(model)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>coefficients</span>
+<span id="cb1-10"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dir.create</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"out"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">showWarnings =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>)</span>
+<span id="cb1-11"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">write.csv</span>(model_summary, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"out/coefs.csv"</span>)</span></code></pre></div></div>
+<p>Ask Claude Code to “targetify <code>analysis.R</code>”, or type <code>/targetfy</code>, and you get a <code>_targets.R</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(targets)</span>
+<span id="cb2-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tarchetypes)</span>
+<span id="cb2-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tar_source</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"R"</span>)</span>
+<span id="cb2-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tar_option_set</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">packages =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"stats"</span>))</span>
+<span id="cb2-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(</span>
+<span id="cb2-6">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tar_file_read</span>(sales, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"data/sales.csv"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">read =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">read.csv</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!!</span>.x)),</span>
+<span id="cb2-7">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tar_target</span>(sales_clean, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">clean_sales</span>(sales)),</span>
+<span id="cb2-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tar_target</span>(model, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">fit_model</span>(sales_clean)),</span>
+<span id="cb2-9">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tar_target</span>(model_summary, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summarise_model</span>(model)),</span>
+<span id="cb2-10">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tar_file</span>(coefs_file, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">write_coefs</span>(model_summary, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"out/coefs.csv"</span>))</span>
+<span id="cb2-11">)</span></code></pre></div></div>
+<p>and the functions behind it, in <code>R/analysis_functions.R</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">clean_sales <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(sales) {</span>
+<span id="cb3-2">  sales <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> sales[sales<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>year <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2020</span>, ]</span>
+<span id="cb3-3">  sales<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>rev <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">log</span>(sales<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>rev)</span>
+<span id="cb3-4">  sales</span>
+<span id="cb3-5">}</span>
+<span id="cb3-6"></span>
+<span id="cb3-7">fit_model <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(sales_clean) <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">lm</span>(rev <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> region, sales_clean)</span>
+<span id="cb3-8"></span>
+<span id="cb3-9">summarise_model <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(model) <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summary</span>(model)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>coefficients</span>
+<span id="cb3-10"></span>
+<span id="cb3-11">write_coefs <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(model_summary, path) {</span>
+<span id="cb3-12">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dir.create</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dirname</span>(path), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">showWarnings =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>)</span>
+<span id="cb3-13">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">write.csv</span>(model_summary, path)</span>
+<span id="cb3-14">  path</span>
+<span id="cb3-15">}</span></code></pre></div></div>
+<p>A few things happened along the way:</p>
+<ul>
+<li>The three lines that build and clean <code>df</code> became one step, <code>sales_clean</code>. A step is a meaningful object (a dataset, a model, a summary, a file), not every assignment.</li>
+<li>Steps got names that say what they hold (<code>sales_clean</code>, not <code>df</code>), and their functions got verbs (<code>clean_sales()</code>).</li>
+<li>The input CSV is tracked, so editing <code>data/sales.csv</code> reruns everything downstream. The output CSV is tracked as a file too.</li>
+<li><code>rm(list = ls())</code>, <code>setwd()</code> and <code>print()</code> were dropped: they don’t belong in a pipeline. Each dropped line is listed, with the reason, in a report.</li>
+</ul>
+</section>
+<section id="it-checks-its-own-work" class="level2">
+<h2 class="anchored" data-anchor-id="it-checks-its-own-work">It checks its own work</h2>
+<p>This is the part I care most about. A rewrite that <em>looks</em> right isn’t enough, so targetfy doesn’t decide on its own that the pipeline is correct. A bundled R script runs your original scripts and the new pipeline, each in a throwaway copy of the project, and compares the results: the final objects and the files written. The conversion is accepted only when they match. If they don’t, Claude reads what differs, fixes the pipeline and tries again.</p>
+<p>It also never touches your files. Your scripts, data and <code>renv.lock</code> stay as they are; targetfy only adds the pipeline, the functions, and the report next to them. If you already have a <code>_targets.R</code>, it writes <code>targets_analysis.R</code> with its own store instead, so your existing pipeline’s cache is safe. And it installs nothing: if a package is missing, it tells you.</p>
+<p>At the end, it shows you the pipeline’s graph with <code>tar_glimpse()</code>:</p>
+<pre><code>sales_file → sales → sales_clean → model → model_summary → coefs_file</code></pre>
+</section>
+<section id="then-optionally-make-it-faster" class="level2">
+<h2 class="anchored" data-anchor-id="then-optionally-make-it-faster">Then, optionally, make it faster</h2>
+<p>Once the pipeline passes the check, targetfy offers improvements one at a time, each tied to a specific step. You can say no to all of them:</p>
+<ul>
+<li><strong>Storage formats</strong>, such as <code>qs2</code> or parquet, for big objects.</li>
+<li><strong>Dynamic branching</strong>, when a step loops over groups, files or parameters, so each branch caches on its own.</li>
+<li><strong>Parallel workers</strong> with {crew}, when steps can run at the same time.</li>
+</ul>
+<p>Each one is checked again. If an improvement changes the results, it’s undone.</p>
+</section>
+<section id="try-it" class="level2">
+<h2 class="anchored" data-anchor-id="try-it">Try it</h2>
+<p>You need <a href="https://claude.com/claude-code">Claude Code</a> and R with <code>targets</code>, <code>tarchetypes</code>, <code>callr</code> and <code>jsonlite</code>. Install the skill with:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> clone https://github.com/Athospd/targetfy.git ~/.claude/skills/targetfy</span></code></pre></div></div>
+<p>Then open your project in Claude Code and ask it to convert your script, or a sequence of scripts in run order (<code>01_load.R</code>, <code>02_model.R</code>, …). When one script saves an <code>.rds</code> that the next one reads, that becomes a direct link between steps.</p>
+<p>For now it supports plain <code>.R</code> files. R Markdown and Quarto documents are planned.</p>
+<p>It’s new, so I’d love to hear how it does on your scripts. Issues and ideas are welcome on <a href="https://github.com/Athospd/targetfy">GitHub</a>.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>r</category>
+  <category>targets</category>
+  <category>claude code</category>
+  <category>ai</category>
+  <guid>https://athospd.github.io/athosdamiani/posts/2026-11-21-targetfy/</guid>
+  <pubDate>Sat, 21 Nov 2026 00:00:00 GMT</pubDate>
+  <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-21-targetfy/targetfy.png" medium="image" type="image/png" height="81" width="144"/>
+</item>
 <item>
   <title>Winding a cosine around a circle: the Fourier transform in a GIF</title>
   <dc:creator>Athos Damiani</dc:creator>
@@ -11306,1243 +11574,6 @@ font-style: inherit;">50</span>))</span></code></pre></div></div>
   <guid>https://athospd.github.io/athosdamiani/posts/2017-06-24-componentes-principais-intuicao/</guid>
   <pubDate>Sat, 24 Jun 2017 00:00:00 GMT</pubDate>
   <media:content url="https://athospd.github.io/athosdamiani/posts/2017-06-24-componentes-principais-intuicao/componentes_principais.webp" medium="image" type="image/webp"/>
-</item>
-<item>
-  <title>Lollapalooza according to Spotify</title>
-  <dc:creator>Athos Damiani</dc:creator>
-  <link>https://athospd.github.io/athosdamiani/posts/2017-03-27-lollapalooza-sp-2017-segundo-spotify/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<p>On the day I went to Lollapalooza I discovered <a href="https://github.com/tiagomendesdantas/Rspotify">Rspotify</a>, a wrapper for the Spotify API, and that gave me the idea of putting together info from both.</p>
-<p>The fun here will involve</p>
-<ul>
-<li>Web Scraping - to download and structure the Lolapalooza SP 2017 schedule tables</li>
-<li>Spotify API - through the Rspotify package</li>
-<li>all the tidyverse packages</li>
-</ul>
-<p>This year’s Lollapalooza in São Paulo had 47 bands spread over four stages. The fun part is linking the Lolla schedule to the band popularity info provided by Spotify. Below I describe how I got the data, list the three hypotheses I came up with and make some plots to discuss them.</p>
-<section id="dataset" class="level2">
-<h2 class="anchored" data-anchor-id="dataset">Dataset</h2>
-<section id="prerequisites" class="level3">
-<h3 class="anchored" data-anchor-id="prerequisites">Prerequisites</h3>
-<p><strong>Packages</strong></p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># installs Rspotify</span></span>
-<span id="cb1-2"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">require</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Rspotify"</span>))</span>
-<span id="cb1-3">  devtools<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">install_github</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"tiagomendesdantas/Rspotify"</span>)</span></code></pre></div></div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(Rspotify)</span>
-<span id="cb2-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(magrittr)</span>
-<span id="cb2-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(forcats)</span>
-<span id="cb2-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(stringi)</span>
-<span id="cb2-5"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(lubridate)</span>
-<span id="cb2-6"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(httr)</span>
-<span id="cb2-7"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(rvest)</span>
-<span id="cb2-8"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(tidyverse)</span></code></pre></div></div>
-</div>
-<p><code>Rspotify</code> is a new package that isn’t on CRAN yet, but it already works.</p>
-<p><strong>Spotify account</strong></p>
-<p>To use the Spotify API you need an account on their website, as you can imagine.</p>
-<p><strong>Spotify App</strong></p>
-<p>To get an access code for their API you need to create an <em>App</em> within your Spotify account; this is the most bureaucratic prerequisite of all. I learned how to do it by following the steps in the README of the <code>Rspotify</code> package itself on Github <a href="https://github.com/tiagomendesdantas/Rspotify">(see here)</a>.</p>
-<p>In the end, you’ll have an <code>app_id</code>, a <code>client_id</code> and a <code>client_secret</code> in hand.</p>
-</section>
-<section id="extracting-the-lollapalooza-sp-2017-schedule" class="level3">
-<h3 class="anchored" data-anchor-id="extracting-the-lollapalooza-sp-2017-schedule">Extracting the Lollapalooza SP 2017 schedule</h3>
-<p>The goal here is to get a <code>data.frame</code> version of the tables on the website <a href="https://www.lollapaloozabr.com/lineup-horarios/">lollapaloozabr.com/lineup-horarios/</a>. It has the full schedule for both days of the event.</p>
-<p>On to the code! Tip: the best way to learn what each step of the code does is to run it line by line and look at the result.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># schedule from the lollapalooza 2017 website ------------------</span></span>
-<span id="cb3-2"></span>
-<span id="cb3-3">lolla2017_programacao <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"https://www.lollapaloozabr.com/lineup-horarios/"</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb3-4">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">GET</span>() <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb3-5">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">read_html</span>() <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb3-6">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">html_table</span>() <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb3-7">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set_names</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"sabado"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"domingo"</span>)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb3-8">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">at_depth</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>, <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> .x <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb3-9">             <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">stri_replace_all_regex</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">" {2,}"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb3-10">             <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">stri_replace_all_regex</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"[</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\\</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">n]{1}"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">","</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb3-11">             <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">stri_replace_all_regex</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"[,]{2,}"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\\\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb3-12">             <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">read.csv</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">text =</span> ., <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">header =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>,</span>
-<span id="cb3-13">                      <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">col.names =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"artist"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"hora"</span>))) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb3-14">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">map</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> .x[<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>] <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb3-15">        <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">data_frame</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">palco =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">names</span>(.), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">programacao_palco =</span> .) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb3-16">        <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">unnest</span>(programacao_palco)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb3-17">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">data_frame</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">dia =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">names</span>(.), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">programacao =</span> .) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb3-18">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">unnest</span>(programacao) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb3-19">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">separate</span>(hora, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"hora_ini"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"hora_fim"</span>), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">sep =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"-"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb3-20">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">artist =</span> artist <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span> tolower,</span>
-<span id="cb3-21">         <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">hora_ini =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">paste</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">if_else</span>(dia <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%in%</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"sabado"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"2017-03-25"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"2017-03-26"</span>), hora_ini) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ymd_hm</span>(),</span>
-<span id="cb3-22">         <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">hora_ini =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">if_else</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">hour</span>(hora_ini) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">12</span>, hora_ini <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">hours</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">12</span>), hora_ini),</span>
-<span id="cb3-23">         <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">hora_fim =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">paste</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">if_else</span>(dia <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%in%</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"sabado"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"2017-03-25"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"2017-03-26"</span>), hora_fim) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ymd_hm</span>(),</span>
-<span id="cb3-24">         <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">hora_fim =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">if_else</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">hour</span>(hora_fim) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">12</span>, hora_fim <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">hours</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">12</span>), hora_fim),</span>
-<span id="cb3-25">         <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">dia =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">fct_relevel</span>(dia, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"sabado"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"domingo"</span>)))</span></code></pre></div></div>
-</div>
-<p><strong>Result</strong></p>
-<div class="cell">
-<div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
-<colgroup>
-<col style="width: 9%">
-<col style="width: 14%">
-<col style="width: 23%">
-<col style="width: 26%">
-<col style="width: 26%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">dia</th>
-<th style="text-align: left;">palco</th>
-<th style="text-align: left;">artist</th>
-<th style="text-align: left;">hora_ini</th>
-<th style="text-align: left;">hora_fim</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">sabado</td>
-<td style="text-align: left;">Palco Skol</td>
-<td style="text-align: left;">cage the elephant</td>
-<td style="text-align: left;">2017-03-25 16:25:00</td>
-<td style="text-align: left;">2017-03-25 17:25:00</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">sabado</td>
-<td style="text-align: left;">Palco Skol</td>
-<td style="text-align: left;">metallica</td>
-<td style="text-align: left;">2017-03-25 21:00:00</td>
-<td style="text-align: left;">2017-03-25 23:00:00</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">sabado</td>
-<td style="text-align: left;">Palco Skol</td>
-<td style="text-align: left;">doctor pheabes</td>
-<td style="text-align: left;">2017-03-25 12:05:00</td>
-<td style="text-align: left;">2017-03-25 13:05:00</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">sabado</td>
-<td style="text-align: left;">Palco Skol</td>
-<td style="text-align: left;">rancid</td>
-<td style="text-align: left;">2017-03-25 18:35:00</td>
-<td style="text-align: left;">2017-03-25 19:35:00</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">sabado</td>
-<td style="text-align: left;">Palco Skol</td>
-<td style="text-align: left;">suricato</td>
-<td style="text-align: left;">2017-03-25 14:15:00</td>
-<td style="text-align: left;">2017-03-25 15:15:00</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">sabado</td>
-<td style="text-align: left;">Palco Onix</td>
-<td style="text-align: left;">the 1975</td>
-<td style="text-align: left;">2017-03-25 17:30:00</td>
-<td style="text-align: left;">2017-03-25 18:30:00</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">sabado</td>
-<td style="text-align: left;">Palco Onix</td>
-<td style="text-align: left;">the outs</td>
-<td style="text-align: left;">2017-03-25 13:10:00</td>
-<td style="text-align: left;">2017-03-25 14:10:00</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">sabado</td>
-<td style="text-align: left;">Palco Onix</td>
-<td style="text-align: left;">the xx</td>
-<td style="text-align: left;">2017-03-25 19:40:00</td>
-<td style="text-align: left;">2017-03-25 20:55:00</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>It’s interesting to note that to build this simple little table we used the <code>httr</code>, <code>rvest</code>, <code>purrr</code>, <code>dplyr</code>, <code>tidyr</code>, <code>lubridate</code>, <code>stringi</code> and <code>forcats</code> packages. Only <code>ggplot2</code> was missing to complete the tidyverse.</p>
-<p>PS: 89 fm is not a band, it was just a slot reserved for the radio station’s advertising.</p>
-</section>
-<section id="extracting-the-popularity-of-the-lollapalooza-bands-on-spotify" class="level3">
-<h3 class="anchored" data-anchor-id="extracting-the-popularity-of-the-lollapalooza-bands-on-spotify">Extracting the popularity of the Lollapalooza bands on Spotify</h3>
-<p>Now let’s use the <code>Rspotify</code> package to extract the popularity of the bands listed in the <code>lolla2017_programacao</code> data.frame. For that, I used an official Spotify playlist made by the Lollapalooza team itself. This playlist is identified by the id <code>1mHoPn6JpbtWtoBuvSXrVm</code> in the Spotify database.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">meu_token <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">spotifyOAuth</span>(app_id, client_id, client_secret) <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># put your info provided by Spotify here.</span></span></code></pre></div></div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">lolla2017_playlist <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">getPlaylistSongs</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"lollabr"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"1mHoPn6JpbtWtoBuvSXrVm"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">token =</span> meu_token) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb5-2">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">artistInfo =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">map</span>(artistId, getArtistinfo),</span>
-<span id="cb5-3">         <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">artist =</span> artist <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span> tolower) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb5-4">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rename</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">track_popularity =</span> popularity,</span>
-<span id="cb5-5">         <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">track_id =</span> id) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb5-6">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">unnest</span>(artistInfo) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb5-7">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">select</span>(artist, id, name, popularity, followers)</span></code></pre></div></div>
-</div>
-<p>Some bands were left out of the playlist, so I searched for the artist name in the Spotify API itself to retrieve the corresponding id. The function that does this is <code>searchArtist()</code>.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># retrieving info on the artists the playlist forgot ----------------------</span></span>
-<span id="cb6-2"></span>
-<span id="cb6-3">possibly_searchArtist <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">possibly</span>(searchArtist, <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NA_character_</span>)</span>
-<span id="cb6-4"></span>
-<span id="cb6-5">artistas_fora_da_playlist <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> lolla2017_programacao <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb6-6">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">filter</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!</span>artist <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%in%</span> lolla2017_playlist<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>artist) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%$%</span></span>
-<span id="cb6-7">  artist <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb6-8">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">data_frame</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">artist =</span> .) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb6-9">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">search_artist =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">map</span>(artist, <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> .x <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span> possibly_searchArtist),</span>
-<span id="cb6-10">         <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">artist_info =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">map2</span>(search_artist, artist, <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> {</span>
-<span id="cb6-11">           <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span>(.x <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span> is.na) {<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">data.frame</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">search_artist =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NA</span>)} <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">else</span> {</span>
-<span id="cb6-12">           .x <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb6-13">             <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">name =</span> name <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span> tolower) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb6-14">             <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">filter</span>(name <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%in%</span> .y) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb6-15">             <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">head</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb6-16">         }})) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb6-17">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">select</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span>search_artist) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb6-18">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">unnest</span>(artist_info) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb6-19">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">select</span>(artist, id, name, popularity, followers)</span></code></pre></div></div>
-</div>
-<p><strong>Result</strong></p>
-<div class="cell">
-<div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
-<colgroup>
-<col style="width: 21%">
-<col style="width: 30%">
-<col style="width: 21%">
-<col style="width: 14%">
-<col style="width: 13%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">artist</th>
-<th style="text-align: left;">id</th>
-<th style="text-align: left;">name</th>
-<th style="text-align: right;">popularity</th>
-<th style="text-align: right;">followers</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">ricci</td>
-<td style="text-align: left;">1EUMh6DZo2CfpolG75YQBL</td>
-<td style="text-align: left;">ricci</td>
-<td style="text-align: right;">49</td>
-<td style="text-align: right;">6116</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">jimmy eat world</td>
-<td style="text-align: left;">3Ayl7mCk0nScecqOzvNp6s</td>
-<td style="text-align: left;">jimmy eat world</td>
-<td style="text-align: right;">66</td>
-<td style="text-align: right;">361785</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">89 fm</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: right;">NA</td>
-<td style="text-align: right;">NA</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">martin garrix</td>
-<td style="text-align: left;">60d24wfXkVzDSfLS6hyCjZ</td>
-<td style="text-align: left;">martin garrix</td>
-<td style="text-align: right;">85</td>
-<td style="text-align: right;">2244761</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">illusionize</td>
-<td style="text-align: left;">3RloA7E4XMItSP4FjMBv3L</td>
-<td style="text-align: left;">illusionize</td>
-<td style="text-align: right;">46</td>
-<td style="text-align: right;">30054</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</section>
-<section id="putting-it-all-together" class="level3">
-<h3 class="anchored" data-anchor-id="putting-it-all-together">Putting it all together</h3>
-<p>Now let’s join the Lolla schedule with the Spotify info. The key is <code>artist</code>.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1">lolla2017 <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">left_join</span>(lolla2017_programacao,</span>
-<span id="cb7-2">                       lolla2017_playlist <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">bind_rows</span>(artistas_fora_da_playlist),</span>
-<span id="cb7-3">                       <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">by =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"artist"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb7-4">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">select</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span>id, <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span>name) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb7-5">  dplyr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">filter</span>(followers <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span> is.na <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span> not)</span></code></pre></div></div>
-</div>
-<p><strong>Final dataset</strong></p>
-<div class="cell">
-<div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
-<colgroup>
-<col style="width: 7%">
-<col style="width: 11%">
-<col style="width: 18%">
-<col style="width: 20%">
-<col style="width: 20%">
-<col style="width: 11%">
-<col style="width: 10%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">dia</th>
-<th style="text-align: left;">palco</th>
-<th style="text-align: left;">artist</th>
-<th style="text-align: left;">hora_ini</th>
-<th style="text-align: left;">hora_fim</th>
-<th style="text-align: right;">popularity</th>
-<th style="text-align: right;">followers</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">sabado</td>
-<td style="text-align: left;">Palco Skol</td>
-<td style="text-align: left;">cage the elephant</td>
-<td style="text-align: left;">2017-03-25 16:25:00</td>
-<td style="text-align: left;">2017-03-25 17:25:00</td>
-<td style="text-align: right;">72</td>
-<td style="text-align: right;">745453</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">sabado</td>
-<td style="text-align: left;">Palco Skol</td>
-<td style="text-align: left;">metallica</td>
-<td style="text-align: left;">2017-03-25 21:00:00</td>
-<td style="text-align: left;">2017-03-25 23:00:00</td>
-<td style="text-align: right;">80</td>
-<td style="text-align: right;">3047126</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">sabado</td>
-<td style="text-align: left;">Palco Skol</td>
-<td style="text-align: left;">doctor pheabes</td>
-<td style="text-align: left;">2017-03-25 12:05:00</td>
-<td style="text-align: left;">2017-03-25 13:05:00</td>
-<td style="text-align: right;">20</td>
-<td style="text-align: right;">313</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">sabado</td>
-<td style="text-align: left;">Palco Skol</td>
-<td style="text-align: left;">rancid</td>
-<td style="text-align: left;">2017-03-25 18:35:00</td>
-<td style="text-align: left;">2017-03-25 19:35:00</td>
-<td style="text-align: right;">60</td>
-<td style="text-align: right;">220182</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">sabado</td>
-<td style="text-align: left;">Palco Skol</td>
-<td style="text-align: left;">suricato</td>
-<td style="text-align: left;">2017-03-25 14:15:00</td>
-<td style="text-align: left;">2017-03-25 15:15:00</td>
-<td style="text-align: right;">41</td>
-<td style="text-align: right;">52326</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">sabado</td>
-<td style="text-align: left;">Palco Onix</td>
-<td style="text-align: left;">the 1975</td>
-<td style="text-align: left;">2017-03-25 17:30:00</td>
-<td style="text-align: left;">2017-03-25 18:30:00</td>
-<td style="text-align: right;">77</td>
-<td style="text-align: right;">1600845</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">sabado</td>
-<td style="text-align: left;">Palco Onix</td>
-<td style="text-align: left;">the outs</td>
-<td style="text-align: left;">2017-03-25 13:10:00</td>
-<td style="text-align: left;">2017-03-25 14:10:00</td>
-<td style="text-align: right;">28</td>
-<td style="text-align: right;">3788</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">sabado</td>
-<td style="text-align: left;">Palco Onix</td>
-<td style="text-align: left;">the xx</td>
-<td style="text-align: left;">2017-03-25 19:40:00</td>
-<td style="text-align: left;">2017-03-25 20:55:00</td>
-<td style="text-align: right;">76</td>
-<td style="text-align: right;">2383923</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</section>
-</section>
-<section id="results" class="level2">
-<h2 class="anchored" data-anchor-id="results">Results</h2>
-<section id="hypothesis-i" class="level3">
-<h3 class="anchored" data-anchor-id="hypothesis-i">Hypothesis I</h3>
-<blockquote class="blockquote">
-<p><strong>Hypothesis I:</strong> the organizers used the strategy of spreading band popularity evenly throughout the day.</p>
-</blockquote>
-<p>One of the many logistical challenges of the event is allocating the bands to time slots across the four different stages.</p>
-<p>I went to the event on Saturday and heard that <em>Cage The Elephant</em> had been one of the first bands to play. I knew how popular the band was (according to Spotify, more popular than <em>The Strokes</em>) and right away I found it odd that the event had them play so early.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1">lolla2017_grafico <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> lolla2017 <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb8-2">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">hora =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">map2</span>(hora_ini, hora_fim, <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">seq</span>(.x, .y, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">30</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">60</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">floor_date</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"30 minutes"</span>))) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb8-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">unnest</span>(hora) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb8-4">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">group_by</span>(dia, hora, palco) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb8-5">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">summarise</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">artist =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">first</span>(artist),</span>
-<span id="cb8-6">            <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">n =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">n</span>(),</span>
-<span id="cb8-7">            <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">mean_popularity =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(popularity))</span>
-<span id="cb8-8"></span>
-<span id="cb8-9">lolla2017_grafico <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb8-10">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ggplot</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ymd_hm</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">format</span>(hora, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"2017-03-26 %H%M"</span>)), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> mean_popularity, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colour =</span> palco)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb8-11">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_line</span>() <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb8-12">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_point</span>() <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb8-13">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_point</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">data =</span> lolla2017_grafico <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">filter</span>(artist <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%in%</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"cage the elephant"</span>), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"red"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb8-14">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_text</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">data =</span> lolla2017_grafico <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">filter</span>(artist <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%in%</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"cage the elephant"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">head</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>), <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">label =</span> artist), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"red"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">hjust =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">vjust =</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb8-15">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">facet_wrap</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>dia) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb8-16">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Hora do dia"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Popularidade média"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb8-17">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">theme</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">text =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">element_text</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">16</span>))</span></code></pre></div></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://athospd.github.io/athosdamiani/posts/2017-03-27-lollapalooza-sp-2017-segundo-spotify/index_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="864"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>The plot above agrees with the common sense that the popular ones are left for the end, which doesn’t help confirm the hypothesis that <em>Cage The Elefant</em> was badly placed.</p>
-</section>
-<section id="hypothesis-ii" class="level3">
-<h3 class="anchored" data-anchor-id="hypothesis-ii">Hypothesis II</h3>
-<blockquote class="blockquote">
-<p><strong>Hypothesis II:</strong> in terms of band popularity, Sunday was better than Saturday.</p>
-</blockquote>
-<p>Talking with friends and acquaintances, I noticed that most of them were either going on Sunday or would rather go on Sunday if they had the chance. This made me wonder whether there really was a higher concentration of good bands on Sunday.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ggplot</span>(lolla2017 <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb9-2">         <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">artist =</span> artist <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">fct_reorder</span>(popularity, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">.desc =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>))) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb9-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_bar</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> artist, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> popularity, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">fill =</span> dia), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">stat =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"identity"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">position =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"dodge"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb9-4">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">theme</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">text =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">element_text</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">16</span>),</span>
-<span id="cb9-5">        <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">axis.text.x =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">element_text</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">angle =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">90</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">hjust =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">vjust =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.4</span>))</span></code></pre></div></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://athospd.github.io/athosdamiani/posts/2017-03-27-lollapalooza-sp-2017-segundo-spotify/index_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="864"></p>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ggplot</span>(lolla2017) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb10-2"> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_density</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">fill =</span> dia, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> popularity, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colour =</span> dia), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">fill =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NA</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb10-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">theme</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">text =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">element_text</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">16</span>),</span>
-<span id="cb10-4">        <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">axis.text.x =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">element_text</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">angle =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">90</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">hjust =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">vjust =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.4</span>))</span></code></pre></div></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://athospd.github.io/athosdamiani/posts/2017-03-27-lollapalooza-sp-2017-segundo-spotify/index_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="864"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>Conclusion: nothing suggests there was an imbalance. I think my circle of friends has some strange bias.</p>
-</section>
-<section id="hypothesis-iii" class="level3">
-<h3 class="anchored" data-anchor-id="hypothesis-iii">Hypothesis III</h3>
-<blockquote class="blockquote">
-<p><strong>Hypothesis III:</strong> band popularity was balanced across the different stages.</p>
-</blockquote>
-<p>When I questioned hypothesis I, I also thought about how hard it is to place the bands on the different stages. Since thousands of people would be fighting for space, it would be in the organizers’ interest to keep them as spread out as possible for several reasons: better queue flow, more comfort, less risk of accidents, among others, and a good way to do that would be to make the stages equally attractive so there wouldn’t be a big crowd in a single spot.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ggplot</span>(lolla2017 <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb11-2">         <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">palco =</span> palco <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span> as.factor <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">fct_reorder</span>(popularity, mean))) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb11-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_boxplot</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">fill =</span> palco, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> popularity, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb11-4">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">theme</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">text =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">element_text</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">16</span>),</span>
-<span id="cb11-5">        <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">axis.text.x =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">element_blank</span>()) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb11-6">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span>)</span></code></pre></div></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://athospd.github.io/athosdamiani/posts/2017-03-27-lollapalooza-sp-2017-segundo-spotify/index_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="864"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>The Skol stage had the least variation in popularity and usually had artists of medium to high popularity, but the AXE and Onix stages got the heavyweight artists. The Perry’s stage hosted the most lesser-known artists.</p>
-</section>
-</section>
-<section id="final-remarks" class="level2">
-<h2 class="anchored" data-anchor-id="final-remarks">Final remarks</h2>
-<p>The topic covered here wasn’t useful, I agree, but we went through almost every step of a typical data analysis process. We did web scraping, used APIs, tidied the data, structured the information, created variables and made plots. Only the modeling part was left out. And it’s no coincidence that all the tidyverse packages were useful in this work.</p>
-<p>The homework is to find some interesting data on the internet and apply the steps we learned here!</p>
-
-
-</section>
-
- ]]></description>
-  <category>analysis</category>
-  <category>spotify</category>
-  <category>lollapalooza</category>
-  <category>api</category>
-  <guid>https://athospd.github.io/athosdamiani/posts/2017-03-27-lollapalooza-sp-2017-segundo-spotify/</guid>
-  <pubDate>Mon, 27 Mar 2017 00:00:00 GMT</pubDate>
-  <media:content url="https://athospd.github.io/athosdamiani/posts/2017-03-27-lollapalooza-sp-2017-segundo-spotify/lolla-spotify_s.webp" medium="image" type="image/webp"/>
 </item>
 </channel>
 </rss>

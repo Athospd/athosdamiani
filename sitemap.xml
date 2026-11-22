@@ -2,102 +2,106 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://athospd.github.io/athosdamiani/resume.html</loc>
-    <lastmod>2026-11-21T06:29:47.771Z</lastmod>
+    <lastmod>2026-11-22T00:50:25.606Z</lastmod>
   </url>
   <url>
     <loc>https://athospd.github.io/athosdamiani/projects.html</loc>
-    <lastmod>2026-11-21T06:29:47.771Z</lastmod>
+    <lastmod>2026-11-22T00:50:25.606Z</lastmod>
   </url>
   <url>
     <loc>https://athospd.github.io/athosdamiani/posts/2017-07-06-tidywoe/index.html</loc>
-    <lastmod>2026-11-21T06:29:47.750Z</lastmod>
+    <lastmod>2026-11-22T00:50:25.580Z</lastmod>
   </url>
   <url>
     <loc>https://athospd.github.io/athosdamiani/posts/2021-01-08-tabulizer/index.html</loc>
-    <lastmod>2026-11-21T06:29:47.763Z</lastmod>
+    <lastmod>2026-11-22T00:50:25.596Z</lastmod>
   </url>
   <url>
     <loc>https://athospd.github.io/athosdamiani/posts/2026-11-20-xgboost-untuned-vs-tuned/index.html</loc>
-    <lastmod>2026-11-21T06:29:47.770Z</lastmod>
+    <lastmod>2026-11-22T00:50:25.605Z</lastmod>
   </url>
   <url>
     <loc>https://athospd.github.io/athosdamiani/posts/2021-02-22-neural-style-transfer/index.html</loc>
-    <lastmod>2026-11-21T06:29:47.765Z</lastmod>
-  </url>
-  <url>
-    <loc>https://athospd.github.io/athosdamiani/posts/2017-06-24-componentes-principais-intuicao/index.html</loc>
-    <lastmod>2026-11-21T06:29:47.750Z</lastmod>
-  </url>
-  <url>
-    <loc>https://athospd.github.io/athosdamiani/posts/2026-11-20-feature-selection-by-correlation/index.html</loc>
-    <lastmod>2026-11-21T06:29:47.766Z</lastmod>
-  </url>
-  <url>
-    <loc>https://athospd.github.io/athosdamiani/posts/2018-08-09-desafio-recuperacao-imagem/index.html</loc>
-    <lastmod>2026-11-21T06:29:47.753Z</lastmod>
-  </url>
-  <url>
-    <loc>https://athospd.github.io/athosdamiani/posts/2026-11-20-learning-rate/index.html</loc>
-    <lastmod>2026-11-21T06:29:47.768Z</lastmod>
-  </url>
-  <url>
-    <loc>https://athospd.github.io/athosdamiani/posts/2020-08-29-xgboost-sql/index.html</loc>
-    <lastmod>2026-11-21T06:29:47.762Z</lastmod>
-  </url>
-  <url>
-    <loc>https://athospd.github.io/athosdamiani/posts/2026-11-20-fourier-transform-gif/index.html</loc>
-    <lastmod>2026-11-21T06:29:47.768Z</lastmod>
-  </url>
-  <url>
-    <loc>https://athospd.github.io/athosdamiani/posts/2017-03-27-lollapalooza-sp-2017-segundo-spotify/index.html</loc>
-    <lastmod>2026-11-21T06:29:47.749Z</lastmod>
-  </url>
-  <url>
-    <loc>https://athospd.github.io/athosdamiani/posts/2018-05-22-arvore-e-multicolinearidade/index.html</loc>
-    <lastmod>2026-11-21T06:29:47.753Z</lastmod>
-  </url>
-  <url>
-    <loc>https://athospd.github.io/athosdamiani/posts/2026-11-20-targetsboard/index.html</loc>
-    <lastmod>2026-11-21T06:29:47.769Z</lastmod>
-  </url>
-  <url>
-    <loc>https://athospd.github.io/athosdamiani/posts/2020-06-09-bechdel/index.html</loc>
-    <lastmod>2026-11-21T06:29:47.762Z</lastmod>
-  </url>
-  <url>
-    <loc>https://athospd.github.io/athosdamiani/posts/2017-08-19-r-telegram-bitcoin/index.html</loc>
-    <lastmod>2026-11-21T06:29:47.750Z</lastmod>
-  </url>
-  <url>
-    <loc>https://athospd.github.io/athosdamiani/posts/2026-11-17-parquet-sql-from-r/index.html</loc>
-    <lastmod>2026-11-21T06:29:47.766Z</lastmod>
-  </url>
-  <url>
-    <loc>https://athospd.github.io/athosdamiani/posts/2021-02-04-simple-audio-classification-with-torch/index.html</loc>
-    <lastmod>2026-11-21T06:29:47.765Z</lastmod>
+    <lastmod>2026-11-22T00:50:25.598Z</lastmod>
   </url>
   <url>
     <loc>https://athospd.github.io/athosdamiani/posts/2017-07-29-segundo-menor-dl/index.html</loc>
-    <lastmod>2026-11-21T06:29:47.750Z</lastmod>
+    <lastmod>2026-11-22T00:50:25.581Z</lastmod>
+  </url>
+  <url>
+    <loc>https://athospd.github.io/athosdamiani/posts/2021-02-04-simple-audio-classification-with-torch/index.html</loc>
+    <lastmod>2026-11-22T00:50:25.598Z</lastmod>
+  </url>
+  <url>
+    <loc>https://athospd.github.io/athosdamiani/posts/2026-11-17-parquet-sql-from-r/index.html</loc>
+    <lastmod>2026-11-22T00:50:25.599Z</lastmod>
+  </url>
+  <url>
+    <loc>https://athospd.github.io/athosdamiani/posts/2017-08-19-r-telegram-bitcoin/index.html</loc>
+    <lastmod>2026-11-22T00:50:25.581Z</lastmod>
+  </url>
+  <url>
+    <loc>https://athospd.github.io/athosdamiani/posts/2020-06-09-bechdel/index.html</loc>
+    <lastmod>2026-11-22T00:50:25.594Z</lastmod>
+  </url>
+  <url>
+    <loc>https://athospd.github.io/athosdamiani/posts/2026-11-20-targetsboard/index.html</loc>
+    <lastmod>2026-11-22T00:50:25.602Z</lastmod>
+  </url>
+  <url>
+    <loc>https://athospd.github.io/athosdamiani/posts/2018-05-22-arvore-e-multicolinearidade/index.html</loc>
+    <lastmod>2026-11-22T00:50:25.584Z</lastmod>
+  </url>
+  <url>
+    <loc>https://athospd.github.io/athosdamiani/posts/2017-03-27-lollapalooza-sp-2017-segundo-spotify/index.html</loc>
+    <lastmod>2026-11-22T00:50:25.580Z</lastmod>
+  </url>
+  <url>
+    <loc>https://athospd.github.io/athosdamiani/posts/2026-11-20-fourier-transform-gif/index.html</loc>
+    <lastmod>2026-11-22T00:50:25.600Z</lastmod>
+  </url>
+  <url>
+    <loc>https://athospd.github.io/athosdamiani/posts/2020-08-29-xgboost-sql/index.html</loc>
+    <lastmod>2026-11-22T00:50:25.594Z</lastmod>
+  </url>
+  <url>
+    <loc>https://athospd.github.io/athosdamiani/posts/2026-11-20-learning-rate/index.html</loc>
+    <lastmod>2026-11-22T00:50:25.601Z</lastmod>
+  </url>
+  <url>
+    <loc>https://athospd.github.io/athosdamiani/posts/2018-08-09-desafio-recuperacao-imagem/index.html</loc>
+    <lastmod>2026-11-22T00:50:25.584Z</lastmod>
+  </url>
+  <url>
+    <loc>https://athospd.github.io/athosdamiani/posts/2026-11-20-feature-selection-by-correlation/index.html</loc>
+    <lastmod>2026-11-22T00:50:25.600Z</lastmod>
+  </url>
+  <url>
+    <loc>https://athospd.github.io/athosdamiani/posts/2017-06-24-componentes-principais-intuicao/index.html</loc>
+    <lastmod>2026-11-22T00:50:25.580Z</lastmod>
+  </url>
+  <url>
+    <loc>https://athospd.github.io/athosdamiani/posts/2026-11-21-targetfy/index.html</loc>
+    <lastmod>2026-11-22T00:50:25.606Z</lastmod>
   </url>
   <url>
     <loc>https://athospd.github.io/athosdamiani/posts/2017-02-21-top10-pacotes-para-data-science/index.html</loc>
-    <lastmod>2026-11-21T06:29:47.749Z</lastmod>
+    <lastmod>2026-11-22T00:50:25.580Z</lastmod>
   </url>
   <url>
     <loc>https://athospd.github.io/athosdamiani/posts/2018-03-29-guess-the-correlation/index.html</loc>
-    <lastmod>2026-11-21T06:29:47.753Z</lastmod>
+    <lastmod>2026-11-22T00:50:25.584Z</lastmod>
   </url>
   <url>
     <loc>https://athospd.github.io/athosdamiani/posts/2026-11-20-top10-packages-2026/index.html</loc>
-    <lastmod>2026-11-21T06:29:47.770Z</lastmod>
+    <lastmod>2026-11-22T00:50:25.605Z</lastmod>
   </url>
   <url>
     <loc>https://athospd.github.io/athosdamiani/index.html</loc>
-    <lastmod>2026-11-21T06:29:47.749Z</lastmod>
+    <lastmod>2026-11-22T00:50:25.578Z</lastmod>
   </url>
   <url>
     <loc>https://athospd.github.io/athosdamiani/blog.html</loc>
-    <lastmod>2026-11-21T06:29:47.748Z</lastmod>
+    <lastmod>2026-11-22T00:50:25.577Z</lastmod>
   </url>
 </urlset>

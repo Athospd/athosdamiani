@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/2026-11-21-targetfy/index.html",
       "/posts/2026-11-20-fourier-transform-gif/index.html",
       "/posts/2026-11-20-targetsboard/index.html",
       "/posts/2026-11-20-learning-rate/index.html",
@@ -28,6 +29,7 @@
   {
     "listing": "/blog.html",
     "items": [
+      "/posts/2026-11-21-targetfy/index.html",
       "/posts/2026-11-20-fourier-transform-gif/index.html",
       "/posts/2026-11-20-targetsboard/index.html",
       "/posts/2026-11-20-learning-rate/index.html",

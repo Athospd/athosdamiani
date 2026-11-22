@@ -67,7 +67,7 @@
     "href": "projects.html#ai-tooling",
     "title": "Projects",
     "section": "AI tooling",
-    "text": "AI tooling\n\ntargetfy\n\nA Claude Code skill that converts R scripts into an equivalent {targets} pipeline. It leaves your scripts untouched and accepts the conversion only when both versions give the same results."
+    "text": "AI tooling\n\ntargetfy\n\nA Claude Code skill that converts R scripts into an equivalent {targets} pipeline. It leaves your scripts untouched and accepts the conversion only when both versions give the same results. ▶ Watch the video"
   },
   {
     "objectID": "projects.html#data-ingestion-apis",

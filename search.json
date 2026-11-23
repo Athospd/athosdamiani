@@ -53,14 +53,21 @@
     "href": "projects.html",
     "title": "Projects",
     "section": "",
-    "text": "tidypredict — XGBoost → SQL\n\nContributed the translation of XGBoost models into SQL, so trained models can be scored inside the database without an R or Python runtime.\n\ntreesnip\n\nLightGBM and CatBoost engines for the tidymodels framework.\n\nembed — step_woe()\n\nContributed a weight-of-evidence preprocessing step, used in credit-risk feature engineering."
+    "text": "targetsboard · v0.1.0\n\nAn experimental visual board for {targets} pipelines. Follow target status as a pipeline runs, inspect values and dependencies, and investigate warnings or errors with debugging context. ▶ Watch the demo"
+  },
+  {
+    "objectID": "projects.html#r-reproducible-workflows",
+    "href": "projects.html#r-reproducible-workflows",
+    "title": "Projects",
+    "section": "",
+    "text": "targetsboard · v0.1.0\n\nAn experimental visual board for {targets} pipelines. Follow target status as a pipeline runs, inspect values and dependencies, and investigate warnings or errors with debugging context. ▶ Watch the demo"
   },
   {
     "objectID": "projects.html#data-ml-engineering",
     "href": "projects.html#data-ml-engineering",
     "title": "Projects",
-    "section": "",
-    "text": "tidypredict — XGBoost → SQL\n\nContributed the translation of XGBoost models into SQL, so trained models can be scored inside the database without an R or Python runtime.\n\ntreesnip\n\nLightGBM and CatBoost engines for the tidymodels framework.\n\nembed — step_woe()\n\nContributed a weight-of-evidence preprocessing step, used in credit-risk feature engineering."
+    "section": "Data & ML engineering",
+    "text": "Data & ML engineering\n\ntidypredict — XGBoost → SQL\n\nContributed the translation of XGBoost models into SQL, so trained models can be scored inside the database without an R or Python runtime.\n\ntreesnip\n\nLightGBM and CatBoost engines for the tidymodels framework.\n\nembed — step_woe()\n\nContributed a weight-of-evidence preprocessing step, used in credit-risk feature engineering."
   },
   {
     "objectID": "projects.html#ai-tooling",
@@ -68,13 +75,6 @@
     "title": "Projects",
     "section": "AI tooling",
     "text": "AI tooling\n\ntargetfy\n\nA Claude Code skill that converts R scripts into an equivalent {targets} pipeline. It leaves your scripts untouched and accepts the conversion only when both versions give the same results. ▶ Watch the video"
-  },
-  {
-    "objectID": "projects.html#r-reproducible-workflows",
-    "href": "projects.html#r-reproducible-workflows",
-    "title": "Projects",
-    "section": "R & reproducible workflows",
-    "text": "R & reproducible workflows\n\ntargetsboard · v0.1.0\n\nAn experimental visual board for {targets} pipelines. Follow target status as a pipeline runs, inspect values and dependencies, and investigate warnings or errors with debugging context. ▶ Watch the demo"
   },
   {
     "objectID": "projects.html#data-ingestion-apis",

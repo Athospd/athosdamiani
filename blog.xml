@@ -10,7 +10,95 @@
 <atom:link href="https://athospd.github.io/athosdamiani/blog.xml" rel="self" type="application/rss+xml"/>
 <description>Notes on data science, data engineering and code — written in Quarto with R and Python.</description>
 <generator>quarto-1.11.9</generator>
-<lastBuildDate>Sat, 21 Nov 2026 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sun, 22 Nov 2026 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>targetsboard 0.1.0: a live view of your {targets} pipeline</title>
+  <dc:creator>Athos Damiani</dc:creator>
+  <link>https://athospd.github.io/athosdamiani/posts/2026-11-22-targetsboard-v0-1-0/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>A {targets} pipeline makes an analysis easier to reproduce: each target is a named step, dependencies form a graph, and cached results let <code>tar_make()</code> focus work where it is needed. But when a pipeline is running, it can still be useful to see its state, understand what changed, and trace a warning or error back to the code that produced it.</p>
+<p>That is the problem I wanted to explore with <a href="https://github.com/Athospd/targetsboard"><strong>targetsboard</strong></a>, a graphical companion for authors of <a href="https://docs.ropensci.org/targets/">{targets}</a> pipelines. I have released its first version, <strong>v0.1.0</strong>. This post is a short introduction for researchers, data scientists and data engineers who already use <code>targets</code> or are curious about making analytical workflows easier to inspect and operate.</p>
+<p>The package is still experimental and at an early stage. The board is intended to help you understand a pipeline while working on it; it does not replace the pipeline script, the store, version control, or the decisions that make an analysis reproducible.</p>
+<section id="what-the-board-shows" class="level2">
+<h2 class="anchored" data-anchor-id="what-the-board-shows">What the board shows</h2>
+<p><code>targetsboard</code> draws the pipeline as a directed graph. Nodes show whether targets are up to date, outdated, running or in error. Focus a target to see its place in the dependency graph and preview its value. The board also surfaces warnings and errors, with supporting information such as a traceback and code you can use to reproduce or debug a target.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://athospd.github.io/athosdamiani/posts/2026-11-22-targetsboard-v0-1-0/board-running.png" class="img-fluid figure-img"></p>
+<figcaption>targetsboard while a pipeline is running: target statuses are visible in the graph, and the selected problem shows its error, traceback and reproducible code in the side pane.</figcaption>
+</figure>
+</div>
+<p>This view connects a few familiar reproducibility and MLOps concerns to the work of an R analysis: <strong>lineage</strong> is visible in the dependency graph, <strong>run status</strong> is visible as work progresses, and <strong>debugging context</strong> is attached to the target that needs attention. The graph is a way to inspect the pipeline, not a substitute for recording code, data inputs and environment details in your project.</p>
+</section>
+<section id="try-it-with-an-existing-project" class="level2">
+<h2 class="anchored" data-anchor-id="try-it-with-an-existing-project">Try it with an existing project</h2>
+<p>Install the released package from GitHub:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1">remotes<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">install_github</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Athospd/targetsboard@v0.1.0"</span>)</span></code></pre></div></div>
+<p>Open an R session in a project that already has a <code>{targets}</code> pipeline, then start the board:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(targetsboard)</span>
+<span id="cb2-2"></span>
+<span id="cb2-3">app <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tar_board</span>()</span></code></pre></div></div>
+<p><code>tar_board()</code> starts the board in a background R process and opens it in your browser. It uses the targets script and store configured for the current project, just as <code>tar_watch()</code> does. You can then run the pipeline from R as usual:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">targets<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tar_make</span>()</span></code></pre></div></div>
+<p>As targets run, watch their statuses update on the graph. Select a node to inspect its dependencies and value. If something warns or errors, open its problem details to review the message and traceback, then use the provided code to reproduce the target or start a debug run.</p>
+<p>You can also start a run from the board. <strong>Run all</strong> builds the pipeline; target menus and selection let you run or invalidate a target, or work with a group. The <strong>Problems</strong> and <strong>Log</strong> tabs collect issues and output from the latest board run. The board’s run controls include options to continue after errors or treat warnings as errors, which can help reveal multiple issues or stop at a warning with a debugging workspace.</p>
+<p>When you are finished, close the board with its power button or stop its background process from R:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">app<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">kill</span>()</span></code></pre></div></div>
+<p>The pipeline remains defined by your <code>targets</code> project. <code>targetsboard</code> does not silently rewrite <code>_targets.R</code>; the controls start runs or invalidation through <code>targets</code> and help you inspect what happened. This keeps the project script as the place to review how the analysis is built.</p>
+</section>
+<section id="see-it-in-action" class="level2">
+<h2 class="anchored" data-anchor-id="see-it-in-action">See it in action</h2>
+<p>The short demo follows a pipeline run, changes the graph layout, previews target values, and finds, fixes and rebuilds after an error:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="https://www.youtube.com/watch?v=pEsTN9rke2U"><img src="https://img.youtube.com/vi/pEsTN9rke2U/hqdefault.jpg" class="img-fluid figure-img"></a></p>
+<figcaption>Watch the targetsboard demo on YouTube</figcaption>
+</figure>
+</div>
+</section>
+<section id="first-release-early-project" class="level2">
+<h2 class="anchored" data-anchor-id="first-release-early-project">First release, early project</h2>
+<p>Version 0.1.0 turns an earlier prototype into a board for following and operating a pipeline during development. It includes graph and status views, target and group actions, problem and run logs, value previews, and debugging support. It also remembers graph layout and includes example pipelines for trying different situations.</p>
+<p>This is the first release, not a claim that every workflow or large pipeline is covered. The repository describes the package as experimental and notes that performance and usability still need work. If you try it, please share issues and ideas on <a href="https://github.com/Athospd/targetsboard">GitHub</a>. The code and installation instructions are in the <a href="https://github.com/Athospd/targetsboard">targetsboard repository</a>.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>r</category>
+  <category>targets</category>
+  <category>reproducibility</category>
+  <category>mlops</category>
+  <category>packages</category>
+  <guid>https://athospd.github.io/athosdamiani/posts/2026-11-22-targetsboard-v0-1-0/</guid>
+  <pubDate>Sun, 22 Nov 2026 00:00:00 GMT</pubDate>
+  <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-22-targetsboard-v0-1-0/thumbnail.svg" medium="image" type="image/svg+xml"/>
+</item>
 <item>
   <title>targetfy: turn your R scripts into a {targets} pipeline</title>
   <dc:creator>Athos Damiani</dc:creator>
@@ -10913,667 +11001,6 @@ font-style: inherit;">30</span>))</span></code></pre></div></div>
   <guid>https://athospd.github.io/athosdamiani/posts/2017-07-06-tidywoe/</guid>
   <pubDate>Thu, 06 Jul 2017 00:00:00 GMT</pubDate>
   <media:content url="https://athospd.github.io/athosdamiani/posts/2017-07-06-tidywoe/tidywoe_hex2.webp" medium="image" type="image/webp"/>
-</item>
-<item>
-  <title>Principal Components: Intuition</title>
-  <dc:creator>Athos Damiani</dc:creator>
-  <link>https://athospd.github.io/athosdamiani/posts/2017-06-24-componentes-principais-intuicao/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<p>Principal components are widely used in statistical modeling, but their rigorous mathematical definition makes PCA look like a more abstract concept than we can grasp, especially when people say <strong>“maximize the total variance”</strong> and <strong>“reduce the dimensionality”</strong>. The first reaction is a big “HUH?”.</p>
-<p>Below are some 3D plots that give a good illustration of what these two statements mean and, even though it’s a simple example, they’ll help extrapolate the idea to more complex problems.</p>
-<ol type="1">
-<li>The first plot is the representation with <strong>100% of the information</strong> in three dimensions.</li>
-<li>The second plot is how the same dataset looks with one dimension less (<strong>dimensionality reduction</strong>).</li>
-<li>When we drop a dimension, we lose information (it’s no longer <strong>100% of the total variance</strong>), and this loss is measured by the variance explained by the dimensions we left behind.</li>
-<li>The first two dimensions project the data so that they show the <strong>maximum total variance</strong> possible in only two dimensions.</li>
-</ol>
-<p><strong>packages for the examples</strong></p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(magrittr)</span>
-<span id="cb1-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(tidyr)</span>
-<span id="cb1-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(dplyr)</span></code></pre></div></div>
-</div>
-<p>Note: don’t forget to rotate the plots! =)</p>
-<section id="example-1---tetrahedron" class="level2">
-<h2 class="anchored" data-anchor-id="example-1---tetrahedron">Example 1 - Tetrahedron</h2>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">a <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span></span>
-<span id="cb2-2">tetraedro <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">data.frame</span>( <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(a <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sqrt</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>)<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>, <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> a <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sqrt</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>)<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">6</span>, <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> a <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sqrt</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>)<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">6</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>),</span>
-<span id="cb2-3">                         <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> a<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>, a<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>),</span>
-<span id="cb2-4">                         <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">z =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, a <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sqrt</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">6</span>)<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>),</span>
-<span id="cb2-5">                         <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">cor =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"a"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"b"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"c"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"d"</span>),</span>
-<span id="cb2-6">                         <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">id =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>)</span>
-<span id="cb2-7"></span>
-<span id="cb2-8">tetraedro_linhas <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">combn</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> tetraedro<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>id, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">m =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb2-9">  t <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb2-10">  as.data.frame.matrix <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb2-11">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set_names</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"id1"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"id2"</span>)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb2-12">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">id_par =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">n</span>()) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb2-13">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">gather</span>(id_ordem, id, id1, id2) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb2-14">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">left_join</span>(tetraedro, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">by =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"id"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb2-15">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">arrange</span>(id_ordem)</span></code></pre></div></div>
-</div>
-<p><strong>Contribution of the components to the total variance</strong></p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">tetraedro_pc <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">prcomp</span>(tetraedro <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span> dplyr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">select</span>(x, y, z)) <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># PCA happens here</span></span>
-<span id="cb3-2">knitr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">kable</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">summary</span>(tetraedro_pc)<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>importance)</span></code></pre></div></div>
-<div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
-<thead>
-<tr class="header">
-<th style="text-align: left;"></th>
-<th style="text-align: right;">PC1</th>
-<th style="text-align: right;">PC2</th>
-<th style="text-align: right;">PC3</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">Standard deviation</td>
-<td style="text-align: right;">0.4082483</td>
-<td style="text-align: right;">0.4082483</td>
-<td style="text-align: right;">0.4082483</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Proportion of Variance</td>
-<td style="text-align: right;">0.3333300</td>
-<td style="text-align: right;">0.3333300</td>
-<td style="text-align: right;">0.3333300</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Cumulative Proportion</td>
-<td style="text-align: right;">0.3333300</td>
-<td style="text-align: right;">0.6666700</td>
-<td style="text-align: right;">1.0000000</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><strong>3 dimensions (100% of the variance)</strong></p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(plotly)</span>
-<span id="cb4-2"></span>
-<span id="cb4-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">plot_ly</span>(tetraedro_linhas, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>x, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>y, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">z =</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>z) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb4-4">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">add_lines</span>() <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb4-5">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">add_markers</span>()</span></code></pre></div></div>
-<div class="cell-output-display">
-<div class="plotly html-widget html-fill-item" id="htmlwidget-f723208b5186d5c083a4" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-f723208b5186d5c083a4">{"x":{"visdat":{"1d554a51a46":["function () ","plotlyVisDat"]},"cur_data":"1d554a51a46","attrs":{"1d554a51a46":{"x":{},"y":{},"z":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","mode":"lines","inherit":true},"1d554a51a46.1":{"x":{},"y":{},"z":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","mode":"markers","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"xaxis":{"title":"x"},"yaxis":{"title":"y"},"zaxis":{"title":"z"}},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[-0.28867513459481287,-0.28867513459481287,-0.28867513459481287,-0.28867513459481287,-0.28867513459481287,-0.28867513459481287,0,0,0,0.57735026918962573,0.57735026918962573,0.57735026918962573],"y":[-0.5,-0.5,0.5,-0.5,0.5,0.5,0,0,0,0,0,0],"z":[0,0,0,0,0,0,0.81649658092772592,0.81649658092772592,0.81649658092772592,0,0,0],"type":"scatter3d","mode":"lines","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"frame":null},{"x":[0.57735026918962573,0.57735026918962573,0.57735026918962573,-0.28867513459481287,-0.28867513459481287,-0.28867513459481287,-0.28867513459481287,-0.28867513459481287,0,-0.28867513459481287,0,0],"y":[0,0,0,-0.5,-0.5,0.5,-0.5,0.5,0,0.5,0,0],"z":[0,0,0,0,0,0,0,0,0.81649658092772592,0,0.81649658092772592,0.81649658092772592],"type":"scatter3d","mode":"markers","marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"line":{"color":"rgba(255,127,14,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-</div>
-</div>
-<p><strong>2 dimensions (67% of the variance)</strong></p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">tetraedro_pc_pred <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> tetraedro_pc <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span> predict <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span> as.data.frame</span>
-<span id="cb5-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">plot_ly</span>(tetraedro_pc_pred, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>PC2, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>PC3, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">z =</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>PC3) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb5-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">add_lines</span>() <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb5-4">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">add_markers</span>()</span></code></pre></div></div>
-<div class="cell-output-display">
-<div class="plotly html-widget html-fill-item" id="htmlwidget-54a7f0f2a9cff9827191" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-54a7f0f2a9cff9827191">{"x":{"visdat":{"1d55414c353b2":["function () ","plotlyVisDat"]},"cur_data":"1d55414c353b2","attrs":{"1d55414c353b2":{"x":{},"y":{},"z":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","mode":"lines","inherit":true},"1d55414c353b2.1":{"x":{},"y":{},"z":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","mode":"markers","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"xaxis":{"title":"PC2"},"yaxis":{"title":"PC3"},"zaxis":{"title":"PC3"}},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[-0.20412414523193148,-0.20412414523193148,-0.20412414523193148,0.61237243569579447],"y":[-0.57735026918962573,0.28867513459481287,0.28867513459481287,0],"z":[-0.57735026918962573,0.28867513459481287,0.28867513459481287,0],"type":"scatter3d","mode":"lines","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"frame":null},{"x":[-0.20412414523193148,-0.20412414523193148,-0.20412414523193148,0.61237243569579447],"y":[-0.57735026918962573,0.28867513459481287,0.28867513459481287,0],"z":[-0.57735026918962573,0.28867513459481287,0.28867513459481287,0],"type":"scatter3d","mode":"markers","marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"line":{"color":"rgba(255,127,14,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-</div>
-</div>
-</section>
-<section id="example-2---a-cool-shape" class="level2">
-<h2 class="anchored" data-anchor-id="example-2---a-cool-shape">Example 2 - A cool shape</h2>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1">x <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>()</span>
-<span id="cb6-2">y <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>()</span>
-<span id="cb6-3">z <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>()</span>
-<span id="cb6-4">c <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>()</span>
-<span id="cb6-5"></span>
-<span id="cb6-6"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> (i <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">62</span>) {</span>
-<span id="cb6-7">  r <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cos</span>(i <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20</span>)</span>
-<span id="cb6-8">  x <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(x, r <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cos</span>(i))</span>
-<span id="cb6-9">  y <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(y, r <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sin</span>(i))</span>
-<span id="cb6-10">  z <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(z, i)</span>
-<span id="cb6-11">  c <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(c, i)</span>
-<span id="cb6-12">}</span>
-<span id="cb6-13"></span>
-<span id="cb6-14">forma_legal <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">data.frame</span>(x, y, z, c)</span></code></pre></div></div>
-</div>
-<p><strong>Contribution of the components to the total variance</strong></p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1">forma_legal_pc <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">prcomp</span>(forma_legal <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span> dplyr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">select</span>(x, y, z)) <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># PCA happens here</span></span>
-<span id="cb7-2">knitr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">kable</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">summary</span>(forma_legal_pc)<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>importance)</span></code></pre></div></div>
-<div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
-<thead>
-<tr class="header">
-<th style="text-align: left;"></th>
-<th style="text-align: right;">PC1</th>
-<th style="text-align: right;">PC2</th>
-<th style="text-align: right;">PC3</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">Standard deviation</td>
-<td style="text-align: right;">18.04936</td>
-<td style="text-align: right;">10.13750</td>
-<td style="text-align: right;">9.854732</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Proportion of Variance</td>
-<td style="text-align: right;">0.61975</td>
-<td style="text-align: right;">0.19550</td>
-<td style="text-align: right;">0.184750</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Cumulative Proportion</td>
-<td style="text-align: right;">0.61975</td>
-<td style="text-align: right;">0.81525</td>
-<td style="text-align: right;">1.000000</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><strong>3 dimensions (100% of the variance)</strong></p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">plot_ly</span>(forma_legal, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>x, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>y, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">z =</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>z, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"scatter3d"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">mode =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"markers+lines"</span>,</span>
-<span id="cb8-2">        <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">line =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">list</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">width =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">6</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">color =</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>c, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colorscale =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Viridis'</span>),</span>
-<span id="cb8-3">        <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">marker =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">list</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">size =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3.5</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">color =</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>c, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colorscale =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Greens'</span>,</span>
-<span id="cb8-4">                      <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">cmin =</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">cmax =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">50</span>))</span></code></pre></div></div>
-<div class="cell-output-display">
-<div class="plotly html-widget html-fill-item" id="htmlwidget-cfee95381032b5f7f88d" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-cfee95381032b5f7f88d">{"x":{"visdat":{"1d554ebb23bd":["function () ","plotlyVisDat"]},"cur_data":"1d554ebb23bd","attrs":{"1d554ebb23bd":{"x":{},"y":{},"z":{},"mode":"markers+lines","line":{"width":6,"color":{},"colorscale":"Viridis"},"marker":{"size":3.5,"color":{},"colorscale":"Greens","cmin":-20,"cmax":50},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"xaxis":{"title":"x"},"yaxis":{"title":"y"},"zaxis":{"title":"z"}},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[10.792541373556107,-8.2813567146336098,-19.577518960244319,-12.812285332551163,5.4968763012981725,18.345714212225747,14.163904117684492,-2.6802881153442994,-16.40849208359786,-14.72709084192371,0.075460321240854236,13.929254518488953,14.448073615159741,2.0916478611455167,-11.117103793135696,-13.344155704224436,-3.6320633095901154,8.2091889612038447,11.502255137480622,4.4097535796240086,-5.4506844394149923,-9.07156704860245,-4.353111937891315,3.0740910518955737,6.2509682449924702,3.4610032187504634,-1.2796070534421031,-3.2722273767265659,-1.8028600794727121,0.21822631836467205,0.38043819629479975,-0.48717847238731893,0.021009360815016032,2.1866721585767368,3.2215914215750581,0.58147236656004808,-4.2188129499713556,-6.1753068941359555,-1.9741220474989305,5.5508832905894359,9.1047035597969952,4.0386205633803227,-6.0769104159475082,-11.768178084388957,-6.5998683362309505,5.7589960320544238,13.946542214371545,9.4407682592777888,-4.6305154384986338,-15.461527458922742,-12.32055429509874,2.7932993393332683,16.190835102122207,14.995118339847984,-0.40903626888692884,-16.078460940078756,-17.237619247369775,-2.3143785127533052,15.139423071678529,18.857634085517432,5.1403951528895373,-13.458493596766125],"y":[16.808387303833907,18.095094543362887,2.7907076497539571,-14.834336633563069,-18.5822728240197,-5.3387164211328777,12.343105670856822,18.225185801197672,7.4218179172382825,-9.5484688043347941,-17.050323458076498,-8.8570547844353875,6.6897634140410664,15.153165933395359,9.516167484139217,-4.0116834472770515,-12.690122822732031,-9.3364231727483027,1.7436207671394468,9.8653284819900851,8.3259124558181465,-0.080298391273307554,-6.9134081465094557,-6.5628668351876893,-0.83466933015956046,4.0796698452214821,4.1890544739080404,0.92090165667652057,-1.5993944178736981,-1.3978118449504959,-0.16803786520920139,-0.32202791352884846,-1.5822783020016302,-1.3633878226730454,1.5264374387031803,4.5066846594916825,3.5470566602568367,-1.9162573888581858,-7.1355715469435657,-6.2015296920624854,1.4627316163828821,9.2540466649407875,9.1055656266128544,-0.20835205404212692,-10.690302991882886,-12.016799046159107,-1.736728985816248,11.330123183906796,14.692202035717482,4.2039987784992654,-11.126521936531649,-16.908601747659556,-6.9808112660148298,10.103712246619141,18.481521695709663,9.8283401192882849,-8.355060720936681,-19.280756092227548,-12.50174208682674,6.0352045555063176,19.241362357189434,14.770828328514572],"z":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62],"mode":"markers+lines","line":{"color":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62],"width":6,"colorscale":"Viridis"},"marker":{"color":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62],"size":3.5,"colorscale":"Greens","cmin":-20,"cmax":50,"line":{"color":"rgba(31,119,180,1)"}},"type":"scatter3d","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-</div>
-</div>
-<p><strong>2 dimensions (82% of the variance)</strong></p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1">forma_legal_pc_pred <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> forma_legal_pc <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span> predict <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span> as.data.frame</span>
-<span id="cb9-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">plot_ly</span>(forma_legal_pc_pred, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>PC1, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y =</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>PC2, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">z =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'scatter3d'</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">mode =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'lines+markers'</span>,</span>
-<span id="cb9-3">        <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">line =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">list</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">width =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">6</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">color =</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>c, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colorscale =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Viridis'</span>),</span>
-<span id="cb9-4">        <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">marker =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">list</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">size =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3.5</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">color =</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>c, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">colorscale =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Greens'</span>,</span>
-<span id="cb9-5">                      <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">cmin =</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">cmax =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">50</span>))</span></code></pre></div></div>
-<div class="cell-output-display">
-<div class="plotly html-widget html-fill-item" id="htmlwidget-544d732a4e2545e623ac" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-544d732a4e2545e623ac">{"x":{"visdat":{"1d55419e5145d":["function () ","plotlyVisDat"]},"cur_data":"1d55419e5145d","attrs":{"1d55419e5145d":{"x":{},"y":{},"z":1,"mode":"lines+markers","line":{"width":6,"color":{},"colorscale":"Viridis"},"marker":{"size":3.5,"color":{},"colorscale":"Greens","cmin":-20,"cmax":50},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"xaxis":{"title":"PC1"},"yaxis":{"title":"PC2"},"zaxis":{"title":[]}},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[-30.056063248044843,-29.717298190478211,-29.156336835555514,-27.973056882292369,-26.346910771292041,-24.861062420788365,-23.955409358152085,-23.525480662871946,-23.036015821015276,-22.02789847573014,-20.534923268341075,-19.028901333361159,-17.965781133096179,-17.371948631061183,-16.849216601992417,-15.967132675746765,-14.65492934540841,-13.233223736127732,-12.08658638185684,-11.310398687705529,-10.659000418535417,-9.8104262176636645,-8.666747142002972,-7.4076164281344585,-6.2807440813417834,-5.3641054620409934,-4.5295254572558861,-3.6091439460610784,-2.565974356809849,-1.4955928304117123,-0.48694195026766607,0.48177286245790901,1.4951622231385175,2.5706306228081037,3.6145559812003265,4.5307339814975611,5.3600957474455138,6.2752887036841116,7.4056892018605724,8.6699403503148158,9.8156287942155664,10.661432568735018,11.308030187194978,12.081820656351873,13.23045330930281,14.656443721867413,15.971221472385007,16.852036213461954,17.371152896171289,17.962461471759312,19.026236021226687,20.535105644046407,22.030328791372856,23.03824249259717,23.525661822737693,23.953822823004373,24.859431936327255,26.346555688423717,27.973823471109185,29.157170037739348,29.71753017324993,30.055932883756292],"y":[-15.225275818464533,-18.109729668391502,-3.8083672831796389,14.322690004206434,19.595432633505311,7.4780490874895378,-10.492565139294003,-17.768843395903843,-8.1568932437882182,8.894655546020136,17.613476535953531,10.612950750339007,-4.8353316017819363,-14.306815231220073,-9.7993369169380635,3.4936158174205976,12.957240824693894,10.610115202151217,-0.15413180407871629,-8.8429345924221856,-8.1372815337752158,-0.064953946676285512,7.1403755419682522,7.4149927899486734,1.9739150000716781,-3.1574232938763127,-3.6646539468942678,-0.57544173437617518,2.059379990306951,2.0282908459950955,0.81649057881835174,0.89705291592834957,2.1955392646839398,2.1593484724818794,-0.63332397764796811,-3.8248188717037341,-3.2718284413216701,2.0078206965345999,7.5616056851551043,7.2630006958943429,-0.075632674173061964,-8.2649821492800069,-8.9667766143829137,-0.16387245510622717,10.715190758537863,13.075199861179156,3.5192579146660674,-9.8799130643881163,-14.412160271960502,-4.8708833291689917,10.669306167530983,17.70058192388338,8.9333374240101833,-8.1912439036288021,-17.833460220511657,-10.527167709794824,7.4945872413127379,19.635285408221886,14.346432570523339,-3.812645608952892,-18.124435178956723,-15.232094527393429],"z":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],"mode":"lines+markers","line":{"color":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62],"width":6,"colorscale":"Viridis"},"marker":{"color":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62],"size":3.5,"colorscale":"Greens","cmin":-20,"cmax":50,"line":{"color":"rgba(31,119,180,1)"}},"type":"scatter3d","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-</div>
-</div>
-</section>
-<section id="learn-more" class="level2">
-<h2 class="anchored" data-anchor-id="learn-more">Learn more</h2>
-<p>My favorite book on this subject (and many others) is <a href="http://www-bcf.usc.edu/~gareth/ISL/ISLR%20Seventh%20Printing.pdf">An Introduction to Statistical Learning</a>.</p>
-<p>cheers</p>
-
-
-</section>
-
- ]]></description>
-  <category>concepts</category>
-  <category>pca</category>
-  <category>principal components</category>
-  <category>plotly</category>
-  <guid>https://athospd.github.io/athosdamiani/posts/2017-06-24-componentes-principais-intuicao/</guid>
-  <pubDate>Sat, 24 Jun 2017 00:00:00 GMT</pubDate>
-  <media:content url="https://athospd.github.io/athosdamiani/posts/2017-06-24-componentes-principais-intuicao/componentes_principais.webp" medium="image" type="image/webp"/>
 </item>
 </channel>
 </rss>

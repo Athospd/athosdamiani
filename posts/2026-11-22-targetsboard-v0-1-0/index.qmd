@@ -4,7 +4,7 @@ description: "An introductory look at targetsboard 0.1.0: follow pipeline runs, 
 date: 2026-11-22
 author: "Athos Damiani"
 categories: [r, targets, reproducibility, mlops, packages]
-image: thumbnail.svg
+image: thumbnail.png
 ---
 
 A {targets} pipeline makes an analysis easier to reproduce: each target is a named step, dependencies form a graph, and cached results let `tar_make()` focus work where it is needed. But when a pipeline is running, it can still be useful to see its state, understand what changed, and trace a warning or error back to the code that produced it.

@@ -70,6 +70,13 @@
     "text": "AI tooling\n\ntargetfy\n\nA Claude Code skill that converts R scripts into an equivalent {targets} pipeline. It leaves your scripts untouched and accepts the conversion only when both versions give the same results. ▶ Watch the video"
   },
   {
+    "objectID": "projects.html#r-reproducible-workflows",
+    "href": "projects.html#r-reproducible-workflows",
+    "title": "Projects",
+    "section": "R & reproducible workflows",
+    "text": "R & reproducible workflows\n\ntargetsboard · v0.1.0\n\nAn experimental visual board for {targets} pipelines. Follow target status as a pipeline runs, inspect values and dependencies, and investigate warnings or errors with debugging context. ▶ Watch the demo"
+  },
+  {
     "objectID": "projects.html#data-ingestion-apis",
     "href": "projects.html#data-ingestion-apis",
     "title": "Projects",

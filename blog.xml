@@ -97,7 +97,7 @@ font-style: inherit;">kill</span>()</span></code></pre></div></div>
   <category>packages</category>
   <guid>https://athospd.github.io/athosdamiani/posts/2026-11-22-targetsboard-v0-1-0/</guid>
   <pubDate>Sun, 22 Nov 2026 00:00:00 GMT</pubDate>
-  <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-22-targetsboard-v0-1-0/thumbnail.svg" medium="image" type="image/svg+xml"/>
+  <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-22-targetsboard-v0-1-0/thumbnail.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 <item>
   <title>targetfy: turn your R scripts into a {targets} pipeline</title>

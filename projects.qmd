@@ -19,6 +19,11 @@ description: "Open-source contributions and personal projects, mostly in R."
 **[targetfy](https://github.com/Athospd/targetfy)**
 : A Claude Code skill that converts R scripts into an equivalent [{targets}](https://books.ropensci.org/targets/) pipeline. It leaves your scripts untouched and accepts the conversion only when both versions give the same results. [▶ Watch the video](https://www.youtube.com/watch?v=f4F8yNo_d8Y)
 
+## R & reproducible workflows
+
+**[targetsboard](https://github.com/Athospd/targetsboard) · v0.1.0**
+: An experimental visual board for [{targets}](https://docs.ropensci.org/targets/) pipelines. Follow target status as a pipeline runs, inspect values and dependencies, and investigate warnings or errors with debugging context. [▶ Watch the demo](https://www.youtube.com/watch?v=pEsTN9rke2U)
+
 ## Data ingestion & APIs
 
 **[wikiaves](https://github.com/athospd/wikiaves)**

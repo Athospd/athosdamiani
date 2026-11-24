@@ -41,7 +41,7 @@ Live at https://athospd.github.io/athosdamiani/. The owner is Athos Damiani, a d
 ## Site pages
 
 - `projects.qmd`: a definition list per section. Each entry is `**[name](repo)**` followed by a `: description` line. Keep descriptions **under 300 characters**. Put extra links, such as a video or a post, at the end of the description line (`[▶ Watch the video](…)`).
-- `blog.qmd`: the listing of `posts/` (search, sort, a list/cards switch). `index.qmd`: home, which lists all posts.
+- `blog.qmd`: the listing of `posts/` (search, sort, a list/cards switch). `index.qmd`: home. Its "Latest posts" section shows only the **3 newest posts** (`max-items: 3` in the `latest` listing), followed by a "See all posts →" link to `blog.qmd`, which is the only page that lists every post. Keep `max-items: 3`, even when adding a post or reworking the home page. An agent once removed it (commit 4f21e79), and the home page showed the whole blog.
 - Theme profile is `pixel` (`_quarto.yml` → `_quarto-pixel.yml`). CSS is in `theme/pixel.scss`, and palettes are in `theme/pixel-dark.scss` and `theme/pixel-light.scss`. `h2` headings get automatic `01/02…` numbers.
 - Design rules: professional, not childish. Keep it compact. The pixel font is for tiny labels only. Borders are 2px pixel rings, dividers are dashed, and there are no rounded corners.
 - `_quarto.yml` includes GoatCounter and the Search Console verification meta tag. Don't remove them.

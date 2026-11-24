@@ -368,287 +368,6 @@ font-style: inherit;">git</span> clone https://github.com/Athospd/targetfy.git ~
   <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-21-targetfy/targetfy.png" medium="image" type="image/png" height="81" width="144"/>
 </item>
 <item>
-  <title>Winding a cosine around a circle: the Fourier transform in a GIF</title>
-  <dc:creator>Athos Damiani</dc:creator>
-  <link>https://athospd.github.io/athosdamiani/posts/2026-11-20-fourier-transform-gif/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<p>A while ago I <a href="https://www.linkedin.com/posts/athosdamiani_rstats-rstats-python-share-6961686612699168768-cPvc/">posted on LinkedIn</a> an #rstats GIF inspired by 3Blue1Brown’s <a href="https://www.youtube.com/watch?v=spUNpyF58BY">But what is the Fourier Transform? A visual introduction</a>. This post is that GIF, with the <a href="https://gist.github.com/Athospd/e554e9090564984a527bb81db1728b0c">code</a> behind it.</p>
-<p><img src="https://athospd.github.io/athosdamiani/posts/2026-11-20-fourier-transform-gif/fourier.gif" class="img-fluid"></p>
-<section id="the-idea" class="level2">
-<h2 class="anchored" data-anchor-id="the-idea">The idea</h2>
-<p>Take a signal <img src="https://latex.codecogs.com/png.latex?g(t)">, here <img src="https://latex.codecogs.com/png.latex?g(t)%20=%20%5Ccos(20t)"> for <img src="https://latex.codecogs.com/png.latex?t"> between 0 and 1, and wrap it around the origin of the complex plane. Each point of the signal becomes <img src="https://latex.codecogs.com/png.latex?g(t)%5C,e%5E%7Bi%5Comega%20t%7D">: the angle comes from <img src="https://latex.codecogs.com/png.latex?t"> and the winding frequency <img src="https://latex.codecogs.com/png.latex?%5Comega">, and the distance from the origin comes from <img src="https://latex.codecogs.com/png.latex?g(t)">.</p>
-<p>Then take the centre of mass of the wrapped curve, the average of all its points:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7Bg%7D(%5Comega)%20=%20%5Cfrac%7B1%7D%7BT%7D%5Cint_0%5ET%20g(t)%5C,e%5E%7Bi%5Comega%20t%7D%5C,dt%0A"></p>
-<ul>
-<li><strong>left panel</strong>: the wrapped curve for the current <img src="https://latex.codecogs.com/png.latex?%5Comega"> and its centre of mass (red dot).</li>
-<li><strong>right panel</strong>: the real part of the centre of mass as <img src="https://latex.codecogs.com/png.latex?%5Comega"> goes from 0.4 to 40.</li>
-</ul>
-<p>For most winding frequencies the curve spreads evenly around the origin and the centre of mass stays near 0. When <img src="https://latex.codecogs.com/png.latex?%5Comega%20=%2020">, the frequency of the cosine, the peaks of the signal all land on the same side of the circle and the centre of mass jumps to about 0.5. That spike is the frequency showing up in the Fourier transform.</p>
-</section>
-<section id="the-code" class="level2">
-<h2 class="anchored" data-anchor-id="the-code">The code</h2>
-<p><code>f()</code> is the signal and <code>expi()</code> is <img src="https://latex.codecogs.com/png.latex?e%5E%7Bix%7D"> written as <img src="https://latex.codecogs.com/png.latex?%5Ccos%20x%20+%20i%20%5Csin%20x">. For each <code>a</code>, <code>x</code> runs from 0 to <code>a * L</code> and the signal is evaluated at <code>x / (a * L)</code>, which goes from 0 to 1. So <code>expi(x) * f(x / (a * L))</code> is <img src="https://latex.codecogs.com/png.latex?g(t)%5C,e%5E%7Bi%5Comega%20t%7D"> with <img src="https://latex.codecogs.com/png.latex?%5Comega%20=%20a%20L">.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1">f <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(x) <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cos</span>(x<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20</span>)</span>
-<span id="cb1-2">expi <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(x) <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cos</span>(x) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sin</span>(x)<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>i</span>
-<span id="cb1-3">L <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">40</span></span>
-<span id="cb1-4">medias_Re <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>()</span>
-<span id="cb1-5">fs <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>()</span>
-<span id="cb1-6">as <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">seq</span>(<span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.01</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">l =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">140</span>)</span></code></pre></div></div>
-</div>
-<p>The original gist writes the GIF with <code>animation::saveGIF()</code>, which needs ImageMagick, and pauses with <code>Sys.sleep(0.1)</code> between frames. Here <code>gifski::save_gif()</code> records each plot as a frame instead, so <code>par(mfrow = c(1,2))</code> moves inside the block to apply to the GIF’s device.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">gifski<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">save_gif</span>({</span>
-<span id="cb2-2">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">par</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">mfrow =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>))</span>
-<span id="cb2-3">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span>(a <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> as) {</span>
-<span id="cb2-4">    x <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">seq</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, a<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">40</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">l =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">500</span>)</span>
-<span id="cb2-5">    ft <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">expi</span>(x)<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">f</span>(x<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span>(a<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>L))</span>
-<span id="cb2-6">    media_Re <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">Re</span>(ft))</span>
-<span id="cb2-7">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">plot</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">Re</span>(ft), <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">Im</span>(ft), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">xlim =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.2</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.2</span>), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ylim =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.2</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.2</span>), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">main =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"cos(20t) - Mass Center on Complex Plane"</span>)</span>
-<span id="cb2-8">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">points</span>(media_Re, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">Im</span>(ft)), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">col =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"red"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">cex =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">pch =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">16</span> )</span>
-<span id="cb2-9">    medias_Re <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(medias_Re, media_Re)</span>
-<span id="cb2-10">    fs <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(fs, a<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>L)</span>
-<span id="cb2-11">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">plot</span>(fs, medias_Re, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"l"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">xlim =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">40</span>), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ylim =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.11</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.51</span>))</span>
-<span id="cb2-12">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">points</span>(a<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>L, media_Re, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">col =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"red"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">cex =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">pch =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">16</span>)</span>
-<span id="cb2-13">  }</span>
-<span id="cb2-14">}, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">gif_file =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"fourier.gif"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">width =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">600</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">height =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">300</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">delay =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.1</span>)</span></code></pre></div></div>
-</div>
-<p>The video goes further, from this centre-of-mass picture to the Fourier transform formula itself.</p>
-
-
-</section>
-
- ]]></description>
-  <category>concepts</category>
-  <category>r</category>
-  <category>fourier transform</category>
-  <category>animation</category>
-  <guid>https://athospd.github.io/athosdamiani/posts/2026-11-20-fourier-transform-gif/</guid>
-  <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
-  <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-20-fourier-transform-gif/fourier.png" medium="image" type="image/png" height="72" width="144"/>
-</item>
-<item>
   <title>{targetsboard}: a Shiny + React board for {targets} pipelines</title>
   <dc:creator>Athos Damiani</dc:creator>
   <link>https://athospd.github.io/athosdamiani/posts/2026-11-20-targetsboard/</link>
@@ -745,320 +464,6 @@ font-style: inherit;">kill</span>()</span></code></pre></div></div>
   <guid>https://athospd.github.io/athosdamiani/posts/2026-11-20-targetsboard/</guid>
   <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
   <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-20-targetsboard/thumbnail.png" medium="image" type="image/png" height="72" width="144"/>
-</item>
-<item>
-  <title>Gentle introduction to the learning rate parameter</title>
-  <dc:creator>Athos Damiani</dc:creator>
-  <link>https://athospd.github.io/athosdamiani/posts/2026-11-20-learning-rate/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<p>I found an old <a href="https://gist.github.com/Athospd/97f16d5768ef72e87d2840f524597653">gist</a> on my GitHub about the learning rate. It fits a regression line by gradient descent, and it’s oddly satisfying to watch. A bit insightful too.</p>
-<p><img src="https://athospd.github.io/athosdamiani/posts/2026-11-20-learning-rate/learning_rate.gif" class="img-fluid"></p>
-<p>There are three curves, one for each learning rate:</p>
-<ul>
-<li><strong>orange</strong>: too low (<code>lr = 0.001</code>). Each step is tiny, so after 100 steps the curve is still far from the points.</li>
-<li><strong>red</strong>: too high (<code>lr = 2</code>). Each step overshoots, so the curve swings far from the points before it settles.</li>
-<li><strong>blue</strong>: just right (<code>lr = 0.05</code>). The curve moves steadily toward the points and stays there.</li>
-</ul>
-<section id="the-learning-rate" class="level2">
-<h2 class="anchored" data-anchor-id="the-learning-rate">The learning rate</h2>
-<p>Gradient descent updates the model parameters a little at each step, in the direction that lowers the loss:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%5Ctheta_%7Bt+1%7D%20=%20%5Ctheta_t%20-%20%5Ceta%20%5C,%20%5Cnabla%20L(%5Ctheta_t)"></p>
-<p>The learning rate <img src="https://latex.codecogs.com/png.latex?%5Ceta"> is the size of that step. The optimizer below is Adam, which adapts the step for each parameter, but the learning rate still sets its scale.</p>
-</section>
-<section id="the-code" class="level2">
-<h2 class="anchored" data-anchor-id="the-code">The code</h2>
-<p>The data is the <code>cars</code> dataset: stopping distance (<code>dist</code>) as a function of speed. The model is <code>dist ~ speed + speed^2</code>, written as a linear layer with two inputs.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(torch)</span>
-<span id="cb1-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">torch_manual_seed</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb1-3"></span>
-<span id="cb1-4">x <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">torch_tensor</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cbind</span>(cars<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>speed, cars<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>speed<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">^</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>))</span>
-<span id="cb1-5">y <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">torch_tensor</span>(cars<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>dist)<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">unsqueeze</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>)</span>
-<span id="cb1-6">mse <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">nn_mse_loss</span>()</span>
-<span id="cb1-7"></span>
-<span id="cb1-8">model_gen <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(lr) {</span>
-<span id="cb1-9">  lin <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">nn_linear</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># b0, b1 and b2</span></span>
-<span id="cb1-10">  opt <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> torch<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">optim_adam</span>(lin<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>parameters, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">lr =</span> lr)</span>
-<span id="cb1-11">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">return</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">list</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">lin =</span> lin, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">opt =</span> opt))</span>
-<span id="cb1-12">}</span>
-<span id="cb1-13"></span>
-<span id="cb1-14">model_fit <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(model) {</span>
-<span id="cb1-15">  model<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>opt<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">zero_grad</span>()</span>
-<span id="cb1-16"></span>
-<span id="cb1-17">  pred <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> model<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">lin</span>(x) <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># b0 + b1*speed + b2*speed^2</span></span>
-<span id="cb1-18">  custo <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mse</span>(y, pred)</span>
-<span id="cb1-19">  custo<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">backward</span>()</span>
-<span id="cb1-20">  model<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>opt<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">step</span>()</span>
-<span id="cb1-21">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">return</span>(pred)</span>
-<span id="cb1-22">}</span></code></pre></div></div>
-</div>
-<p>Three copies of the same model, one per learning rate:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">model1 <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">model_gen</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>)</span>
-<span id="cb2-2">model2 <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">model_gen</span>(<span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.05</span>)</span>
-<span id="cb2-3">model3 <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">model_gen</span>(<span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.001</span>)</span></code></pre></div></div>
-</div>
-<p>Each iteration takes one optimizer step for each model and draws the three fitted curves. The original gist plots to the screen with <code>Sys.sleep(0.1)</code> between steps. Here <code>gifski::save_gif()</code> records each plot as a frame instead.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">gifski<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">save_gif</span>({</span>
-<span id="cb3-2">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> (i <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>) {</span>
-<span id="cb3-3">    pred1 <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">model_fit</span>(model1)</span>
-<span id="cb3-4">    pred2 <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">model_fit</span>(model2)</span>
-<span id="cb3-5">    pred3 <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">model_fit</span>(model3)</span>
-<span id="cb3-6">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">plot</span>(cars, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">main =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">paste</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"step"</span>, i))</span>
-<span id="cb3-7">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">lines</span>(x[, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>]<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">unsqueeze</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>), pred1, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">col =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"red"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">lwd =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>)</span>
-<span id="cb3-8">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">lines</span>(x[, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>]<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">unsqueeze</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>), pred2, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">col =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"royalblue"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">lwd =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>)</span>
-<span id="cb3-9">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">lines</span>(x[, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>]<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">unsqueeze</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>), pred3, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">col =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"orange"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">lwd =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>)</span>
-<span id="cb3-10">  }</span>
-<span id="cb3-11">}, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">gif_file =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"learning_rate.gif"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">width =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">640</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">height =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">480</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">delay =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.1</span>)</span></code></pre></div></div>
-</div>
-<p>Tune your models, folks!</p>
-
-
-</section>
-
- ]]></description>
-  <category>concepts</category>
-  <category>deep learning</category>
-  <category>torch</category>
-  <category>r</category>
-  <category>optimization</category>
-  <guid>https://athospd.github.io/athosdamiani/posts/2026-11-20-learning-rate/</guid>
-  <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
-  <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-20-learning-rate/learning_rate.png" medium="image" type="image/png" height="108" width="144"/>
 </item>
 <item>
   <title>Dropping highly correlated features can throw away the signal</title>
@@ -1933,6 +1338,1018 @@ font-style: inherit;">2</span>)</span>
   <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-20-feature-selection-by-correlation/feature-selection.png" medium="image" type="image/png" height="101" width="144"/>
 </item>
 <item>
+  <title>Winding a cosine around a circle: the Fourier transform in a GIF</title>
+  <dc:creator>Athos Damiani</dc:creator>
+  <link>https://athospd.github.io/athosdamiani/posts/2026-11-20-fourier-transform-gif/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>A while ago I <a href="https://www.linkedin.com/posts/athosdamiani_rstats-rstats-python-share-6961686612699168768-cPvc/">posted on LinkedIn</a> an #rstats GIF inspired by 3Blue1Brown’s <a href="https://www.youtube.com/watch?v=spUNpyF58BY">But what is the Fourier Transform? A visual introduction</a>. This post is that GIF, with the <a href="https://gist.github.com/Athospd/e554e9090564984a527bb81db1728b0c">code</a> behind it.</p>
+<p><img src="https://athospd.github.io/athosdamiani/posts/2026-11-20-fourier-transform-gif/fourier.gif" class="img-fluid"></p>
+<section id="the-idea" class="level2">
+<h2 class="anchored" data-anchor-id="the-idea">The idea</h2>
+<p>Take a signal <img src="https://latex.codecogs.com/png.latex?g(t)">, here <img src="https://latex.codecogs.com/png.latex?g(t)%20=%20%5Ccos(20t)"> for <img src="https://latex.codecogs.com/png.latex?t"> between 0 and 1, and wrap it around the origin of the complex plane. Each point of the signal becomes <img src="https://latex.codecogs.com/png.latex?g(t)%5C,e%5E%7Bi%5Comega%20t%7D">: the angle comes from <img src="https://latex.codecogs.com/png.latex?t"> and the winding frequency <img src="https://latex.codecogs.com/png.latex?%5Comega">, and the distance from the origin comes from <img src="https://latex.codecogs.com/png.latex?g(t)">.</p>
+<p>Then take the centre of mass of the wrapped curve, the average of all its points:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7Bg%7D(%5Comega)%20=%20%5Cfrac%7B1%7D%7BT%7D%5Cint_0%5ET%20g(t)%5C,e%5E%7Bi%5Comega%20t%7D%5C,dt%0A"></p>
+<ul>
+<li><strong>left panel</strong>: the wrapped curve for the current <img src="https://latex.codecogs.com/png.latex?%5Comega"> and its centre of mass (red dot).</li>
+<li><strong>right panel</strong>: the real part of the centre of mass as <img src="https://latex.codecogs.com/png.latex?%5Comega"> goes from 0.4 to 40.</li>
+</ul>
+<p>For most winding frequencies the curve spreads evenly around the origin and the centre of mass stays near 0. When <img src="https://latex.codecogs.com/png.latex?%5Comega%20=%2020">, the frequency of the cosine, the peaks of the signal all land on the same side of the circle and the centre of mass jumps to about 0.5. That spike is the frequency showing up in the Fourier transform.</p>
+</section>
+<section id="the-code" class="level2">
+<h2 class="anchored" data-anchor-id="the-code">The code</h2>
+<p><code>f()</code> is the signal and <code>expi()</code> is <img src="https://latex.codecogs.com/png.latex?e%5E%7Bix%7D"> written as <img src="https://latex.codecogs.com/png.latex?%5Ccos%20x%20+%20i%20%5Csin%20x">. For each <code>a</code>, <code>x</code> runs from 0 to <code>a * L</code> and the signal is evaluated at <code>x / (a * L)</code>, which goes from 0 to 1. So <code>expi(x) * f(x / (a * L))</code> is <img src="https://latex.codecogs.com/png.latex?g(t)%5C,e%5E%7Bi%5Comega%20t%7D"> with <img src="https://latex.codecogs.com/png.latex?%5Comega%20=%20a%20L">.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1">f <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(x) <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cos</span>(x<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span>)</span>
+<span id="cb1-2">expi <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(x) <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cos</span>(x) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sin</span>(x)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>i</span>
+<span id="cb1-3">L <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">40</span></span>
+<span id="cb1-4">medias_Re <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>()</span>
+<span id="cb1-5">fs <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>()</span>
+<span id="cb1-6">as <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.01</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">l =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">140</span>)</span></code></pre></div></div>
+</div>
+<p>The original gist writes the GIF with <code>animation::saveGIF()</code>, which needs ImageMagick, and pauses with <code>Sys.sleep(0.1)</code> between frames. Here <code>gifski::save_gif()</code> records each plot as a frame instead, so <code>par(mfrow = c(1,2))</code> moves inside the block to apply to the GIF’s device.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">gifski<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">save_gif</span>({</span>
+<span id="cb2-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">par</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mfrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>))</span>
+<span id="cb2-3">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span>(a <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> as) {</span>
+<span id="cb2-4">    x <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, a<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">40</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">l =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">500</span>)</span>
+<span id="cb2-5">    ft <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">expi</span>(x)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">f</span>(x<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>(a<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>L))</span>
+<span id="cb2-6">    media_Re <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mean</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Re</span>(ft))</span>
+<span id="cb2-7">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Re</span>(ft), <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Im</span>(ft), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xlim =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.2</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.2</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ylim =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.2</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.2</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">main =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cos(20t) - Mass Center on Complex Plane"</span>)</span>
+<span id="cb2-8">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">points</span>(media_Re, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mean</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Im</span>(ft)), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">col =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"red"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">cex =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">pch =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">16</span> )</span>
+<span id="cb2-9">    medias_Re <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(medias_Re, media_Re)</span>
+<span id="cb2-10">    fs <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(fs, a<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>L)</span>
+<span id="cb2-11">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot</span>(fs, medias_Re, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"l"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xlim =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">40</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ylim =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.11</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.51</span>))</span>
+<span id="cb2-12">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">points</span>(a<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>L, media_Re, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">col =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"red"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">cex =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">pch =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">16</span>)</span>
+<span id="cb2-13">  }</span>
+<span id="cb2-14">}, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">gif_file =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"fourier.gif"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">width =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">600</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">height =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">300</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">delay =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.1</span>)</span></code></pre></div></div>
+</div>
+<p>The video goes further, from this centre-of-mass picture to the Fourier transform formula itself.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>concepts</category>
+  <category>r</category>
+  <category>fourier transform</category>
+  <category>animation</category>
+  <guid>https://athospd.github.io/athosdamiani/posts/2026-11-20-fourier-transform-gif/</guid>
+  <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
+  <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-20-fourier-transform-gif/fourier.png" medium="image" type="image/png" height="72" width="144"/>
+</item>
+<item>
+  <title>Gentle introduction to the learning rate parameter</title>
+  <dc:creator>Athos Damiani</dc:creator>
+  <link>https://athospd.github.io/athosdamiani/posts/2026-11-20-learning-rate/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>I found an old <a href="https://gist.github.com/Athospd/97f16d5768ef72e87d2840f524597653">gist</a> on my GitHub about the learning rate. It fits a regression line by gradient descent, and it’s oddly satisfying to watch. A bit insightful too.</p>
+<p><img src="https://athospd.github.io/athosdamiani/posts/2026-11-20-learning-rate/learning_rate.gif" class="img-fluid"></p>
+<p>There are three curves, one for each learning rate:</p>
+<ul>
+<li><strong>orange</strong>: too low (<code>lr = 0.001</code>). Each step is tiny, so after 100 steps the curve is still far from the points.</li>
+<li><strong>red</strong>: too high (<code>lr = 2</code>). Each step overshoots, so the curve swings far from the points before it settles.</li>
+<li><strong>blue</strong>: just right (<code>lr = 0.05</code>). The curve moves steadily toward the points and stays there.</li>
+</ul>
+<section id="the-learning-rate" class="level2">
+<h2 class="anchored" data-anchor-id="the-learning-rate">The learning rate</h2>
+<p>Gradient descent updates the model parameters a little at each step, in the direction that lowers the loss:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%5Ctheta_%7Bt+1%7D%20=%20%5Ctheta_t%20-%20%5Ceta%20%5C,%20%5Cnabla%20L(%5Ctheta_t)"></p>
+<p>The learning rate <img src="https://latex.codecogs.com/png.latex?%5Ceta"> is the size of that step. The optimizer below is Adam, which adapts the step for each parameter, but the learning rate still sets its scale.</p>
+</section>
+<section id="the-code" class="level2">
+<h2 class="anchored" data-anchor-id="the-code">The code</h2>
+<p>The data is the <code>cars</code> dataset: stopping distance (<code>dist</code>) as a function of speed. The model is <code>dist ~ speed + speed^2</code>, written as a linear layer with two inputs.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(torch)</span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">torch_manual_seed</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb1-3"></span>
+<span id="cb1-4">x <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">torch_tensor</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cbind</span>(cars<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>speed, cars<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>speed<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">^</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>))</span>
+<span id="cb1-5">y <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">torch_tensor</span>(cars<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>dist)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unsqueeze</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)</span>
+<span id="cb1-6">mse <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">nn_mse_loss</span>()</span>
+<span id="cb1-7"></span>
+<span id="cb1-8">model_gen <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(lr) {</span>
+<span id="cb1-9">  lin <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">nn_linear</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># b0, b1 and b2</span></span>
+<span id="cb1-10">  opt <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> torch<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">optim_adam</span>(lin<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>parameters, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">lr =</span> lr)</span>
+<span id="cb1-11">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">return</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">lin =</span> lin, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">opt =</span> opt))</span>
+<span id="cb1-12">}</span>
+<span id="cb1-13"></span>
+<span id="cb1-14">model_fit <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(model) {</span>
+<span id="cb1-15">  model<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>opt<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">zero_grad</span>()</span>
+<span id="cb1-16"></span>
+<span id="cb1-17">  pred <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> model<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">lin</span>(x) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># b0 + b1*speed + b2*speed^2</span></span>
+<span id="cb1-18">  custo <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mse</span>(y, pred)</span>
+<span id="cb1-19">  custo<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">backward</span>()</span>
+<span id="cb1-20">  model<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>opt<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">step</span>()</span>
+<span id="cb1-21">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">return</span>(pred)</span>
+<span id="cb1-22">}</span></code></pre></div></div>
+</div>
+<p>Three copies of the same model, one per learning rate:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">model1 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">model_gen</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)</span>
+<span id="cb2-2">model2 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">model_gen</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.05</span>)</span>
+<span id="cb2-3">model3 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">model_gen</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.001</span>)</span></code></pre></div></div>
+</div>
+<p>Each iteration takes one optimizer step for each model and draws the three fitted curves. The original gist plots to the screen with <code>Sys.sleep(0.1)</code> between steps. Here <code>gifski::save_gif()</code> records each plot as a frame instead.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">gifski<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">save_gif</span>({</span>
+<span id="cb3-2">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> (i <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>) {</span>
+<span id="cb3-3">    pred1 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">model_fit</span>(model1)</span>
+<span id="cb3-4">    pred2 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">model_fit</span>(model2)</span>
+<span id="cb3-5">    pred3 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">model_fit</span>(model3)</span>
+<span id="cb3-6">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot</span>(cars, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">main =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"step"</span>, i))</span>
+<span id="cb3-7">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">lines</span>(x[, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unsqueeze</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>), pred1, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">col =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"red"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">lwd =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span>)</span>
+<span id="cb3-8">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">lines</span>(x[, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unsqueeze</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>), pred2, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">col =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"royalblue"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">lwd =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span>)</span>
+<span id="cb3-9">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">lines</span>(x[, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unsqueeze</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>), pred3, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">col =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"orange"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">lwd =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span>)</span>
+<span id="cb3-10">  }</span>
+<span id="cb3-11">}, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">gif_file =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"learning_rate.gif"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">width =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">640</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">height =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">480</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">delay =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.1</span>)</span></code></pre></div></div>
+</div>
+<p>Tune your models, folks!</p>
+
+
+</section>
+
+ ]]></description>
+  <category>concepts</category>
+  <category>deep learning</category>
+  <category>torch</category>
+  <category>r</category>
+  <category>optimization</category>
+  <guid>https://athospd.github.io/athosdamiani/posts/2026-11-20-learning-rate/</guid>
+  <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
+  <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-20-learning-rate/learning_rate.png" medium="image" type="image/png" height="108" width="144"/>
+</item>
+<item>
+  <title>Top 10 packages for data science, 2026 edition</title>
+  <dc:creator>Athos Damiani</dc:creator>
+  <link>https://athospd.github.io/athosdamiani/posts/2026-11-20-top10-packages-2026/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>In 2017 I wrote my <a href="../2017-02-21-top10-pacotes-para-data-science/">top 10 packages for data science</a>. Nine years later, some of them are still on my list, some were replaced by their successors, and some new ones changed the way I work. Here is the 2026 edition, plus a special mention for the packages of the GenAI era.</p>
+<p><img src="https://athospd.github.io/athosdamiani/posts/2026-11-20-top10-packages-2026/podium-2026.png" class="img-fluid"></p>
+<section id="purrr-vector-and-list-manipulation" class="level3">
+<h3 class="anchored" data-anchor-id="purrr-vector-and-list-manipulation"><a href="https://purrr.tidyverse.org/">10. purrr</a> (vector and list manipulation)</h3>
+<p>Still here, and still putting the <code>for</code> loop at risk of extinction. <code>map()</code> and friends apply functions over vectors and lists without i, j, k indices, and they are the natural way to work with <em>list-columns</em>. Since version 1.1, <code>in_parallel()</code> runs the same <code>map()</code> calls in parallel, too.</p>
+</section>
+<section id="tidymodels-statistical-modeling" class="level3">
+<h3 class="anchored" data-anchor-id="tidymodels-statistical-modeling"><a href="https://www.tidymodels.org/">9. tidymodels</a> (statistical modeling)</h3>
+<p><em>Replaces caret.</em> It was made by caret’s own author, Max Kuhn, as its successor. The pieces of the modeling process are separate packages that fit together: {rsample} for train/test splits and cross-validation, {recipes} for preprocessing, {parsnip} for one interface to many engines (glmnet, ranger, xgboost, lightgbm…), {tune} for hyperparameter tuning, and {yardstick} for metrics. Most posts on this blog with a model in them use it, like the <a href="../2026-11-20-xgboost-untuned-vs-tuned/">untuned vs tuned xgboost</a> one.</p>
+</section>
+<section id="quarto-reports" class="level3">
+<h3 class="anchored" data-anchor-id="quarto-reports"><a href="https://quarto.org/">8. Quarto</a> (reports)</h3>
+<p><em>Replaces knitr/rmarkdown.</em> Quarto is RMarkdown’s successor, from the same team. Same idea, write the analysis and let the tool make the pdf, word or html, but it works with R, Python and Julia alike, and it does websites, books, slides and dashboards out of the box. knitr is still under the hood when the code is R.</p>
+<p>PS: this blog is made with Quarto!</p>
+</section>
+<section id="mirai-async-and-parallel-computing" class="level3">
+<h3 class="anchored" data-anchor-id="mirai-async-and-parallel-computing"><a href="https://mirai.r-lib.org/">7. mirai</a> (async and parallel computing)</h3>
+<p><em>Replaces stringr.</em> {mirai} evaluates R code asynchronously and in parallel, on your laptop or spread across the machines of a cluster. It’s now an official cluster type in R’s own {parallel} package. Its best trick is that you rarely call it directly: it is the engine behind a lot of the R you already use.</p>
+<ul>
+<li>{purrr}: <code>map(x, in_parallel(f))</code> runs a <code>map()</code> in parallel.</li>
+<li>{shiny}: long computations run in the background (<code>ExtendedTask</code>) while the app stays responsive.</li>
+<li>{targets}: through {crew}, the steps of a pipeline run on parallel workers, locally or in the cloud.</li>
+<li>{promises}: any async R code can wait on a mirai.</li>
+</ul>
+<p>Parallel R used to mean choosing between a handful of frameworks with different rules. Now it’s mostly one engine, and it’s fast.</p>
+</section>
+<section id="lubridate-date-manipulation" class="level3">
+<h3 class="anchored" data-anchor-id="lubridate-date-manipulation"><a href="https://lubridate.tidyverse.org/">6. lubridate</a> (date manipulation)</h3>
+<p>Dates are still an endless source of headaches, and lubridate is still the cure: parsing, arithmetic, comparisons, rounding, time zones.</p>
+</section>
+<section id="shiny-web-apps" class="level3">
+<h3 class="anchored" data-anchor-id="shiny-web-apps"><a href="https://shiny.posit.co/">5. shiny</a> (web apps)</h3>
+<p>Web applications without html, css or javascript. Shiny is more mature than ever, with modern themes from {bslib}, and it now exists for Python too.</p>
+</section>
+<section id="targets-pipelines" class="level3">
+<h3 class="anchored" data-anchor-id="targets-pipelines"><a href="https://docs.ropensci.org/targets/">4. targets</a> (pipelines)</h3>
+<p><em>New on the list.</em> {targets} turns an analysis into a pipeline of steps that know their dependencies. Change one step and only what depends on it runs again; everything else is skipped. For projects with a long data preparation or slow models, it’s the difference between waiting hours and waiting seconds, and the results are reproducible by design.</p>
+</section>
+<section id="tidyverse-data-manipulation" class="level3">
+<h3 class="anchored" data-anchor-id="tidyverse-data-manipulation"><a href="https://www.tidyverse.org/">3. tidyverse</a> (data manipulation)</h3>
+<p><em>Replaces dplyr (3rd) and tidyr (4th).</em> In 2017 they were two separate medals. Today <code>library(tidyverse)</code> loads them together with ggplot2, readr, tibble, purrr, stringr, forcats and lubridate, and that’s how most people use them. dplyr’s verbs (<code>filter()</code>, <code>arrange()</code>, <code>select()</code>, <code>distinct()</code>, <code>mutate()</code>, <code>summarise()</code>) are the same, now with <code>.by</code> for grouping in one line, and tidyr’s <code>gather()</code>/<code>spread()</code> became <code>pivot_longer()</code>/<code>pivot_wider()</code>.</p>
+</section>
+<section id="ggplot2-visualization" class="level3">
+<h3 class="anchored" data-anchor-id="ggplot2-visualization"><a href="https://ggplot2.tidyverse.org/">2. ggplot2</a> (visualization)</h3>
+<p>Still the silver medal and still the most famous R package. The <a href="https://vita.had.co.nz/papers/layered-grammar.pdf">grammar of graphics</a> is as useful as ever, and the ecosystem around it ({patchwork}, {gganimate}, {ggiraph} and many more) keeps growing. A must in any data scientist’s toolbox.</p>
+</section>
+<section id="torch-deep-learning" class="level3">
+<h3 class="anchored" data-anchor-id="torch-deep-learning"><a href="https://torch.mlverse.org/">1. torch</a> (deep learning)</h3>
+<p><em>Replaces magrittr.</em> The pipe was my gold medal in 2017. It won so completely that base R has had its own pipe, <code>|&gt;</code>, since R 4.1, so magrittr retires from the list with honors.</p>
+<p>The gold medal now goes to {torch}: deep learning in R, built directly on the C++ library behind PyTorch (LibTorch), without Python. Tensors on the GPU, automatic differentiation and neural network modules, with an R interface. Automatic differentiation alone makes it worth learning: any model you can write as a function, you can fit with gradient descent. A few posts on this blog use it, like <a href="../2021-02-04-simple-audio-classification-with-torch/">simple audio classification</a> and the <a href="../2026-11-20-learning-rate/">learning rate</a> one.</p>
+</section>
+<section id="honorable-mentions" class="level3">
+<h3 class="anchored" data-anchor-id="honorable-mentions">Honorable mentions</h3>
+<ul>
+<li><strong>keras3</strong> (deep learning with a high-level API)</li>
+<li><strong>torchvision</strong> (images, datasets and pretrained models for torch)</li>
+<li><strong>forcats</strong> (factor utilities)</li>
+<li><strong>Rcpp</strong> (R to C++)</li>
+<li><strong>FactoMineR</strong> (multivariate analysis)</li>
+<li><strong>DBI</strong> (database connection)</li>
+<li><strong>httr2/xml2/rvest</strong> (web tools)</li>
+<li><strong>janitor</strong> (data cleaning for modeling)</li>
+<li><strong>roxygen2</strong> (R package creation)</li>
+<li><strong>devtools/usethis</strong> (package development tools)</li>
+<li><strong>htmlwidgets</strong> (integration between R and JavaScript libraries)</li>
+<li><strong>leaflet</strong> (interactive maps)</li>
+</ul>
+</section>
+<section id="special-mention-the-genai-era" class="level3">
+<h3 class="anchored" data-anchor-id="special-mention-the-genai-era">Special mention: the GenAI era</h3>
+<p>LLMs, RAG and agents arrived in R too, and a new family of packages came with them:</p>
+<ul>
+<li><a href="https://ellmer.tidyverse.org/"><strong>ellmer</strong></a>: chat with LLMs from many providers (Claude, OpenAI, Gemini, local models via Ollama and more), with streaming, tool calling and structured data extraction.</li>
+<li><a href="https://ragnar.tidyverse.org/"><strong>ragnar</strong></a>: Retrieval-Augmented Generation (RAG) workflows. Reads documents, splits them into chunks, generates embeddings, stores them and retrieves the relevant ones for the LLM.</li>
+<li><a href="https://posit-dev.github.io/mcptools/"><strong>mcptools</strong></a>: the Model Context Protocol (MCP) for R. Serve R functions as tools for apps like Claude Desktop and Claude Code, or use other MCP servers’ tools from R.</li>
+<li><a href="https://posit-dev.github.io/btw/"><strong>btw</strong></a>: describes your R objects, workspace and package documentation in a format LLMs understand.</li>
+<li><a href="https://vitals.tidyverse.org/"><strong>vitals</strong></a>: evaluates LLM-based products, an R port of Python’s Inspect framework.</li>
+<li><a href="https://posit-dev.github.io/shinychat/"><strong>shinychat</strong></a> and <a href="https://posit-dev.github.io/querychat/"><strong>querychat</strong></a>: a chat interface for Shiny apps, and a chat that turns users’ questions into SQL queries over your data.</li>
+</ul>
+<p>I’m still discovering and learning this whole new world. But it’s as sure as the sunrise that it’s here to stay.</p>
+</section>
+<section id="what-the-downloads-say" class="level2">
+<h2 class="anchored" data-anchor-id="what-the-downloads-say">What the downloads say</h2>
+<p>A top 10 is a matter of taste, but the download counts are data. The CRAN logs of Posit’s mirror are public, so here are the 2017 list and the 2026 list, with downloads in the month before each post.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tidyverse)</span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">options</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">knitr.kable.NA =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>)</span>
+<span id="cb1-3"></span>
+<span id="cb1-4">downloads <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(pkgs, from, to) {</span>
+<span id="cb1-5">  url <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str_glue</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"https://cranlogs.r-pkg.org/downloads/total/{from}:{to}/{str_flatten(pkgs, ',')}"</span>)</span>
+<span id="cb1-6">  jsonlite<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">fromJSON</span>(url) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">select</span>(package, downloads)</span>
+<span id="cb1-7">}</span>
+<span id="cb1-8"></span>
+<span id="cb1-9">top_2017 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"magrittr"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ggplot2"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dplyr"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tidyr"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"shiny"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"lubridate"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"stringr"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"rmarkdown"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"caret"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"purrr"</span>)</span>
+<span id="cb1-10">top_2026 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"torch"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ggplot2"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tidyverse"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"targets"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"shiny"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"lubridate"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mirai"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"quarto"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tidymodels"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"purrr"</span>)</span>
+<span id="cb1-11"></span>
+<span id="cb1-12">pkgs <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">union</span>(top_2017, top_2026)</span>
+<span id="cb1-13"></span>
+<span id="cb1-14"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">bind_rows</span>(</span>
+<span id="cb1-15">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">feb_2017 =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">downloads</span>(pkgs, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2017-01-21"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2017-02-20"</span>),</span>
+<span id="cb1-16">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">nov_2026 =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">downloads</span>(pkgs, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2026-10-20"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2026-11-18"</span>),</span>
+<span id="cb1-17">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">.id =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"month"</span></span>
+<span id="cb1-18">) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span id="cb1-19">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pivot_wider</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">names_from =</span> month, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">values_from =</span> downloads) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span id="cb1-20">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(</span>
+<span id="cb1-21">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">feb_2017 =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">na_if</span>(feb_2017, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>), <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># torch, targets, tidymodels, quarto and mirai didn't exist yet</span></span>
+<span id="cb1-22">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">rank_2017 =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">match</span>(package, top_2017),</span>
+<span id="cb1-23">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">rank_2026 =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">match</span>(package, top_2026)</span>
+<span id="cb1-24">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span id="cb1-25">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrange</span>(rank_2026, rank_2017) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span id="cb1-26">  knitr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">kable</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">format.args =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">big.mark =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">","</span>))</span></code></pre></div></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">package</th>
+<th style="text-align: right;">feb_2017</th>
+<th style="text-align: right;">nov_2026</th>
+<th style="text-align: right;">rank_2017</th>
+<th style="text-align: right;">rank_2026</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">torch</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">43,751</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ggplot2</td>
+<td style="text-align: right;">437,680</td>
+<td style="text-align: right;">2,115,852</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">tidyverse</td>
+<td style="text-align: right;">49,273</td>
+<td style="text-align: right;">864,499</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">targets</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">12,599</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">shiny</td>
+<td style="text-align: right;">148,314</td>
+<td style="text-align: right;">919,605</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">lubridate</td>
+<td style="text-align: right;">91,281</td>
+<td style="text-align: right;">602,683</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">mirai</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">41,213</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">quarto</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">56,386</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">tidymodels</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">98,256</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">purrr</td>
+<td style="text-align: right;">63,867</td>
+<td style="text-align: right;">1,205,141</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">magrittr</td>
+<td style="text-align: right;">355,815</td>
+<td style="text-align: right;">1,688,325</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">dplyr</td>
+<td style="text-align: right;">296,973</td>
+<td style="text-align: right;">1,754,169</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">tidyr</td>
+<td style="text-align: right;">144,913</td>
+<td style="text-align: right;">1,106,347</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">stringr</td>
+<td style="text-align: right;">342,351</td>
+<td style="text-align: right;">1,187,180</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rmarkdown</td>
+<td style="text-align: right;">208,673</td>
+<td style="text-align: right;">1,371,005</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">caret</td>
+<td style="text-align: right;">87,426</td>
+<td style="text-align: right;">132,869</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>A few things stand out:</p>
+<ul>
+<li>ggplot2 is the most downloaded package on CRAN that you’d install on purpose. Only rlang, a low-level dependency of almost everything, beats it.</li>
+<li>magrittr still has more than 1.6 million downloads a month, mostly as a dependency of other packages, even with the native pipe in base R.</li>
+<li>torch, mirai and targets are far from the top in downloads. They’re on my list because of what they do for my work, not because everyone uses them (yet).</li>
+<li>Quarto is a command-line tool, not an R package. The <code>quarto</code> R package only calls it, so its downloads say little about how many people use Quarto.</li>
+</ul>
+<p>These numbers only count Posit’s CRAN mirror, so they are a sample, not the whole picture.</p>
+<p>What about you, do you agree? Tell me which packages live in your heart! =)</p>
+
+
+</section>
+
+ ]]></description>
+  <category>top 10</category>
+  <category>packages</category>
+  <category>r</category>
+  <guid>https://athospd.github.io/athosdamiani/posts/2026-11-20-top10-packages-2026/</guid>
+  <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
+  <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-20-top10-packages-2026/podium-2026.png" medium="image" type="image/png" height="81" width="144"/>
+</item>
+<item>
   <title>Untuned vs tuned xgboost, one tree at a time</title>
   <dc:creator>Athos Damiani</dc:creator>
   <link>https://athospd.github.io/athosdamiani/posts/2026-11-20-xgboost-untuned-vs-tuned/</link>
@@ -2611,423 +3028,6 @@ font-style: inherit;">"rmse"</span>)</span></code></pre></div></div>
   <guid>https://athospd.github.io/athosdamiani/posts/2026-11-20-xgboost-untuned-vs-tuned/</guid>
   <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
   <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-20-xgboost-untuned-vs-tuned/xgboost.png" medium="image" type="image/png" height="65" width="144"/>
-</item>
-<item>
-  <title>Top 10 packages for data science, 2026 edition</title>
-  <dc:creator>Athos Damiani</dc:creator>
-  <link>https://athospd.github.io/athosdamiani/posts/2026-11-20-top10-packages-2026/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<p>In 2017 I wrote my <a href="../2017-02-21-top10-pacotes-para-data-science/">top 10 packages for data science</a>. Nine years later, some of them are still on my list, some were replaced by their successors, and some new ones changed the way I work. Here is the 2026 edition, plus a special mention for the packages of the GenAI era.</p>
-<p><img src="https://athospd.github.io/athosdamiani/posts/2026-11-20-top10-packages-2026/podium-2026.png" class="img-fluid"></p>
-<section id="purrr-vector-and-list-manipulation" class="level3">
-<h3 class="anchored" data-anchor-id="purrr-vector-and-list-manipulation"><a href="https://purrr.tidyverse.org/">10. purrr</a> (vector and list manipulation)</h3>
-<p>Still here, and still putting the <code>for</code> loop at risk of extinction. <code>map()</code> and friends apply functions over vectors and lists without i, j, k indices, and they are the natural way to work with <em>list-columns</em>. Since version 1.1, <code>in_parallel()</code> runs the same <code>map()</code> calls in parallel, too.</p>
-</section>
-<section id="tidymodels-statistical-modeling" class="level3">
-<h3 class="anchored" data-anchor-id="tidymodels-statistical-modeling"><a href="https://www.tidymodels.org/">9. tidymodels</a> (statistical modeling)</h3>
-<p><em>Replaces caret.</em> It was made by caret’s own author, Max Kuhn, as its successor. The pieces of the modeling process are separate packages that fit together: {rsample} for train/test splits and cross-validation, {recipes} for preprocessing, {parsnip} for one interface to many engines (glmnet, ranger, xgboost, lightgbm…), {tune} for hyperparameter tuning, and {yardstick} for metrics. Most posts on this blog with a model in them use it, like the <a href="../2026-11-20-xgboost-untuned-vs-tuned/">untuned vs tuned xgboost</a> one.</p>
-</section>
-<section id="quarto-reports" class="level3">
-<h3 class="anchored" data-anchor-id="quarto-reports"><a href="https://quarto.org/">8. Quarto</a> (reports)</h3>
-<p><em>Replaces knitr/rmarkdown.</em> Quarto is RMarkdown’s successor, from the same team. Same idea, write the analysis and let the tool make the pdf, word or html, but it works with R, Python and Julia alike, and it does websites, books, slides and dashboards out of the box. knitr is still under the hood when the code is R.</p>
-<p>PS: this blog is made with Quarto!</p>
-</section>
-<section id="mirai-async-and-parallel-computing" class="level3">
-<h3 class="anchored" data-anchor-id="mirai-async-and-parallel-computing"><a href="https://mirai.r-lib.org/">7. mirai</a> (async and parallel computing)</h3>
-<p><em>Replaces stringr.</em> {mirai} evaluates R code asynchronously and in parallel, on your laptop or spread across the machines of a cluster. It’s now an official cluster type in R’s own {parallel} package. Its best trick is that you rarely call it directly: it is the engine behind a lot of the R you already use.</p>
-<ul>
-<li>{purrr}: <code>map(x, in_parallel(f))</code> runs a <code>map()</code> in parallel.</li>
-<li>{shiny}: long computations run in the background (<code>ExtendedTask</code>) while the app stays responsive.</li>
-<li>{targets}: through {crew}, the steps of a pipeline run on parallel workers, locally or in the cloud.</li>
-<li>{promises}: any async R code can wait on a mirai.</li>
-</ul>
-<p>Parallel R used to mean choosing between a handful of frameworks with different rules. Now it’s mostly one engine, and it’s fast.</p>
-</section>
-<section id="lubridate-date-manipulation" class="level3">
-<h3 class="anchored" data-anchor-id="lubridate-date-manipulation"><a href="https://lubridate.tidyverse.org/">6. lubridate</a> (date manipulation)</h3>
-<p>Dates are still an endless source of headaches, and lubridate is still the cure: parsing, arithmetic, comparisons, rounding, time zones.</p>
-</section>
-<section id="shiny-web-apps" class="level3">
-<h3 class="anchored" data-anchor-id="shiny-web-apps"><a href="https://shiny.posit.co/">5. shiny</a> (web apps)</h3>
-<p>Web applications without html, css or javascript. Shiny is more mature than ever, with modern themes from {bslib}, and it now exists for Python too.</p>
-</section>
-<section id="targets-pipelines" class="level3">
-<h3 class="anchored" data-anchor-id="targets-pipelines"><a href="https://docs.ropensci.org/targets/">4. targets</a> (pipelines)</h3>
-<p><em>New on the list.</em> {targets} turns an analysis into a pipeline of steps that know their dependencies. Change one step and only what depends on it runs again; everything else is skipped. For projects with a long data preparation or slow models, it’s the difference between waiting hours and waiting seconds, and the results are reproducible by design.</p>
-</section>
-<section id="tidyverse-data-manipulation" class="level3">
-<h3 class="anchored" data-anchor-id="tidyverse-data-manipulation"><a href="https://www.tidyverse.org/">3. tidyverse</a> (data manipulation)</h3>
-<p><em>Replaces dplyr (3rd) and tidyr (4th).</em> In 2017 they were two separate medals. Today <code>library(tidyverse)</code> loads them together with ggplot2, readr, tibble, purrr, stringr, forcats and lubridate, and that’s how most people use them. dplyr’s verbs (<code>filter()</code>, <code>arrange()</code>, <code>select()</code>, <code>distinct()</code>, <code>mutate()</code>, <code>summarise()</code>) are the same, now with <code>.by</code> for grouping in one line, and tidyr’s <code>gather()</code>/<code>spread()</code> became <code>pivot_longer()</code>/<code>pivot_wider()</code>.</p>
-</section>
-<section id="ggplot2-visualization" class="level3">
-<h3 class="anchored" data-anchor-id="ggplot2-visualization"><a href="https://ggplot2.tidyverse.org/">2. ggplot2</a> (visualization)</h3>
-<p>Still the silver medal and still the most famous R package. The <a href="https://vita.had.co.nz/papers/layered-grammar.pdf">grammar of graphics</a> is as useful as ever, and the ecosystem around it ({patchwork}, {gganimate}, {ggiraph} and many more) keeps growing. A must in any data scientist’s toolbox.</p>
-</section>
-<section id="torch-deep-learning" class="level3">
-<h3 class="anchored" data-anchor-id="torch-deep-learning"><a href="https://torch.mlverse.org/">1. torch</a> (deep learning)</h3>
-<p><em>Replaces magrittr.</em> The pipe was my gold medal in 2017. It won so completely that base R has had its own pipe, <code>|&gt;</code>, since R 4.1, so magrittr retires from the list with honors.</p>
-<p>The gold medal now goes to {torch}: deep learning in R, built directly on the C++ library behind PyTorch (LibTorch), without Python. Tensors on the GPU, automatic differentiation and neural network modules, with an R interface. Automatic differentiation alone makes it worth learning: any model you can write as a function, you can fit with gradient descent. A few posts on this blog use it, like <a href="../2021-02-04-simple-audio-classification-with-torch/">simple audio classification</a> and the <a href="../2026-11-20-learning-rate/">learning rate</a> one.</p>
-</section>
-<section id="honorable-mentions" class="level3">
-<h3 class="anchored" data-anchor-id="honorable-mentions">Honorable mentions</h3>
-<ul>
-<li><strong>keras3</strong> (deep learning with a high-level API)</li>
-<li><strong>torchvision</strong> (images, datasets and pretrained models for torch)</li>
-<li><strong>forcats</strong> (factor utilities)</li>
-<li><strong>Rcpp</strong> (R to C++)</li>
-<li><strong>FactoMineR</strong> (multivariate analysis)</li>
-<li><strong>DBI</strong> (database connection)</li>
-<li><strong>httr2/xml2/rvest</strong> (web tools)</li>
-<li><strong>janitor</strong> (data cleaning for modeling)</li>
-<li><strong>roxygen2</strong> (R package creation)</li>
-<li><strong>devtools/usethis</strong> (package development tools)</li>
-<li><strong>htmlwidgets</strong> (integration between R and JavaScript libraries)</li>
-<li><strong>leaflet</strong> (interactive maps)</li>
-</ul>
-</section>
-<section id="special-mention-the-genai-era" class="level3">
-<h3 class="anchored" data-anchor-id="special-mention-the-genai-era">Special mention: the GenAI era</h3>
-<p>LLMs, RAG and agents arrived in R too, and a new family of packages came with them:</p>
-<ul>
-<li><a href="https://ellmer.tidyverse.org/"><strong>ellmer</strong></a>: chat with LLMs from many providers (Claude, OpenAI, Gemini, local models via Ollama and more), with streaming, tool calling and structured data extraction.</li>
-<li><a href="https://ragnar.tidyverse.org/"><strong>ragnar</strong></a>: Retrieval-Augmented Generation (RAG) workflows. Reads documents, splits them into chunks, generates embeddings, stores them and retrieves the relevant ones for the LLM.</li>
-<li><a href="https://posit-dev.github.io/mcptools/"><strong>mcptools</strong></a>: the Model Context Protocol (MCP) for R. Serve R functions as tools for apps like Claude Desktop and Claude Code, or use other MCP servers’ tools from R.</li>
-<li><a href="https://posit-dev.github.io/btw/"><strong>btw</strong></a>: describes your R objects, workspace and package documentation in a format LLMs understand.</li>
-<li><a href="https://vitals.tidyverse.org/"><strong>vitals</strong></a>: evaluates LLM-based products, an R port of Python’s Inspect framework.</li>
-<li><a href="https://posit-dev.github.io/shinychat/"><strong>shinychat</strong></a> and <a href="https://posit-dev.github.io/querychat/"><strong>querychat</strong></a>: a chat interface for Shiny apps, and a chat that turns users’ questions into SQL queries over your data.</li>
-</ul>
-<p>I’m still discovering and learning this whole new world. But it’s as sure as the sunrise that it’s here to stay.</p>
-</section>
-<section id="what-the-downloads-say" class="level2">
-<h2 class="anchored" data-anchor-id="what-the-downloads-say">What the downloads say</h2>
-<p>A top 10 is a matter of taste, but the download counts are data. The CRAN logs of Posit’s mirror are public, so here are the 2017 list and the 2026 list, with downloads in the month before each post.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(tidyverse)</span>
-<span id="cb1-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">options</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">knitr.kable.NA =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span>)</span>
-<span id="cb1-3"></span>
-<span id="cb1-4">downloads <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(pkgs, from, to) {</span>
-<span id="cb1-5">  url <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">str_glue</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"https://cranlogs.r-pkg.org/downloads/total/{from}:{to}/{str_flatten(pkgs, ',')}"</span>)</span>
-<span id="cb1-6">  jsonlite<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">fromJSON</span>(url) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">select</span>(package, downloads)</span>
-<span id="cb1-7">}</span>
-<span id="cb1-8"></span>
-<span id="cb1-9">top_2017 <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"magrittr"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ggplot2"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"dplyr"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"tidyr"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"shiny"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"lubridate"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"stringr"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"rmarkdown"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"caret"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"purrr"</span>)</span>
-<span id="cb1-10">top_2026 <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"torch"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ggplot2"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"tidyverse"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"targets"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"shiny"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"lubridate"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"mirai"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"quarto"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"tidymodels"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"purrr"</span>)</span>
-<span id="cb1-11"></span>
-<span id="cb1-12">pkgs <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">union</span>(top_2017, top_2026)</span>
-<span id="cb1-13"></span>
-<span id="cb1-14"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">bind_rows</span>(</span>
-<span id="cb1-15">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">feb_2017 =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">downloads</span>(pkgs, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"2017-01-21"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"2017-02-20"</span>),</span>
-<span id="cb1-16">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">nov_2026 =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">downloads</span>(pkgs, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"2026-10-20"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"2026-11-18"</span>),</span>
-<span id="cb1-17">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">.id =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"month"</span></span>
-<span id="cb1-18">) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span></span>
-<span id="cb1-19">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">pivot_wider</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">names_from =</span> month, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">values_from =</span> downloads) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span></span>
-<span id="cb1-20">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(</span>
-<span id="cb1-21">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">feb_2017 =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">na_if</span>(feb_2017, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>), <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># torch, targets, tidymodels, quarto and mirai didn't exist yet</span></span>
-<span id="cb1-22">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">rank_2017 =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">match</span>(package, top_2017),</span>
-<span id="cb1-23">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">rank_2026 =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">match</span>(package, top_2026)</span>
-<span id="cb1-24">  ) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span></span>
-<span id="cb1-25">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">arrange</span>(rank_2026, rank_2017) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span></span>
-<span id="cb1-26">  knitr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">kable</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">format.args =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">list</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">big.mark =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">","</span>))</span></code></pre></div></div>
-<div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
-<thead>
-<tr class="header">
-<th style="text-align: left;">package</th>
-<th style="text-align: right;">feb_2017</th>
-<th style="text-align: right;">nov_2026</th>
-<th style="text-align: right;">rank_2017</th>
-<th style="text-align: right;">rank_2026</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">torch</td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;">43,751</td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;">1</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">ggplot2</td>
-<td style="text-align: right;">437,680</td>
-<td style="text-align: right;">2,115,852</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">2</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">tidyverse</td>
-<td style="text-align: right;">49,273</td>
-<td style="text-align: right;">864,499</td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;">3</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">targets</td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;">12,599</td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;">4</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">shiny</td>
-<td style="text-align: right;">148,314</td>
-<td style="text-align: right;">919,605</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">5</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">lubridate</td>
-<td style="text-align: right;">91,281</td>
-<td style="text-align: right;">602,683</td>
-<td style="text-align: right;">6</td>
-<td style="text-align: right;">6</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">mirai</td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;">41,213</td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;">7</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">quarto</td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;">56,386</td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;">8</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">tidymodels</td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;">98,256</td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;">9</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">purrr</td>
-<td style="text-align: right;">63,867</td>
-<td style="text-align: right;">1,205,141</td>
-<td style="text-align: right;">10</td>
-<td style="text-align: right;">10</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">magrittr</td>
-<td style="text-align: right;">355,815</td>
-<td style="text-align: right;">1,688,325</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">dplyr</td>
-<td style="text-align: right;">296,973</td>
-<td style="text-align: right;">1,754,169</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">tidyr</td>
-<td style="text-align: right;">144,913</td>
-<td style="text-align: right;">1,106,347</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">stringr</td>
-<td style="text-align: right;">342,351</td>
-<td style="text-align: right;">1,187,180</td>
-<td style="text-align: right;">7</td>
-<td style="text-align: right;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">rmarkdown</td>
-<td style="text-align: right;">208,673</td>
-<td style="text-align: right;">1,371,005</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">caret</td>
-<td style="text-align: right;">87,426</td>
-<td style="text-align: right;">132,869</td>
-<td style="text-align: right;">9</td>
-<td style="text-align: right;"></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>A few things stand out:</p>
-<ul>
-<li>ggplot2 is the most downloaded package on CRAN that you’d install on purpose. Only rlang, a low-level dependency of almost everything, beats it.</li>
-<li>magrittr still has more than 1.6 million downloads a month, mostly as a dependency of other packages, even with the native pipe in base R.</li>
-<li>torch, mirai and targets are far from the top in downloads. They’re on my list because of what they do for my work, not because everyone uses them (yet).</li>
-<li>Quarto is a command-line tool, not an R package. The <code>quarto</code> R package only calls it, so its downloads say little about how many people use Quarto.</li>
-</ul>
-<p>These numbers only count Posit’s CRAN mirror, so they are a sample, not the whole picture.</p>
-<p>What about you, do you agree? Tell me which packages live in your heart! =)</p>
-
-
-</section>
-
- ]]></description>
-  <category>top 10</category>
-  <category>packages</category>
-  <category>r</category>
-  <guid>https://athospd.github.io/athosdamiani/posts/2026-11-20-top10-packages-2026/</guid>
-  <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
-  <media:content url="https://athospd.github.io/athosdamiani/posts/2026-11-20-top10-packages-2026/podium-2026.png" medium="image" type="image/png" height="81" width="144"/>
 </item>
 <item>
   <title>Querying Parquet with SQL from R, no warehouse needed</title>

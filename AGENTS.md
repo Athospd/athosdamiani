@@ -2,6 +2,8 @@
 
 Live at https://athospd.github.io/athosdamiani/. The owner is Athos Damiani, a data scientist with a statistics background and data engineering experience. The audience is recruiters and R/data people.
 
+These notes are for every coding agent, and `CLAUDE.md` imports them for Claude Code. Add new lessons here, not in `CLAUDE.md`. `_quarto.yml` renders only `*.qmd` and `*.Rmd` files, which keeps these notes off the site.
+
 ## Publishing: a push to `main` is a live deploy
 
 - `.github/workflows/publish.yml` renders the site and pushes it to `gh-pages` on every push to `main`. A second run, "pages build and deployment", then serves it. The whole thing takes about 3 minutes.

@@ -9,6 +9,10 @@ profile:
 project:
   type: website
   output-dir: _site
+  # Only pages and posts. Keeps AGENTS.md / CLAUDE.md (agent notes) off the site.
+  render:
+    - "*.qmd"
+    - "*.Rmd"
 
 website:
   title: "Athos Damiani"

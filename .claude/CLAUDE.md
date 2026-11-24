@@ -12,6 +12,8 @@ Live at https://athospd.github.io/athosdamiani/. The owner is Athos Damiani, a d
   - `gh run list -L 3` shows both runs as `success`.
   - `curl -s https://athospd.github.io/athosdamiani/<page>.html | grep -o '<new text>'` confirms the change is live.
   - Only report "live" after that check passes.
+  - Wait with an `until` loop, because `sleep` is blocked. Match the run to your commit: `H=$(git rev-parse HEAD); until id=$(gh run list -R Athospd/athosdamiani -w publish.yml -L 1 --json databaseId,headSha -q ".[] | select(.headSha==\"$H\") | .databaseId") && [ -n "$id" ]; do :; done; gh run watch $id -R Athospd/athosdamiani --exit-status`. Then loop on `curl` until the new text appears.
+- GitHub Pages sends `Cache-Control: max-age=600`. If the owner still sees an old version after the live check passes, it's their browser cache: tell them to hard-refresh.
 
 ## Writing a post
 
@@ -19,6 +21,9 @@ Live at https://athospd.github.io/athosdamiani/. The owner is Athos Damiani, a d
 - Front matter: `title`, `description` (one line, shown in listings and previews), `date`, `author: "Athos Damiani"`, `categories` (lowercase, reuse existing ones such as `r`, `targets`, `claude code`, `ai`), and `image:` (the thumbnail). Python posts add `jupyter: python3`. Add `execute: warning: false` when "built under R version" noise appears.
 - Voice is first person, plain and concrete. State facts. No self-praise ("reliable", "powerful", "best-known") and no hype. Say what the thing does, why the owner built it, and how to try it, with short paragraphs and real code or output. A new project post links its GitHub repo, and the Projects page links back to it.
 - Use real artifacts, never mock-ups. Example: the targetfy post shows the actual `tar_glimpse()` graph from running the pipeline.
+- Run code that the post shows but doesn't execute (an ```` ```r ```` block in a `.qmd`, a generated `_targets.R`) in a scratchpad project before publishing, so what readers copy works.
+- Check every version, date or ranking claim against its source (package NEWS, CRAN, cranlogs) before publishing. Earlier drafts got "added in purrr 1.0" (it was 1.1) wrong this way.
+- A post based on a LinkedIn post or a gist links both in its opening paragraph.
 - Helper files for a post (generator scripts, intermediate images) go in the post folder with a `_` prefix (`_make_thumb.py`, `_glimpse.R`). Quarto doesn't publish them, and they keep the image reproducible. Start each script with a comment that says how to regenerate the image.
 - Check the rendered output: `grep -lE '## Warning|## Error' _site/posts/*/index.html` should print nothing.
 
@@ -29,6 +34,8 @@ Live at https://athospd.github.io/athosdamiani/. The owner is Athos Damiani, a d
 - Method: a Python script writes `_thumb.html` (an inline SVG with `shape-rendering="crispEdges"` and Google Fonts with `display=block`). Then screenshot it with headless Chrome:
   `"/c/Program Files/Google/Chrome/Application/chrome.exe" --headless=new --hide-scrollbars --window-size=1600,900 --virtual-time-budget=6000 --screenshot=<out>.png _thumb.html`.
   Look at the PNG with Read before using it. Model to copy: `posts/2026-11-21-targetfy/_make_thumb.py`.
+- Real R output in an image (a `tar_glimpse()` graph, an htmlwidget): save it with `htmlwidgets::saveWidget(..., selfcontained = FALSE)`, screenshot it with `--force-device-scale-factor=2`, crop it to its content with PIL, and embed the PNG in the SVG as base64. See `posts/2026-11-21-targetfy/_glimpse.R`.
+- Before using a PNG, check that no text overflows a panel or runs into a border, and that arrows read as arrows.
 - Headless Edge is unreliable on this machine. Use Chrome.
 
 ## Site pages
@@ -38,10 +45,14 @@ Live at https://athospd.github.io/athosdamiani/. The owner is Athos Damiani, a d
 - Theme profile is `pixel` (`_quarto.yml` → `_quarto-pixel.yml`). CSS is in `theme/pixel.scss`, and palettes are in `theme/pixel-dark.scss` and `theme/pixel-light.scss`. `h2` headings get automatic `01/02…` numbers.
 - Design rules: professional, not childish. Keep it compact. The pixel font is for tiny labels only. Borders are 2px pixel rings, dividers are dashed, and there are no rounded corners.
 - `_quarto.yml` includes GoatCounter and the Search Console verification meta tag. Don't remove them.
+- `https://athospd.github.io/` is a separate repo, `Athospd/Athospd.github.io` (branch `master`). Its `index.html` redirects to this site, and its `robots.txt` points crawlers to `athosdamiani/sitemap.xml`.
+- Check layout changes on a phone width. Headless Chrome won't go below about 500px, so screenshot a page that holds the site in a `<iframe width=390>`, with `--allow-file-access-from-files`.
 
 ## Environment gotchas (Windows)
 
 - Quarto: `export PATH="/c/Users/ap_da/AppData/Local/Programs/Quarto/bin:$PATH"` in bash. Quarto uses **R 4.4.1**, and only that version has the post packages.
+- `Rscript` isn't on the bash PATH. Use `"/c/Program Files/R/R-4.4.1/bin/Rscript.exe"`.
+- When you write LaTeX or regexes through Python or a heredoc, use raw strings. In a normal Python string, `"\text"` becomes a TAB followed by `ext`, which once broke an equation on the live site.
 - Never `cd` into `_site`. It locks the folder, and the next render fails with "file in use".
 - The tabulizer post needs Java 11 to re-render. Its output is frozen, so a normal render doesn't need Java.
 - `_HANDOFF*.md` files at the root are local, gitignored history notes from earlier sessions. Read them for background, and don't commit them.

@@ -12,47 +12,53 @@ description: "Data Scientist · Statistics · ML · Python · R · SQL · Spark 
 ## Experience
 
 ::: {.job}
-### Senior R/Shiny Developer — Halo
-[Aug 2025 – present · São Paulo / Remote · Technology consultancy]{.when}
+### Data Scientist (Data Science Developer) — Halo
+[Aug 2025 – present · US-based, Remote]{.when}
 
-- Engineer an enterprise R/Shiny application for a pharmaceutical client, turning analytical workflows into interactive tools for clinical data exploration.
-- Work with cross-functional stakeholders on design, usability, scalability and compliance requirements.
-- *R, Shiny, Git*
+- Delivered claims prediction through an enterprise R/Shiny dashboard, letting teams run scenario analyses and cutting the planning and optimization workflow by 50%.
+- Built two R/Shiny dashboards for research teams, reducing manual reporting from days to minutes and supporting health insurance simulations.
+- Implemented automated testing and CI/CD pipelines, moving releases from quarterly to monthly with near-zero failures.
+- Partnered with US-based stakeholders to define requirements, translating clinical workflows into automated R/Shiny solutions.
+- *R, Shiny, SQL, MongoDB, Posit Connect, HTML, CSS, JavaScript, GitHub, Docker, Bash*
 :::
 
 ::: {.job}
-### Machine Learning Specialist — Serasa Experian
-[Jul 2024 – Aug 2025 · Brazil · Credit bureau]{.when}
+### Machine Learning Engineer — Serasa Experian
+[Aug 2024 – Aug 2025 · Brazil · Credit bureau]{.when}
 
-- Led initiatives bridging credit-risk data science and ML engineering, aligning technical and business stakeholders.
-- Improved model reliability and the path from analytical work to production delivery on Databricks.
-- *Python, Databricks, SQL, Git*
+- Replaced logistic regression with a random forest in the main baseline model, raising its KS from 30% to 40%, with SHAP-based explanations for model governance.
+- Led ML engineering integration across the credit-risk team, cutting model deployment time by 90% (from 6 months to 20 days) with MLflow and Databricks.
+- Built an automated model validation tool in Python, reducing validation from 3 days to 15 minutes.
+- *Python, SQL, MLflow, dbt, Spark, PySpark, Databricks, Delta Tables*
 :::
 
 ::: {.job}
 ### Data Scientist — Bank of England
-[Feb 2023 – Jul 2024 · United Kingdom · Central bank / regulator]{.when}
+[Feb 2023 – Jul 2024 · London, UK · Central bank / regulator]{.when}
 
-- Delivered data products for strategic teams, including **data pipelines** and Shiny dashboards built with software-engineering practices.
-- Received an "Excelling" annual bonus award.
-- *R, SQL, Git*
+- Built a production R package and Shiny dashboard serving 40+ users across 5 strategic business units, replacing manual SharePoint spreadsheet workflows with automated database updates.
+- Engineered reproducible DAG-based **data pipelines** with R's {targets}, automated testing and Azure DevOps CI/CD, reducing a regulatory process from about a week to a couple of hours.
+- Introduced collaborative Git workflows to a non-code-centric team, improving maintainability and debugging; received the year-end "Excelling" performance bonus award.
+- *R, SQL, Shiny, Python, GitHub, CI/CD, Azure DevOps, Airflow*
 :::
 
 ::: {.job}
 ### Senior Data Scientist, Lending — Nubank
 [Oct 2021 – Dec 2022 · Brazil · Digital bank]{.when}
 
-- Built and monitored a core risk model supporting lending products, on a **Spark / Databricks** stack.
-- *R, Scala, Python, Spark, Databricks, Git*
+- Built, deployed and monitored Nubank's primary personal-loan credit-risk model, raising AUC by 7% and supporting lending decisions for 7M+ borrowers.
+- Developed a model-monitoring framework in Python, Scala and Spark on **Databricks** to detect data drift and performance degradation, helping prevent over R$1M (~US$200K) in potential credit losses.
+- Worked with cross-functional squads in an 80M+ customer organization to bring analytics into decision-making.
+- *Python, R, SQL, Spark, Scala, Databricks, AWS, MLflow, GitHub, Looker*
 :::
 
 ::: {.job}
-### Co-founder & Data Scientist — R6 Consulting / Curso-R
-[Feb 2017 – present · Brazil]{.when}
+### Co-founder, Instructor & Data Scientist — R6 Statistical Consultant / Curso-R
+[Feb 2017 – present · Brazil · Part-time]{.when}
 
-- Co-founded the R6 data consultancy and Curso-R, a training initiative focused on teaching R.
-- Deliver data projects, training and open-source contributions to the R community.
-- *R, SQL, machine learning, web development, Git*
+- Co-founded Curso-R, an R training platform in Brazil: courses for 500+ students and open-source packages used by the R community.
+- Consulted for 20+ clients on data-science projects in finance, health and the public sector.
+- *R, SQL, Shiny, GitHub*
 :::
 
 ::: {.job}
@@ -82,9 +88,9 @@ description: "Data Scientist · Statistics · ML · Python · R · SQL · Spark 
 <details>
 <summary>Earlier roles (2011 – 2015)</summary>
 
-- **Analyst, Legal Department — Itaú Unibanco** (2014–2015): model to support settlement-offer values in labour lawsuits.
-- **Junior Data Analyst — IBOPE** (2014): experimental design, forecasting, multivariate analysis, process automation.
-- **Data Scientist — Brazilian Association of Jurimetrics** (2013–2014): empirical research, relational databases, data collection, reporting and web applications.
+- **Data Scientist — Itaú Unibanco** (Nov 2014 – Aug 2015): model to support settlement-offer values in labour lawsuits.
+- **Data Scientist — IBOPE** (Jun – Nov 2014): experimental design, forecasting, multivariate analysis, process automation.
+- **Data Scientist — Brazilian Association of Jurimetrics** (Jan 2013 – May 2014): empirical research, relational databases, data collection, reporting and web applications.
 - **Statistical Consulting Intern — IME-USP** (2011–2012): consulting projects and data preparation in R.
 
 </details>
@@ -93,15 +99,16 @@ description: "Data Scientist · Statistics · ML · Python · R · SQL · Spark 
 
 | Area | Tools |
 |---|---|
-| Languages | Python, R, SQL, Scala · some JavaScript, HTML/CSS, C++ |
-| ML & MLOps | MLflow, end-to-end ML lifecycle, model monitoring, Torch |
-| Data engineering | SQL, Spark, PySpark, Databricks, Hive, Bash, Docker, Git |
-| Data products | Shiny, web apps, dashboards |
+| Languages | Python, R, SQL, Scala, JavaScript |
+| ML & MLOps | MLflow, scikit-learn, XGBoost, LightGBM, tidymodels, PyTorch |
+| Data engineering | Spark, PySpark, Databricks, Airflow, dbt |
+| Cloud & DevOps | AWS, Azure, GitHub, CI/CD, Docker |
+| Applications | Shiny, Bash, HTML, CSS |
 
 ## Education
 
 - **B.Sc. Statistics** — Institute of Mathematics and Statistics, University of São Paulo (2009–2013)
-- **M.Sc. studies (not completed)** — Polytechnic School, University of São Paulo (2019–2022). Topic: automatic acoustic detection of bird species with R and Torch. [Project](https://athospd.github.io/mestrado/)
+- **Master's in Acoustic Engineering (coursework, without the dissertation)** — Polytechnic School, University of São Paulo (2019–2022). Topic: automatic acoustic detection of bird species with R and Torch. [Project](https://athospd.github.io/mestrado/)
 
 ## Certifications
 
@@ -109,7 +116,7 @@ Stanford Statistical Learning · Bayesian Methods for Machine Learning (with Hon
 
 ## Languages
 
-Portuguese (native) · English (C1, IELTS)
+Portuguese (native) · English (fluent, IELTS C1) · Spanish (basic)
 
 ## Publications
 
